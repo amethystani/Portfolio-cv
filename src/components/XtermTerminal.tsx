@@ -35,64 +35,23 @@ const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
 async function playWelcomeAnimation(term: Terminal, onComplete: () => void) {
   term.write('\x1b[?25l') // hide cursor
 
-  const glitchColors = ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[36m', '\x1b[35m']
-
-  // Boot sequence typing
-  const bootLines = [
-    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Loading core modules...\x1b[0m',
-    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Establishing neural link...\x1b[0m',
-    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Synchronizing data streams...\x1b[0m',
-    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Bypassing security protocols...\x1b[0m',
-    '\x1b[36mSystem boot up complete.\x1b[0m',
+  const bannerLines = [
+    '',
+    '\x1b[32m    _          _                    _     \x1b[0m',
+    '\x1b[32m   / \\   _ __ (_)_ __ ___   ___  ___| |__  \x1b[0m',
+    '\x1b[32m  / _ \\ | \'_ \\| | \'_ ` _ \\ / _ \\/ __| \'_ \\ \x1b[0m',
+    '\x1b[32m / ___ \\| | | | | | | | | |  __/\\__ \\ | | |\x1b[0m',
+    '\x1b[32m/_/   \\_\\_| |_|_|_| |_| |_|\\___||___/_| |_|\x1b[0m',
+    '',
+    '\x1b[1m\x1b[97mWelcome to Animesh\'s Terminal OS\x1b[0m',
+    '\x1b[2mType \x1b[0m\x1b[36mhelp\x1b[0m\x1b[2m to see all commands. Use \x1b[0m\x1b[36mnano <file>\x1b[0m\x1b[2m to edit.\x1b[0m',
+    '\x1b[2mSupports pipes, redirection, variables, aliases, and more.\x1b[0m',
     ''
   ]
 
-  for (const line of bootLines) {
-    for (const char of line) {
-      term.write(char)
-      await delay(Math.random() * 10 + 5)
-    }
-    term.write('\r\n')
-    await delay(150 + Math.random() * 100)
-  }
-
-  // Anime Katana ASCII Drop
-  const animeLogo = [
-    '\x1b[31m               )',
-    '\x1b[31m              ( ',
-    '\x1b[31m ______       ) ',
-    '\x1b[90m_\\ _~-\\___   (  ',
-    '\x1b[90m=  = ==-- \x1b[37m\\   \x1b[31m) ',
-    '\x1b[90m/ /__\\___ \x1b[37m/   \x1b[31m( ',
-    '\x1b[90m|_|   \\___\\    \x1b[31m)\x1b[0m',
-    ''
-  ]
-
-  const katana = [
-    '\x1b[90m       /| ________________________________________________\x1b[0m',
-    '\x1b[31mO|===|* >\x1b[37m________________________________________________>\x1b[0m',
-    '\x1b[90m       \\|\x1b[0m'
-  ]
-
-  for (const line of katana) {
+  for (const line of bannerLines) {
     term.write(line + '\r\n')
-    await delay(120) // Drop line by line slowly
-  }
-
-  term.write('\r\n')
-
-  const titleLines = [
-    '\x1b[1m\x1b[97m           ANIMESH OS v1.0.0 \x1b[0m',
-    '\x1b[2mType \x1b[36mhelp\x1b[2m to view commands. Use \x1b[36mnano <file>\x1b[2m to edit.\x1b[0m',
-    '\x1b[2mSupports pipes, redirect, variables, aliases, & magic.\x1b[0m',
-    ''
-  ]
-
-  for (const line of titleLines) {
-    for (const char of line) {
-      term.write(char); await delay(3)
-    }
-    term.write('\r\n')
+    await delay(30)
   }
 
   term.write('\x1b[?25h') // show cursor

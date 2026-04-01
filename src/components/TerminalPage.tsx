@@ -25,50 +25,40 @@ const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
   ),
 })
 
-// macOS Terminal dock icon SVG
+// macOS Terminal dock icon SVG and styles
 function TerminalDockIcon({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      title="Open Terminal"
-      aria-label="Open Terminal"
+      title="Terminal"
+      aria-label="Terminal"
+      className="dock-item"
       style={{
         background: 'none',
         border: 'none',
         cursor: 'pointer',
         padding: 0,
-        transition: 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        outline: 'none',
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.15) translateY(-8px)')}
-      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) translateY(0)')}
     >
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        {/* Rounded rect background */}
-        <rect x="2" y="2" width="60" height="60" rx="14" fill="#000000" stroke="#333" strokeWidth="0.5" />
-        {/* Inner glow */}
-        <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#termGrad)" />
-        {/* Terminal prompt > */}
-        <path d="M16 22 L28 32 L16 42" stroke="#00FF41" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        {/* Cursor line _ */}
-        <line x1="32" y1="42" x2="48" y2="42" stroke="#00FF41" strokeWidth="3.5" strokeLinecap="round" />
-        <defs>
-          <linearGradient id="termGrad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stopColor="#1a1a1a" />
-            <stop offset="1" stopColor="#0d0d0d" />
-          </linearGradient>
-        </defs>
-      </svg>
+      <div className="dock-icon">
+        <svg width="100%" height="100%" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Base rounded square */}
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="#1C1C1E" />
+          {/* Top window bar */}
+          <path d="M2 16C2 8.26801 8.26801 2 16 2H48C55.732 2 62 8.26801 62 16V22H2V16Z" fill="#D2D2D2" />
+          {/* Traffic Light Buttons */}
+          <circle cx="10" cy="12" r="3.5" fill="#FF5F56" />
+          <circle cx="21" cy="12" r="3.5" fill="#FFBD2E" />
+          <circle cx="32" cy="12" r="3.5" fill="#27C93F" />
+          {/* Terminal Text `>_` */}
+          <text x="8" y="46" fill="#E5E5E5" fontFamily="Courier, monospace" fontSize="18" fontWeight="bold">&gt;_</text>
+          {/* Subtle outline highlight */}
+          <rect x="2" y="2" width="60" height="60" rx="14" stroke="#000000" strokeWidth="1" />
+        </svg>
+      </div>
+      <div className="dock-dot" />
     </button>
-  )
-}
-
-// Bounce dot indicator under dock icon
-function DockDot() {
-  return (
-    <div style={{
-      width: 4, height: 4, borderRadius: '50%',
-      background: '#888', margin: '4px auto 0',
-    }} />
   )
 }
 
@@ -108,6 +98,49 @@ export default function TerminalPage() {
         position: 'relative',
       }}
     >
+      <style>{`
+        .mac-dock-container {
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-radius: 20px;
+          padding: 8px 12px;
+          border: 1px solid rgba(255,255,255,0.2);
+          box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: flex-end;
+          gap: 12px;
+          height: 76px;
+        }
+        .dock-item {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          height: 100%;
+          margin-bottom: 2px;
+        }
+        .dock-icon {
+          width: 60px;
+          height: 60px;
+          transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+          transform-origin: bottom center;
+        }
+        .dock-item:hover .dock-icon {
+          transform: scale(1.3) translateY(-8px);
+          margin: 0 10px;
+        }
+        .dock-dot {
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background-color: rgba(255, 255, 255, 0.8);
+          position: absolute;
+          bottom: -6px;
+        }
+      `}</style>
+
       {/* Minimized: show dock bar at bottom */}
       {isMinimized && (
         <div
@@ -124,22 +157,8 @@ export default function TerminalPage() {
           }}
         >
           {/* Dock bar */}
-          <div
-            style={{
-              background: 'rgba(50, 50, 50, 0.85)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderRadius: '18px',
-              padding: '8px 20px 6px',
-              border: '1px solid rgba(255,255,255,0.1)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+          <div className="mac-dock-container">
             <TerminalDockIcon onClick={handleRestore} />
-            <DockDot />
           </div>
         </div>
       )}
