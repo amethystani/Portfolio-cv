@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import MacOsChrome from './MacOsChrome'
 import AppleMusic from './AppleMusic'
+import Finder from './Finder'
 
 const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
   ssr: false,
@@ -25,6 +26,34 @@ const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
     </div>
   ),
 })
+
+// macOS Finder dock icon
+function FinderDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Finder"
+      aria-label="Finder"
+      className="dock-item"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 0,
+        outline: 'none',
+      }}
+    >
+      <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+        <img 
+          src="/Finder.png" 
+          alt="Finder" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain', transform: 'scale(1.15)' }} 
+        />
+      </div>
+      <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
+    </button>
+  )
+}
 
 // macOS Terminal dock icon SVG and styles
 function TerminalDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
@@ -147,6 +176,10 @@ export default function TerminalPage() {
   const [isMusicMinimized, setIsMusicMinimized] = useState(false)
   const [isMusicMaximized, setIsMusicMaximized] = useState(false)
 
+  const [isFinderOpen, setIsFinderOpen] = useState(false)
+  const [isFinderMinimized, setIsFinderMinimized] = useState(false)
+  const [isFinderMaximized, setIsFinderMaximized] = useState(false)
+
   const handleClose = useCallback(() => {
     setIsClosed(true)
   }, [])
@@ -172,6 +205,14 @@ export default function TerminalPage() {
   const handleMinimizeMusic = useCallback(() => setIsMusicMinimized(true), [])
   const handleMaximizeMusic = useCallback(() => setIsMusicMaximized(prev => !prev), [])
 
+  const handleOpenFinder = useCallback(() => {
+    setIsFinderOpen(true)
+    setIsFinderMinimized(false)
+  }, [])
+  const handleCloseFinder = useCallback(() => setIsFinderOpen(false), [])
+  const handleMinimizeFinder = useCallback(() => setIsFinderMinimized(true), [])
+  const handleMaximizeFinder = useCallback(() => setIsFinderMaximized(prev => !prev), [])
+
   const handleOpenResume = useCallback(() => {
     window.open('/resume.pdf', '_blank')
   }, [])
@@ -180,7 +221,7 @@ export default function TerminalPage() {
     window.open('/portfolio', '_blank')
   }, [])
 
-  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized)
+  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized) && (!isFinderOpen || isFinderMinimized)
 
   return (
     <div
@@ -257,12 +298,44 @@ export default function TerminalPage() {
           }}
         >
           <div className="mac-dock-container">
+            <FinderDockIcon onClick={handleOpenFinder} isActive={isFinderOpen && !isFinderMinimized} />
             <TerminalDockIcon onClick={handleRestore} isActive={!isClosed} />
             <AppleMusicDockIcon onClick={handleOpenMusic} isActive={isMusicOpen && !isMusicMinimized} />
             <SafariDockIcon onClick={handleOpenPortfolio} />
             <PreviewDockIcon onClick={handleOpenResume} />
           </div>
         </div>
+      )}
+
+      {/* Finder window */}
+      {(isFinderOpen && !isFinderMinimized) && (
+        <MacOsChrome
+          title="Finder"
+          onClose={handleCloseFinder}
+          onMinimize={handleMinimizeFinder}
+          onMaximize={handleMaximizeFinder}
+          isMaximized={isFinderMaximized}
+          style={
+            isFinderMaximized
+              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
+              : {
+                  width: 'min(90vw, 850px)',
+                  height: 'min(80dvh, 550px)',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+                }
+          }
+        >
+          <Finder 
+            onOpenTerminal={handleRestore} 
+            onOpenMusic={handleOpenMusic} 
+            onOpenResume={handleOpenResume} 
+            onOpenPortfolio={handleOpenPortfolio} 
+          />
+        </MacOsChrome>
       )}
 
       {/* Terminal window */}
