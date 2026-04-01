@@ -374,9 +374,9 @@ function getParentAndName(path: string, cwd: string): { parent: DirNode; name: s
   let node: FSNode = vfs
   for (const part of parts) {
     if (node.type !== 'dir') return null
-    const child = node.children[part]
-    if (!child) return null
-    node = child
+    const childNode: FSNode | undefined = node.children[part]
+    if (!childNode) return null
+    node = childNode
   }
   if (node.type !== 'dir') return null
   return { parent: node, name }
