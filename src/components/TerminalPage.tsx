@@ -188,6 +188,8 @@ export default function TerminalPage() {
         width: '100vw',
         height: '100dvh',
         background: '#2C2C2C',
+        position: 'relative',
+        overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -275,12 +277,14 @@ export default function TerminalPage() {
           isMaximized={isMaximized}
           style={
             isMaximized
-              ? { width: '100%', height: '100%', position: 'absolute' }
+              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
               : {
                   width: 'min(95vw, 900px)',
                   height: 'min(85dvh, 600px)',
-                  margin: 'auto',
-                  position: 'absolute'
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
                 }
           }
         >
@@ -298,12 +302,14 @@ export default function TerminalPage() {
           isMaximized={isMusicMaximized}
           style={
             isMusicMaximized
-              ? { width: '100%', height: '100%', position: 'absolute' }
+              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
               : {
                   width: 'min(95vw, 1100px)',
                   height: 'min(85dvh, 700px)',
-                  margin: 'auto',
-                  position: 'absolute'
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)'
                 }
           }
         >

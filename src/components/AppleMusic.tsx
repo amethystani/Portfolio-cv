@@ -179,8 +179,15 @@ export default function AppleMusic() {
 
         <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '20px 0 16px 0', opacity: 0.9 }}>Recently Played</h2>
         <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
-          {Array(4).fill(0).map((_, i) => (
-             <div key={i} style={{ width: '160px', height: '160px', backgroundColor: '#333', borderRadius: '8px', flexShrink: 0, backgroundImage: 'url(/previewicon.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.5 }}></div>
+          {[
+            { img: '/slowrush.jpg', name: 'The Slow Rush' },
+            { img: '/currents.png', name: 'Currents' },
+            { img: '/lonerism.jpeg', name: 'Lonerism' }
+          ].map((item, i) => (
+             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+               <div style={{ width: '160px', height: '160px', backgroundColor: '#333', borderRadius: '8px', flexShrink: 0, backgroundImage: `url(${item.img})`, backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}></div>
+               <span style={{ fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>{item.name}</span>
+             </div>
           ))}
         </div>
       </div>
@@ -225,7 +232,7 @@ export default function AppleMusic() {
         {/* Song Info */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', overflow: 'hidden' }}>
           <div style={{ width: '36px', height: '36px', backgroundColor: '#888', borderRadius: '4px', flexShrink: 0, marginRight: '12px' }}>
-            <img src="/Apple_Music_Symbol_2.webp" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px', filter: 'brightness(0.8)' }} alt="Album Art" />
+            <img src="/slowrush.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} alt="Album Art" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', whiteSpace: 'nowrap' }}>
             <span style={{ fontSize: '13px', fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden' }}>

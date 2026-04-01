@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: "Animesh's MacBook — zsh",
   description: 'Portfolio — Animesh',
+  icons: {
+    icon: '/slowrush.jpg'
+  }
 }
 
 export const viewport = {
