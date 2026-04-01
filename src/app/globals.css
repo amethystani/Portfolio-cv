@@ -13,6 +13,8 @@ body {
   height: 100%;
   background: #2C2C2C;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 /* Fix xterm.js container sizing */
@@ -40,4 +42,18 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #777;
+}
+
+/* Mobile: smaller font for terminal, remove padding */
+@media (max-width: 640px) {
+  .xterm {
+    font-size: 11px !important;
+  }
+}
+
+/* Ensure proper viewport on iOS */
+@supports (-webkit-touch-callout: none) {
+  body {
+    height: -webkit-fill-available;
+  }
 }

@@ -1,12 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 type Props = {
   title?: string
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  onClose?: () => void
+  onMinimize?: () => void
+  onMaximize?: () => void
+  isMaximized?: boolean
 }
 
 export default function MacOsChrome({
@@ -14,12 +18,18 @@ export default function MacOsChrome({
   children,
   className = '',
   style,
+  onClose,
+  onMinimize,
+  onMaximize,
+  isMaximized = false,
 }: Props) {
+  const [hovered, setHovered] = useState(false)
+
   return (
     <div
-      className={`flex flex-col overflow-hidden rounded-[10px] ${className}`}
+      className={`flex flex-col overflow-hidden ${isMaximized ? '' : 'rounded-[10px]'} ${className}`}
       style={{
-        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.75), 0 0 0 0.5px rgba(255,255,255,0.08)',
+        boxShadow: isMaximized ? 'none' : '0 20px 60px rgba(0, 0, 0, 0.75), 0 0 0 0.5px rgba(255,255,255,0.08)',
         background: '#1E1E1E',
         ...style,
       }}
@@ -35,22 +45,67 @@ export default function MacOsChrome({
         }}
       >
         {/* Traffic light buttons */}
-        <div className="flex items-center gap-[8px] px-[10px] z-10">
+        <div
+          className="flex items-center gap-[8px] px-[10px] z-10"
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {/* Close (Red) → Refresh */}
           <div
-            title="Close"
-            className="rounded-full cursor-default"
+            title="Refresh"
+            role="button"
+            tabIndex={0}
+            onClick={onClose}
+            className="rounded-full cursor-pointer relative flex items-center justify-center"
             style={{ width: 12, height: 12, background: '#FF5F57', border: '0.5px solid rgba(0,0,0,0.3)' }}
-          />
+          >
+            {hovered && (
+              <svg width="6" height="6" viewBox="0 0 6 6" fill="none" style={{ position: 'absolute' }}>
+                <line x1="0.5" y1="0.5" x2="5.5" y2="5.5" stroke="#4D0000" strokeWidth="1.1" strokeLinecap="round" />
+                <line x1="5.5" y1="0.5" x2="0.5" y2="5.5" stroke="#4D0000" strokeWidth="1.1" strokeLinecap="round" />
+              </svg>
+            )}
+          </div>
+          {/* Minimize (Yellow) */}
           <div
             title="Minimize"
-            className="rounded-full cursor-default"
+            role="button"
+            tabIndex={0}
+            onClick={onMinimize}
+            className="rounded-full cursor-pointer relative flex items-center justify-center"
             style={{ width: 12, height: 12, background: '#FEBC2E', border: '0.5px solid rgba(0,0,0,0.3)' }}
-          />
+          >
+            {hovered && (
+              <svg width="6" height="1" viewBox="0 0 6 1" fill="none" style={{ position: 'absolute' }}>
+                <line x1="0.5" y1="0.5" x2="5.5" y2="0.5" stroke="#985600" strokeWidth="1.2" strokeLinecap="round" />
+              </svg>
+            )}
+          </div>
+          {/* Maximize (Green) */}
           <div
-            title="Maximize"
-            className="rounded-full cursor-default"
+            title={isMaximized ? "Restore" : "Maximize"}
+            role="button"
+            tabIndex={0}
+            onClick={onMaximize}
+            className="rounded-full cursor-pointer relative flex items-center justify-center"
             style={{ width: 12, height: 12, background: '#28C840', border: '0.5px solid rgba(0,0,0,0.3)' }}
-          />
+          >
+            {hovered && (
+              <svg width="6" height="6" viewBox="0 0 8 8" fill="none" style={{ position: 'absolute' }}>
+                {isMaximized ? (
+                  <>
+                    <polyline points="2,6 2,2 6,2" fill="none" stroke="#006500" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points="6,2 6,6 2,6" fill="none" stroke="#006500" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </>
+                ) : (
+                  <>
+                    <polyline points="1,5 1,1 5,1" fill="none" stroke="#006500" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points="7,3 7,7 3,7" fill="none" stroke="#006500" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </>
+                )}
+              </svg>
+            )}
+          </div>
         </div>
 
         {/* Centered title */}

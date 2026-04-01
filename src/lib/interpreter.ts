@@ -20,6 +20,7 @@ const c = {
 
 export const CLEAR_SENTINEL = '\x00CLEAR\x00'
 export const OPEN_URL_PREFIX = '\x00OPEN:'
+export const EDIT_PREFIX = '\x00EDIT:'
 
 export type InterpreterState = {
   cwd: string
@@ -332,7 +333,7 @@ function dispatchCommand(cmd: string, args: string[], state: InterpreterState, s
       return `${c.dim}${cmd}: command available in a real terminal [simulated]${c.reset}`
     case 'git': return cmdGit(args)
     case 'vim': case 'nvim': case 'nano': case 'vi':
-      return `${c.dim}${cmd}: interactive editors not available in this terminal${c.reset}`
+      return cmdNanoEdit(cmd, args, state)
     case 'top': case 'htop': return `${c.dim}${cmd}: interactive mode not available. Use 'ps' instead${c.reset}`
     case 'less': case 'more': return stdin || `${c.dim}${cmd}: use 'cat' to view files${c.reset}`
     case 'file': return cmdFile(args, state)
@@ -795,6 +796,23 @@ function cmdMan(args: string[]): string {
     open: `${c.bold}OPEN(1)${c.reset}\n\n${c.bold}NAME${c.reset}\n  open -- open files or URLs\n\n${c.bold}SYNOPSIS${c.reset}\n  open <file|portfolio|URL>`,
   }
   return manPages[args[0]] ?? `${c.red}man: no manual entry for ${args[0]}${c.reset}`
+}
+
+function cmdNanoEdit(cmd: string, args: string[], state: InterpreterState): string {
+  if (args.length === 0) return `${c.red}${cmd}: missing filename${c.reset}`
+  const filePath = args[0]
+  const absPath = normalizePath(filePath, state.cwd)
+  const node = resolvePath(absPath, state.cwd)
+  let content = ''
+  let isNew = false
+  if (node) {
+    if (node.type === 'dir') return `${c.red}${cmd}: ${filePath}: Is a directory${c.reset}`
+    content = node.content
+  } else {
+    isNew = true
+  }
+  // Return a sentinel the terminal component picks up
+  return EDIT_PREFIX + JSON.stringify({ path: absPath, displayPath: filePath, content, isNew })
 }
 
 export { getCompletions }
