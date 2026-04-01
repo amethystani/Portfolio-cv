@@ -17,32 +17,87 @@ import {
 import { getCompletions, writeFileFS } from '@/lib/filesystem'
 
 const COMMANDS = [
-  'ls','cd','pwd','cat','echo','clear','whoami','help','man','uname','date','hostname',
-  'exit','logout','export','unset','env','printenv','set','alias','unalias','history',
-  'which','type','command','mkdir','rmdir','touch','rm','cp','mv','find','tree','diff',
-  'grep','head','tail','wc','sort','uniq','tr','cut','sed','awk','rev','tac','nl',
-  'tee','xargs','seq','printf','expr','bc','base64','xxd','md5','md5sum','sha256sum',
-  'cal','cowsay','fortune','neofetch','screenfetch','fastfetch','uptime','df','du','ps',
-  'kill','jobs','fg','bg','chmod','chown','ln','basename','dirname','realpath','readlink',
-  'yes','true','false','test','sleep','ping','curl','wget','ssh','scp','id','groups',
-  'w','who','last','su','sudo','git','vim','nvim','nano','vi','top','htop','less','more',
-  'file','stat','source','open','npm','npx','node','python','python3','pip','cargo','go',
-  'apt','brew',
+  'ls', 'cd', 'pwd', 'cat', 'echo', 'clear', 'whoami', 'help', 'man', 'uname', 'date', 'hostname',
+  'exit', 'logout', 'export', 'unset', 'env', 'printenv', 'set', 'alias', 'unalias', 'history',
+  'which', 'type', 'command', 'mkdir', 'rmdir', 'touch', 'rm', 'cp', 'mv', 'find', 'tree', 'diff',
+  'grep', 'head', 'tail', 'wc', 'sort', 'uniq', 'tr', 'cut', 'sed', 'awk', 'rev', 'tac', 'nl',
+  'tee', 'xargs', 'seq', 'printf', 'expr', 'bc', 'base64', 'xxd', 'md5', 'md5sum', 'sha256sum',
+  'cal', 'cowsay', 'fortune', 'neofetch', 'screenfetch', 'fastfetch', 'uptime', 'df', 'du', 'ps',
+  'kill', 'jobs', 'fg', 'bg', 'chmod', 'chown', 'ln', 'basename', 'dirname', 'realpath', 'readlink',
+  'yes', 'true', 'false', 'test', 'sleep', 'ping', 'curl', 'wget', 'ssh', 'scp', 'id', 'groups',
+  'w', 'who', 'last', 'su', 'sudo', 'git', 'vim', 'nvim', 'nano', 'vi', 'top', 'htop', 'less', 'more',
+  'file', 'stat', 'source', 'open', 'npm', 'npx', 'node', 'python', 'python3', 'pip', 'cargo', 'go',
+  'apt', 'brew',
 ]
 
-const WELCOME_BANNER = [
-  '',
-  '\x1b[32m    _          _                    _     \x1b[0m',
-  '\x1b[32m   / \\   _ __ (_)_ __ ___   ___  ___| |__  \x1b[0m',
-  '\x1b[32m  / _ \\ | \'_ \\| | \'_ ` _ \\ / _ \\/ __| \'_ \\ \x1b[0m',
-  '\x1b[32m / ___ \\| | | | | | | | | |  __/\\__ \\ | | |\x1b[0m',
-  '\x1b[32m/_/   \\_\\_| |_|_|_| |_| |_|\\___||___/_| |_|\x1b[0m',
-  '',
-  '\x1b[1m\x1b[97mWelcome to Animesh\'s Terminal\x1b[0m',
-  '\x1b[2mType \x1b[0m\x1b[36mhelp\x1b[0m\x1b[2m to see all commands. Use \x1b[0m\x1b[36mnano <file>\x1b[0m\x1b[2m to edit.\x1b[0m',
-  '\x1b[2mSupports pipes, redirection, variables, aliases, and more.\x1b[0m',
-  '',
-].join('\r\n')
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
+
+async function playWelcomeAnimation(term: Terminal, onComplete: () => void) {
+  term.write('\x1b[?25l') // hide cursor
+
+  const glitchColors = ['\x1b[31m', '\x1b[32m', '\x1b[33m', '\x1b[36m', '\x1b[35m']
+
+  // Boot sequence typing
+  const bootLines = [
+    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Loading core modules...\x1b[0m',
+    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Establishing neural link...\x1b[0m',
+    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Synchronizing data streams...\x1b[0m',
+    '\x1b[90m[ \x1b[32mOK\x1b[90m ] Bypassing security protocols...\x1b[0m',
+    '\x1b[36mSystem boot up complete.\x1b[0m',
+    ''
+  ]
+
+  for (const line of bootLines) {
+    for (const char of line) {
+      term.write(char)
+      await delay(Math.random() * 10 + 5)
+    }
+    term.write('\r\n')
+    await delay(150 + Math.random() * 100)
+  }
+
+  // Anime Katana ASCII Drop
+  const animeLogo = [
+    '\x1b[31m               )',
+    '\x1b[31m              ( ',
+    '\x1b[31m ______       ) ',
+    '\x1b[90m_\\ _~-\\___   (  ',
+    '\x1b[90m=  = ==-- \x1b[37m\\   \x1b[31m) ',
+    '\x1b[90m/ /__\\___ \x1b[37m/   \x1b[31m( ',
+    '\x1b[90m|_|   \\___\\    \x1b[31m)\x1b[0m',
+    ''
+  ]
+
+  const katana = [
+    '\x1b[90m       /| ________________________________________________\x1b[0m',
+    '\x1b[31mO|===|* >\x1b[37m________________________________________________>\x1b[0m',
+    '\x1b[90m       \\|\x1b[0m'
+  ]
+
+  for (const line of katana) {
+    term.write(line + '\r\n')
+    await delay(120) // Drop line by line slowly
+  }
+
+  term.write('\r\n')
+
+  const titleLines = [
+    '\x1b[1m\x1b[97m           ANIMESH OS v1.0.0 \x1b[0m',
+    '\x1b[2mType \x1b[36mhelp\x1b[2m to view commands. Use \x1b[36mnano <file>\x1b[2m to edit.\x1b[0m',
+    '\x1b[2mSupports pipes, redirect, variables, aliases, & magic.\x1b[0m',
+    ''
+  ]
+
+  for (const line of titleLines) {
+    for (const char of line) {
+      term.write(char); await delay(3)
+    }
+    term.write('\r\n')
+  }
+
+  term.write('\x1b[?25h') // show cursor
+  onComplete()
+}
 
 // ──────────────── Editor State ────────────────
 type EditorState = {
@@ -77,6 +132,7 @@ export default function XtermTerminal() {
   const searchQueryRef = useRef<string>('')
   const searchResultRef = useRef<string>('')
   const editorRef = useRef<EditorState>(createEditorState())
+  const isBootingRef = useRef<boolean>(true)
 
   useEffect(() => {
     if (!containerRef.current || termRef.current) return
@@ -124,18 +180,24 @@ export default function XtermTerminal() {
     termRef.current = term
     fitAddonRef.current = fitAddon
 
-    setTimeout(() => { try { fitAddon.fit() } catch {} }, 50)
+    setTimeout(() => { try { fitAddon.fit() } catch { } }, 50)
 
-    term.write(WELCOME_BANNER)
-    term.write(getPrompt(stateRef.current))
+    isBootingRef.current = true
+    playWelcomeAnimation(term, () => {
+      isBootingRef.current = false
+      term.write(getPrompt(stateRef.current))
+    })
 
     const ro = new ResizeObserver(() => {
-      try { fitAddon.fit() } catch {}
+      try { fitAddon.fit() } catch { }
       if (editorRef.current.active) editorRender(term, editorRef.current)
     })
     ro.observe(containerRef.current)
 
     term.onData((data) => {
+      // ──── Skip if booting ────
+      if (isBootingRef.current) return
+
       // ──── Editor mode ────
       if (editorRef.current.active) {
         handleEditorInput(term, data, editorRef.current, stateRef.current)
@@ -146,7 +208,7 @@ export default function XtermTerminal() {
       let buf = lineBufferRef.current
       let pos = cursorPosRef.current
 
-      for (let i = 0; i < data.length; ) {
+      for (let i = 0; i < data.length;) {
         const code = data.charCodeAt(i)
 
         // Reverse search mode
@@ -375,7 +437,7 @@ function editorRender(term: Terminal, ed: EditorState) {
 let cutBuffer = ''
 
 function handleEditorInput(term: Terminal, data: string, ed: EditorState, interpState: InterpreterState) {
-  for (let i = 0; i < data.length; ) {
+  for (let i = 0; i < data.length;) {
     const code = data.charCodeAt(i)
 
     // ESC sequences (arrow keys)

@@ -67,7 +67,7 @@ export function cmdSort(args: string[], stdin: string): string {
   const numeric = args.includes('-n')
   const unique = args.includes('-u')
   let lines = stdin.split('\n')
-  if (unique) lines = [...new Set(lines)]
+  if (unique) lines = Array.from(new Set(lines))
   lines.sort((a, b) => {
     if (numeric) return parseFloat(a) - parseFloat(b)
     return a.localeCompare(b)
@@ -294,7 +294,7 @@ export function cmdFortune(): string {
     "It's not a bug, it's an undocumented feature.",
     'There are only two hard things in CS: cache invalidation and naming things.',
     'The best error message is the one that never shows up.',
-    'Code is like humor. When you have to explain it, it's bad. — Cory House',
+    "Code is like humor. When you have to explain it, it's bad. — Cory House",
     'Fix the cause, not the symptom. — Steve Maguire',
     'Premature optimization is the root of all evil. — Donald Knuth',
   ]
