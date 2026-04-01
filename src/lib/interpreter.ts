@@ -325,12 +325,14 @@ function dispatchCommand(cmd: string, args: string[], state: InterpreterState, s
     case 'groups': return 'staff admin'
     case 'w': case 'who': return `animesh  console  Apr  1 00:00`
     case 'last': return `animesh  ttys000  :0   Apr  1 00:00   still logged in`
-    case 'su': case 'sudo': return `${c.red}${cmd}: permission denied [simulated]${c.reset}`
-    case 'apt': case 'apt-get': case 'brew': return `${c.dim}${cmd}: simulated — no package manager available${c.reset}`
+    case 'su': case 'sudo': case 'chmod': case 'chown':
+    case 'apt': case 'apt-get': case 'brew': case 'yum': case 'pacman':
     case 'npm': case 'npx': case 'node': case 'python': case 'python3':
     case 'pip': case 'pip3': case 'cargo': case 'go': case 'rustc':
     case 'gcc': case 'g++': case 'make': case 'cmake':
-      return `${c.dim}${cmd}: command available in a real terminal [simulated]${c.reset}`
+    case 'docker': case 'kubectl': case 'systemctl': case 'journalctl':
+      state.lastExitCode = 5
+      return `${c.red}Access is denied. Administrative privileges required.${c.reset}`
     case 'git': return cmdGit(args)
     case 'vim': case 'nvim': case 'nano': case 'vi':
       return cmdNanoEdit(cmd, args, state)
