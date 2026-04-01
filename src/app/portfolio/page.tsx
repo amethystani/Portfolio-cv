@@ -76,7 +76,7 @@ export default function PortfolioReplica() {
         </p>
         
         <p style={{ marginBottom: '20px' }}>
-          Currently, I'm working on complex web applications utilizing <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>React</a> and <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Next.js</a> alongside Node.js backends. Our aim is to understand under which conditions systems can scale efficiently while maintaining a clean, accessible layout and optimal user experience.
+          Currently, I&apos;m working on complex web applications utilizing <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>React</a> and <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Next.js</a> alongside Node.js backends. Our aim is to understand under which conditions systems can scale efficiently while maintaining a clean, accessible layout and optimal user experience.
         </p>
 
         <p style={{ marginBottom: '20px' }}>
