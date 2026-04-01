@@ -72,7 +72,7 @@ function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActi
     >
       <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
         <img 
-          src="/apple-music-icon.svg" 
+          src="/Apple_Music_Symbol_2.webp" 
           alt="Apple Music" 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
         />
@@ -128,7 +128,7 @@ function SafariDockIcon({ onClick }: { onClick: () => void }) {
     >
       <div className="dock-icon">
         <img 
-          src="/Apple Safari.svg" 
+          src="/safari-icon.svg" 
           alt="Portfolio" 
           style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
         />
