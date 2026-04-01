@@ -79,24 +79,39 @@ function PreviewDockIcon({ onClick }: { onClick: () => void }) {
       }}
     >
       <div className="dock-icon">
-        <svg width="100%" height="100%" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Back Photo */}
-          <g transform="translate(32, 32) rotate(-8) translate(-32, -32)">
-            <rect x="12" y="10" width="40" height="44" rx="4" fill="#E8EBED" stroke="#D1D5DB" strokeWidth="1.5" />
-            <path d="M14 42 L26 28 L34 36 L40 30 L50 42" stroke="none" fill="#A5D6A7" />
-            <circle cx="26" cy="22" r="4" fill="#FFE082" />
-          </g>
-          {/* Front Photo */}
-          <g transform="translate(32, 32) rotate(4) translate(-32, -32)">
-            <rect x="12" y="10" width="40" height="44" rx="4" fill="#FFFFFF" stroke="#D1D5DB" strokeWidth="1.5" />
-            <path d="M14 46 L28 28 L36 38 L42 30 L50 40" stroke="none" fill="#90CAF9" />
-            <circle cx="28" cy="24" r="4" fill="#FFE082" />
-          </g>
-          {/* Magnifying Glass */}
-          <circle cx="36" cy="36" r="15" fill="rgba(224, 242, 254, 0.4)" stroke="#90A4AE" strokeWidth="3.5" />
-          <circle cx="36" cy="36" r="13" fill="none" stroke="#FFFFFF" strokeWidth="1.5" />
-          <path d="M47 47 L58 58" stroke="#546E7A" strokeWidth="6" strokeLinecap="round" />
-        </svg>
+        <img 
+          src="/previewicon.png" 
+          alt="resume.pdf" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+        />
+      </div>
+      <div className="dock-dot" style={{ opacity: 0 }} />
+    </button>
+  )
+}
+
+// macOS Safari dock icon
+function SafariDockIcon({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Portfolio Site"
+      aria-label="Portfolio Site"
+      className="dock-item"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 0,
+        outline: 'none',
+      }}
+    >
+      <div className="dock-icon">
+        <img 
+          src="/Apple Safari.svg" 
+          alt="Portfolio" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+        />
       </div>
       <div className="dock-dot" style={{ opacity: 0 }} />
     </button>
@@ -127,6 +142,10 @@ export default function TerminalPage() {
 
   const handleOpenResume = useCallback(() => {
     window.open('/resume.pdf', '_blank')
+  }, [])
+
+  const handleOpenPortfolio = useCallback(() => {
+    window.open('/portfolio', '_blank')
   }, [])
 
   const showDock = isMinimized || isClosed
@@ -207,6 +226,7 @@ export default function TerminalPage() {
         >
           <div className="mac-dock-container">
             <TerminalDockIcon onClick={handleRestore} isActive={!isClosed} />
+            <SafariDockIcon onClick={handleOpenPortfolio} />
             <PreviewDockIcon onClick={handleOpenResume} />
           </div>
         </div>
