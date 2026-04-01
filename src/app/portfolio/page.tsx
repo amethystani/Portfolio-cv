@@ -21,6 +21,22 @@ const navLinks = [
 export default function PortfolioReplica() {
   return (
     <div style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', minHeight: '100vh', backgroundColor: '#fff', color: '#333' }}>
+      <style>{`
+        .nav-link {
+          color: #aaa;
+          text-decoration: none;
+          font-weight: normal;
+          transition: color 0.2s;
+        }
+        .nav-link:hover {
+          color: #fff;
+        }
+        .nav-link.active {
+          color: #fff;
+          font-weight: bold;
+        }
+      `}</style>
+
       {/* Top Navbar */}
       <nav style={{ 
         display: 'flex', 
@@ -39,14 +55,7 @@ export default function PortfolioReplica() {
             <a 
               key={link} 
               href="#" 
-              style={{ 
-                color: idx === 0 ? '#fff' : '#aaa', 
-                textDecoration: 'none',
-                fontWeight: idx === 0 ? 'bold' : 'normal',
-                transition: 'color 0.2s'
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = idx === 0 ? '#fff' : '#aaa')}
+              className={`nav-link ${idx === 0 ? 'active' : ''}`}
             >
               {link}
             </a>
