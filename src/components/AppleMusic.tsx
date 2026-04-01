@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function AppleMusic() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -25,7 +26,7 @@ export default function AppleMusic() {
   }, []);
 
   return (
-    <div style={{
+    <div className="am-container" style={{
       display: 'flex',
       width: '100%',
       flex: 1, // take remaining height of MacOsChrome
@@ -36,18 +37,69 @@ export default function AppleMusic() {
       overflow: 'hidden',
       position: 'relative',
     }}>
+      <style>{`
+        .am-container { flex-direction: row; }
+        .am-sidebar { 
+          width: 260px; 
+          display: flex; 
+          background-color: rgba(30, 30, 30, 0.95);
+          border-right: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 24px 16px;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+        .am-main { 
+          flex: 1;
+          background-color: #1E1E1E;
+          padding: 32px 40px;
+          overflow-y: auto;
+          position: relative;
+          padding-bottom: 120px;
+        }
+        .am-bottom-bar {
+          position: absolute;
+          bottom: 24px;
+          left: calc(260px + (100% - 260px) / 2);
+          transform: translateX(-50%);
+          width: min(90%, 640px);
+          height: 60px;
+          background: rgba(45, 45, 45, 0.7);
+          backdrop-filter: blur(30px);
+          -webkit-backdrop-filter: blur(30px);
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+          z-index: 100;
+        }
+        .am-bottom-controls { display: flex; align-items: center; gap: 20px; color: #FFF; }
+        .am-bottom-actions { display: flex; align-items: center; gap: 16px; color: #FFF; opacity: 0.8; }
+        @media (max-width: 768px) {
+          .am-container { flex-direction: column; }
+          .am-sidebar { display: none; }
+          .am-main { padding: 20px; padding-bottom: 100px; }
+          .am-bottom-bar {
+            left: 50%;
+            width: 95%;
+            padding: 0 12px;
+            bottom: 12px;
+          }
+          .am-bottom-actions { display: none; }
+          .am-bottom-controls { gap: 12px !important; }
+          /* Hide non-essential control icons on mobile */
+          .am-bottom-controls > svg { display: none; }
+          .am-bottom-controls > button { display: flex; align-items: center; justify-content: center; }
+          .am-bottom-song-img {
+            display: none !important;
+          }
+        }
+      `}</style>
       <audio ref={audioRef} src="/song.mp3" preload="auto" />
 
       {/* Sidebar */}
-      <div style={{
-        width: '260px',
-        backgroundColor: 'rgba(30, 30, 30, 0.95)',
-        borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '24px 16px',
-        display: 'flex',
-        flexDirection: 'column',
-        overflowY: 'auto',
-      }}>
+      <div className="am-sidebar">
         <div style={{ padding: '0 8px 16px', display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.7 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg>
           <span style={{ fontSize: '13px' }}>Search</span>
@@ -98,20 +150,13 @@ export default function AppleMusic() {
       </div>
 
       {/* Main Content Area */}
-      <div style={{
-        flex: 1,
-        backgroundColor: '#1E1E1E',
-        padding: '32px 40px',
-        overflowY: 'auto',
-        position: 'relative',
-        paddingBottom: '120px' // Added padding to prevent cutting off the bottom for the floating bar
-      }}>
+      <div className="am-main">
         <h1 style={{ fontSize: '28px', fontWeight: 700, margin: '0 0 24px 0' }}>Home</h1>
 
         <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px 0', opacity: 0.9 }}>Top Picks for You</h2>
         
         {/* Horizontal Cards Area */}
-        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {/* Card 1: JACKBOYS 2 */}
           <div style={{
             minWidth: '240px',
@@ -178,14 +223,14 @@ export default function AppleMusic() {
         </div>
 
         <h2 style={{ fontSize: '16px', fontWeight: 600, margin: '20px 0 16px 0', opacity: 0.9 }}>Recently Played</h2>
-        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '20px', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {[
             { img: '/slowrush.jpg', name: 'The Slow Rush' },
             { img: '/currents.png', name: 'Currents' },
             { img: '/lonerism.jpeg', name: 'Lonerism' }
           ].map((item, i) => (
              <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-               <div style={{ width: '160px', height: '160px', backgroundColor: '#333', borderRadius: '8px', flexShrink: 0, backgroundImage: `url(${item.img})`, backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}></div>
+               <div style={{ width: '160px', height: '160px', backgroundColor: '#333', borderRadius: '8px', flexShrink: 0, backgroundImage: 'url(' + item.img + ')', backgroundSize: 'cover', backgroundPosition: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}></div>
                <span style={{ fontSize: '13px', fontWeight: 500, opacity: 0.9 }}>{item.name}</span>
              </div>
           ))}
@@ -193,26 +238,9 @@ export default function AppleMusic() {
       </div>
 
       {/* Floating Playback Bar */}
-      <div style={{
-        position: 'absolute',
-        bottom: '24px',
-        left: 'calc(260px + (100% - 260px) / 2)',
-        transform: 'translateX(-50%)',
-        width: 'min(90%, 640px)',
-        height: '60px',
-        background: 'rgba(45, 45, 45, 0.7)',
-        backdropFilter: 'blur(30px)',
-        WebkitBackdropFilter: 'blur(30px)',
-        borderRadius: '12px',
-        border: '1px solid rgba(255,255,255,0.1)',
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 16px',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-        zIndex: 100,
-      }}>
+      <div className="am-bottom-bar">
         {/* Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', color: '#FFF' }}>
+        <div className="am-bottom-controls">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 20L9 12l10-8v16zM5 19h2V5H5v14z"/></svg>
           <button 
@@ -226,13 +254,12 @@ export default function AppleMusic() {
             )}
           </button>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4l10 8-10 8V4zM19 5h-2v14h2V5z"/></svg>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
         </div>
 
         {/* Song Info */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', overflow: 'hidden' }}>
-          <div style={{ width: '36px', height: '36px', backgroundColor: '#888', borderRadius: '4px', flexShrink: 0, marginRight: '12px' }}>
-            <img src="/slowrush.jpg" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} alt="Album Art" />
+          <div className="am-bottom-song-img" style={{ width: '36px', height: '36px', backgroundColor: '#888', borderRadius: '4px', flexShrink: 0, marginRight: '12px' }}>
+            <Image src="/slowrush.jpg" width={36} height={36} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} alt="Album Art" unoptimized />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', whiteSpace: 'nowrap' }}>
             <span style={{ fontSize: '13px', fontWeight: 600, textOverflow: 'ellipsis', overflow: 'hidden' }}>
@@ -245,7 +272,7 @@ export default function AppleMusic() {
         </div>
 
         {/* Right actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', color: '#FFF', opacity: 0.8 }}>
+        <div className="am-bottom-actions">
            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FA586A' }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>

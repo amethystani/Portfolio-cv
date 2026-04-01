@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 type FinderProps = {
   onOpenTerminal?: () => void;
@@ -31,137 +32,153 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
   const currentFiles = activeTab === 'Applications' ? apps : (activeTab === 'Documents' ? docs : []);
 
   return (
-    <div style={{
-      display: 'flex',
-      width: '100%',
-      height: '100%',
-      backgroundColor: '#1E1E1E',
-      color: '#ECECEC',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      overflow: 'hidden'
-    }}>
-      {/* Sidebar */}
-      <div style={{
-        width: '200px',
-        backgroundColor: 'rgba(30,30,30,0.8)',
-        backdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(255,255,255,0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '10px 0'
-      }}>
-        <div style={{ padding: '0 12px 6px', fontSize: '11px', fontWeight: 600, color: '#999' }}>Favorites</div>
-        {sidebarItems.map(item => (
-          <div 
-            key={item.id}
-            onClick={() => setActiveTab(item.id)}
-            style={{ 
-              padding: '6px 12px', 
-              margin: '0 8px 2px',
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '8px',
-              fontSize: '13px',
-              borderRadius: '6px',
-              backgroundColor: activeTab === item.id ? 'rgba(255,255,255,0.1)' : 'transparent',
-              cursor: 'pointer'
-            }}
-          >
-            <div style={{ color: activeTab === item.id ? '#FA586A' : '#0a84ff' }}>
-              {item.icon}
-            </div>
-            <span>{item.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Main View */}
-      <div style={{
-        flex: 1,
-        backgroundColor: '#1E1E1E',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-        {/* Toolbar Area */}
-        <div style={{
-          height: '52px',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          justifyContent: 'space-between'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-            <span style={{ fontSize: '14px', fontWeight: 600 }}>{activeTab}</span>
-          </div>
-          <div>
-            <div style={{
-              background: 'rgba(255,255,255,0.1)',
-              borderRadius: '6px',
-              padding: '4px 8px',
-              display: 'flex',
-              alignItems: 'center',
-              width: '150px'
-            }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-              <span style={{ fontSize: '12px', color: '#999', marginLeft: '6px' }}>Search</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Files Grid */}
-        <div style={{
-          flex: 1,
-          padding: '24px',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '24px',
-          alignContent: 'flex-start',
-          overflowY: 'auto'
-        }}>
-          {currentFiles.length === 0 ? (
-            <div style={{ width: '100%', textAlign: 'center', color: '#666', marginTop: '60px' }}>
-              No files here.
-            </div>
-          ) : (
-            currentFiles.map(file => (
-              <div 
-                key={file.name}
-                onClick={() => {
-                  if (file.action) file.action();
-                }}
-                style={{
-                  width: '90px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '6px',
-                  cursor: file.action ? 'pointer' : 'default',
-                  opacity: file.action ? 1 : 0.5
-                }}
-              >
-                <div style={{
-                  width: '64px',
-                  height: '64px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'rgba(255,255,255,0.05)',
-                  borderRadius: '12px',
-                  padding: '8px'
-                }}>
-                  <img src={file.icon} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} alt={file.name} draggable={false} />
-                </div>
-                <span style={{ fontSize: '12px', textAlign: 'center', wordBreak: 'break-word', lineHeight: '1.2' }}>{file.name}</span>
+    <>
+      <style>{`
+        .finder-container {
+          display: flex;
+          width: 100%;
+          height: 100%;
+          background-color: #1E1E1E;
+          color: #ECECEC;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          overflow: hidden;
+        }
+        .finder-sidebar {
+          width: 200px;
+          background-color: rgba(30,30,30,0.8);
+          backdrop-filter: blur(20px);
+          border-right: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          flex-direction: column;
+          padding: 10px 0;
+        }
+        .finder-main {
+          flex: 1;
+          background-color: #1E1E1E;
+          display: flex;
+          flex-direction: column;
+        }
+        .finder-toolbar {
+          height: 52px;
+          border-bottom: 1px solid rgba(255,255,255,0.1);
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          justify-content: space-between;
+        }
+        @media (max-width: 600px) {
+          .finder-sidebar {
+            display: none !important;
+          }
+          .finder-toolbar {
+            padding: 0 8px;
+          }
+        }
+      `}</style>
+      <div className="finder-container">
+        {/* Sidebar */}
+        <div className="finder-sidebar">
+          <div style={{ padding: '0 12px 6px', fontSize: '11px', fontWeight: 600, color: '#999' }}>Favorites</div>
+          {sidebarItems.map(item => (
+            <div 
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              style={{ 
+                padding: '6px 12px', 
+                margin: '0 8px 2px',
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                fontSize: '13px',
+                borderRadius: '6px',
+                backgroundColor: activeTab === item.id ? 'rgba(255,255,255,0.1)' : 'transparent',
+                cursor: 'pointer'
+              }}
+            >
+              <div style={{ color: activeTab === item.id ? '#FA586A' : '#0a84ff' }}>
+                {item.icon}
               </div>
-            ))
-          )}
+              <span>{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Main View */}
+        <div className="finder-main">
+          {/* Toolbar Area */}
+          <div className="finder-toolbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+              <span style={{ fontSize: '14px', fontWeight: 600 }}>{activeTab}</span>
+            </div>
+            <div>
+              <div style={{
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: '6px',
+                padding: '4px 8px',
+                display: 'flex',
+                alignItems: 'center',
+                width: '120px'
+              }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+                <span style={{ fontSize: '12px', color: '#999', marginLeft: '6px', display: 'flex' }}>Search</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Files Grid */}
+          <div style={{
+            flex: 1,
+            padding: '24px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '24px',
+            alignContent: 'flex-start',
+            overflowY: 'auto'
+          }}>
+            {currentFiles.length === 0 ? (
+              <div style={{ width: '100%', textAlign: 'center', color: '#666', marginTop: '60px' }}>
+                No files here.
+              </div>
+            ) : (
+              currentFiles.map(file => (
+                <div 
+                  key={file.name}
+                  onClick={() => {
+                    if (file.action) file.action();
+                  }}
+                  style={{
+                    width: '90px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: file.action ? 'pointer' : 'default',
+                    opacity: file.action ? 1 : 0.5
+                  }}
+                >
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255,255,255,0.05)',
+                    borderRadius: '12px',
+                    padding: '8px'
+                  }}>
+                    <Image src={file.icon} width={48} height={48} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} alt={file.name} draggable={false} unoptimized />
+                  </div>
+                  <span style={{ fontSize: '12px', textAlign: 'center', wordBreak: 'break-word', lineHeight: '1.2' }}>{file.name}</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

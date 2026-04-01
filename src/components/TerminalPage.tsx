@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
+import Image from 'next/image'
 import MacOsChrome from './MacOsChrome'
 import AppleMusic from './AppleMusic'
 import Finder from './Finder'
@@ -44,10 +45,13 @@ function FinderDockIcon({ onClick, isActive }: { onClick: () => void, isActive?:
       }}
     >
       <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
-        <img 
+        <Image 
           src="/Finder.png" 
           alt="Finder" 
+          width={60}
+          height={60}
           style={{ width: '100%', height: '100%', objectFit: 'contain', transform: 'scale(1.15)' }} 
+          unoptimized
         />
       </div>
       <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
@@ -72,10 +76,13 @@ function TerminalDockIcon({ onClick, isActive }: { onClick: () => void, isActive
       }}
     >
       <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
-        <img 
+        <Image 
           src="/terminal-2021-06-03.png.webp" 
           alt="Terminal" 
+          width={60}
+          height={60}
           style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          unoptimized
         />
       </div>
       <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
@@ -100,10 +107,13 @@ function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActi
       }}
     >
       <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
-        <img 
+        <Image 
           src="/Apple_Music_Symbol_2.webp" 
           alt="Apple Music" 
+          width={60}
+          height={60}
           style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+          unoptimized
         />
       </div>
       <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
@@ -128,10 +138,13 @@ function PreviewDockIcon({ onClick }: { onClick: () => void }) {
       }}
     >
       <div className="dock-icon">
-        <img 
+        <Image 
           src="/previewicon.png" 
           alt="resume.pdf" 
+          width={60}
+          height={60}
           style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          unoptimized
         />
       </div>
       <div className="dock-dot" style={{ opacity: 0 }} />
@@ -156,10 +169,13 @@ function SafariDockIcon({ onClick }: { onClick: () => void }) {
       }}
     >
       <div className="dock-icon">
-        <img 
+        <Image 
           src="/safari-icon.svg" 
           alt="Portfolio" 
+          width={60}
+          height={60}
           style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+          unoptimized
         />
       </div>
       <div className="dock-dot" style={{ opacity: 0 }} />
