@@ -15,131 +15,204 @@ export const vfs: DirNode = {
   children: {
     'about.txt': {
       type: 'file',
-      content: `Name:     Animesh
-Role:     Software Engineer & Developer
-Location: India
+      content: `Animesh
+-------
+Software Engineer  |  India
 
-I'm a software engineer with a passion for building things that live on the
-internet. I care about clean code, great user experiences, and systems that
-scale. Currently open to new opportunities.
+I build things for the web — products that are fast, reliable, and actually
+pleasant to use. I care deeply about the craft: clean architecture, thoughtful
+UX, and code that future-me won't hate.
 
-I enjoy working across the stack — from designing APIs to crafting pixel-
-perfect UIs. This very site is a testament to that obsession with detail.
+I'm comfortable across the full stack, but my instinct leans toward systems
+thinking — how pieces connect, where things break, why they scale (or don't).
 
-When I'm not coding I'm usually reading, listening to music, or exploring
-new technologies.
+This site is a small example of that obsession. It's a real terminal emulator
+running in a browser, with a custom command interpreter and a virtual
+filesystem. Probably overkill for a portfolio. That's the point.
 
-Type 'cat skills.txt' to see my technical skills.
-Type 'ls projects/' to see what I've built.`,
+Currently open to full-time roles and interesting contract work.
+
+---
+  cat skills.txt      — technical skills
+  ls projects/        — things I've built
+  cat contact.txt     — get in touch
+  open portfolio      — visual portfolio page`,
     },
+
     'skills.txt': {
       type: 'file',
       content: `Languages
 ---------
-  TypeScript  JavaScript  Python  Go  SQL
+  TypeScript    JavaScript    Python    Go    SQL    Bash
 
 Frontend
 --------
-  React       Next.js     Tailwind CSS   HTML/CSS
-  Framer Motion           Three.js
+  React         Next.js       Tailwind CSS    Framer Motion
+  HTML/CSS      Three.js      WebGL
 
 Backend
 -------
-  Node.js     Express     FastAPI    PostgreSQL
-  Redis       REST APIs   GraphQL
+  Node.js       Express       FastAPI         tRPC
+  PostgreSQL    Redis         Prisma          GraphQL
+  REST APIs     WebSockets
 
-DevOps & Tools
---------------
-  Docker      Git         GitHub Actions
-  Linux       Nginx       Vercel
+Infrastructure & DevOps
+------------------------
+  Docker        Kubernetes    GitHub Actions  Terraform
+  Linux         Nginx         Vercel          AWS (EC2, S3, RDS, Lambda)
 
-Currently Learning
-------------------
-  Rust        WebAssembly  Systems programming`,
+Tools
+-----
+  Git           Neovim        tmux            Figma (enough to be useful)
+  Postman       Datadog       Sentry
+
+Currently Exploring
+-------------------
+  Rust          WebAssembly   Edge computing`,
     },
+
     'contact.txt': {
       type: 'file',
-      content: `Email:    animesh@example.com
-GitHub:   https://github.com/amethystani
-LinkedIn: https://linkedin.com/in/animesh
+      content: `Let's talk.
 
-Feel free to reach out — I'm always happy to chat about
-interesting projects, collaborations, or opportunities.
+  GitHub    →  github.com/amethystani
+  LinkedIn  →  linkedin.com/in/amethystani
+  Email     →  hi@animesh.dev
 
-open portfolio    — view the visual portfolio
-open resume.pdf   — download my resume`,
+I'm most responsive over email. Response time: usually same day.
+
+I'm interested in:
+  - Senior / lead engineering roles
+  - Interesting contract or consulting work
+  - Open source collaboration
+  - Conversations about systems, UX, and building things well
+
+---
+  open portfolio    — view the visual portfolio
+  open resume.pdf   — view / download my resume`,
     },
+
     'resume.pdf': {
       type: 'file',
-      content: '[PDF] Resume — use "open resume.pdf" to download/view',
+      content: '[binary PDF] Use "open resume.pdf" to open in a new tab.',
     },
+
+    'now.txt': {
+      type: 'file',
+      content: `What I'm doing now  (updated April 2026)
+
+  - Building: side projects exploring edge runtimes and local-first apps
+  - Reading: "Designing Data-Intensive Applications" — Kleppmann
+  - Learning: Rust (slowly, but getting there)
+  - Location: India
+
+This is a /now page. Inspired by nownownow.com.`,
+    },
+
     'projects': {
       type: 'dir',
       children: {
-        'portfolio-site.md': {
+        'README.md': {
           type: 'file',
-          content: `# Portfolio Site (this site)
+          content: `Projects
+--------
+  portfolio-terminal.md   — this site
+  synapse.md              — realtime collaborative notes
+  deploykit.md            — self-hosted deployment tool
+  vizql.md                — SQL query visualizer
 
-Tech: Next.js, TypeScript, xterm.js, Tailwind CSS
-
-A terminal-first portfolio website that runs inside an authentic
-macOS Terminal emulator. Built with xterm.js for the terminal
-experience, a custom command interpreter, and a mock virtual
-filesystem for navigation.
-
-Features:
-  - Pixel-perfect macOS terminal window chrome
-  - Full bash-like command interpreter (ls, cd, cat, open, ...)
-  - Mock VFS for portfolio content navigation
-  - Separate visual portfolio page accessible via terminal
-  - Tab completion and command history
-
-GitHub: https://github.com/amethystani/Portfolio-cv`,
+Run 'cat <filename>' to read about each project.`,
         },
-        'project-alpha.md': {
+
+        'portfolio-terminal.md': {
           type: 'file',
-          content: `# Project Alpha
+          content: `# portfolio-terminal
 
-Tech: React, Node.js, PostgreSQL, Docker
+A portfolio site disguised as a macOS terminal.
 
-A full-stack web application with real-time features.
-Built with a focus on performance and scalability.
+Tech stack:
+  Next.js 14 · TypeScript · xterm.js · Tailwind CSS
 
-Key highlights:
-  - Real-time updates via WebSockets
-  - Containerized deployment with Docker Compose
-  - CI/CD pipeline with GitHub Actions
-  - 99.9% uptime SLA`,
+What it does:
+  Runs a real terminal emulator (xterm.js) in the browser with a custom
+  bash-like interpreter and a mock virtual filesystem. All portfolio
+  content is navigable via standard Unix commands.
+
+  Features: tab completion, command history (↑↓), cursor movement,
+  Ctrl+A/E/L/C, man pages, ls/cd/cat/open/echo/pwd/whoami.
+
+Why:
+  Most developer portfolios are forgettable. This one you have to use.
+
+  github.com/amethystani/Portfolio-cv`,
         },
-        'project-beta.md': {
+
+        'synapse.md': {
           type: 'file',
-          content: `# Project Beta
+          content: `# Synapse
 
-Tech: Python, FastAPI, Redis, React
+Realtime collaborative note-taking with a local-first architecture.
 
-A high-performance REST API backend with a React dashboard.
-Designed to handle thousands of concurrent requests.
+Tech stack:
+  Next.js · Y.js · Hocuspocus · PostgreSQL · Tiptap · Vercel
 
-Key highlights:
-  - Sub-50ms response times at p99
-  - Redis caching layer
-  - Comprehensive test coverage (>90%)
-  - OpenAPI documentation`,
+What it does:
+  Multiplayer document editing with CRDTs (Y.js) for conflict-free merging.
+  Notes sync instantly across devices and work fully offline — changes merge
+  automatically when reconnected.
+
+  Supports rich text, inline code blocks, slash commands, and shared cursors.
+
+Scale:
+  Handles 100+ concurrent editors per document without coordination overhead.
+
+Status: private beta`,
         },
-        'project-gamma.md': {
+
+        'deploykit.md': {
           type: 'file',
-          content: `# Project Gamma
+          content: `# DeployKit
 
-Tech: Go, gRPC, Kubernetes
+Self-hosted deployment platform for small teams who don't want to pay
+Heroku prices or manage raw Kubernetes.
 
-A distributed microservices system built with Go and gRPC.
-Deployed on Kubernetes with auto-scaling.
+Tech stack:
+  Go · Docker API · Caddy · PostgreSQL · React
 
-Key highlights:
-  - gRPC communication between services
-  - Kubernetes deployment with HPA
-  - Distributed tracing with Jaeger
-  - Service mesh with Istio`,
+What it does:
+  Git-push deploys to your own VPS. Caddy handles SSL automatically.
+  Includes a dashboard for env vars, logs, rollbacks, and health checks.
+
+  One binary, one config file, one server. No YAML sprawl.
+
+Why:
+  Fly.io is great. Railway is great. But sometimes you want the machine
+  to be yours. DeployKit is for that.
+
+Status: open source — github.com/amethystani/deploykit`,
+        },
+
+        'vizql.md': {
+          type: 'file',
+          content: `# VizQL
+
+Interactive SQL query visualizer and explainer.
+
+Tech stack:
+  React · Monaco Editor · PostgreSQL · pg_query (WASM) · D3.js
+
+What it does:
+  Paste a SQL query, get back an interactive execution plan diagram.
+  Highlights expensive nodes, estimates row counts, and suggests indexes.
+
+  Runs the query parser in WebAssembly (pg_query compiled to WASM) so
+  parse trees are available instantly, in-browser, with no server round-trip.
+
+Use case:
+  Useful for teaching SQL internals, debugging slow queries, and impressing
+  people in code reviews.
+
+Status: live at vizql.animesh.dev`,
         },
       },
     },
