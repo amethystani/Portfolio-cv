@@ -152,7 +152,7 @@ export default function PortfolioClient() {
           <section id="contact" style={{ marginBottom: '60px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Welcome</h2>
             <p style={{ maxWidth: '600px', margin: '0 auto' }}>
-              Hi, I'm Animesh! Click on the navigation tabs above to explore my background, experience, research, and projects in a distinct sub-view without scrolling endlessly. 
+              Hi, I&apos;m Animesh! Click on the navigation tabs above to explore my background, experience, research, and projects in a distinct sub-view without scrolling endlessly. 
             </p>
             <div style={{ marginTop: '24px' }}>
               I am always open to interesting projects, collaborations, and opportunities. You can reach out to me directly at: <br/>
