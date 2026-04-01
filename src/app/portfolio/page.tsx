@@ -215,7 +215,7 @@ export default function PortfolioReplica() {
               <span className="entry-title">Neuro-Scheduling for Graph Segmentation (NSGS)</span>
               <span className="entry-date">2024</span>
             </div>
-            <div className="entry-meta">CVPR '26 Submission / Neuromorphic Computing</div>
+            <div className="entry-meta">CVPR &apos;26 Submission / Neuromorphic Computing</div>
             <ul className="bullet-list">
               <li>Designed an event-driven neuromorphic graph segmentation (NSGS) framework that models image regions as asynchronous computational units, facilitating inherent parallelism and reducing redundant operations by 38–62%.</li>
               <li>Achieved a 17.5x speedup and superior accuracy (65.8% avg. mIoU) over state-of-the-art models (YOLOv8m-seg), while demonstrating exceptional resource efficiency with 4.4x less energy consumption.</li>
@@ -290,11 +290,11 @@ export default function PortfolioReplica() {
             <div>
               <h2 className="section-title">Scholastic Achievements</h2>
               <ul className="bullet-list">
-                <li>Selected among 200 participants for the Bitcoin Talents Program by Frankfurt School Blockchain Center (Jan '25)</li>
-                <li>Selected from over 16,000 global applicants for Harvard Aspire Institute Leadership Program (Nov '24)</li>
-                <li>Achieved a score of 102 in the core test of Test für Ausländische Studierende (TestAS) (Apr '23)</li>
-                <li>Selected for the Harvard College Project for Asian and International Relations (HPAIR) - highly selective program with ~2-3% acceptance (Aug '23)</li>
-                <li>Awarded Certificate of Appreciation by Defense Minister of India for board exam performance ('20, '22)</li>
+                <li>Selected among 200 participants for the Bitcoin Talents Program by Frankfurt School Blockchain Center (Jan &apos;25)</li>
+                <li>Selected from over 16,000 global applicants for Harvard Aspire Institute Leadership Program (Nov &apos;24)</li>
+                <li>Achieved a score of 102 in the core test of Test für Ausländische Studierende (TestAS) (Apr &apos;23)</li>
+                <li>Selected for the Harvard College Project for Asian and International Relations (HPAIR) - highly selective program with ~2-3% acceptance (Aug &apos;23)</li>
+                <li>Awarded Certificate of Appreciation by Defense Minister of India for board exam performance (&apos;20, &apos;22)</li>
               </ul>
             </div>
 
