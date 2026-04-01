@@ -14,11 +14,28 @@ const navLinks = [
   { name: 'Skills', id: 'skills' }
 ];
 
+const contentIndex = {
+  home: "Welcome Hi, I'm Animesh! Click on the navigation tabs above to explore my background, experience, research, and projects in a distinct sub-view without scrolling endlessly. I am always open to interesting projects, collaborations, and opportunities. You can reach out to me directly at: am847@snu.edu.in LinkedIn Profile GitHub Account Animesh Mishra Delhi, India",
+  about: "Education B.Tech in Computer Science and Engineering Expected 2026 Shiv Nadar Institution of Eminence CGPA: 7.34 Class XII (ISC) 2022 City Montessori School 91.25% Class X (ICSE) 2020 City Montessori School 94.00%",
+  experience: "Experience Student Researcher (Part-time) May 2025 – Sep 2025 Complexity Science Hub Vienna, Austria (Remote) Engineered a reproducible Python ETL to ingest and enrich physics-literature data from OpenAlex and APS APIs. Built joined research-graph tables across authors, institutions, fields, and time. Added demographic annotations for downstream bias slicing. Built a batched LLM evaluation harness to run parallel factuality and validity audits across 3 open-source models (Gemma 2 9B, LLaMA 3, Mixtral 8x7B). Standardized prompts and outputs to enable apples-to-apples comparisons. Implemented Evaluator and Auditor modules to compute error-rate and consistency metrics and graph-based similarity features from co-authorship networks. Quant Research Analyst Intern Jun 2025 – Aug 2025 ConsultAdd Services Pvt. Ltd. Pune, Maharashtra Designed and deployed high-volume data scraping pipelines for market intelligence, extracting over 500K records on unpartnered staffing firms. Constructed and backtested time-series predictive models (Prophet, XGBoost) to forecast staffing demand and role saturation over a 12-month horizon. Intern (DCT-R&D Department) Sep 2024 – Dec 2024 Exicom Group Developed Time-Series Predictive Models and an AI Assistant (EVAI) to forecast Electric Vehicle (EV) charging demand. Engineered a comprehensive Geospatial Feature Engineering Pipeline using OpenStreetMap, Folium, and GeoPandas to analyze charger placement optimization. Implemented an efficient MLOps workflow, including LangChain integration and containerized deployment via Ollama. Research Intern (Institute for Systems Studies and Analyses) May 2024 – Jul 2024 Defence Research & Development Organisation Designed and implemented a custom Genetic Algorithm (GA) with specialized fitness functions and mutation operators to solve a high-dimensional, constrained Vehicle Routing Problem (VRP). Used DBSCAN/K-Means clustering to segment complex mobility patterns, generating geospatial heatmap visualizations.",
+  research: "Research & Publications Spectral Sentinel: Scalable Byzantine-Robust Decentralized Federated Learning via Sketched Random Matrix Theory on Blockchain 2025 Preprint / Systems + ML Designed an RMT-driven Byzantine detector by tracking gradient covariance eigenspectra against the Marchenko–Pastur law (KS test + tail anomalies), and scaled detection via Frequent Directions sketching with O(k²) memory for k<d. Proved (ε, δ)-Byzantine resilience with minimax-optimal convergence O(σf/√T + f²/T), and validated on Polygon testnet/mainnet. Reliability Analysis of Non-Bonded/Re-usable PZT Sensors for EMI-based SHM 2024 Elsevier Measurement (In Review) / Structural Health Monitoring Built a reliability/measurement-system framework for electromechanical impedance (EMI) signals across surface-bonded vs clamp-based PZT attachments. Quantified clamp-tightening regimes (free-free/open/partial/fully bonded), showing fully bonded clamp achieves ICC = 0.993 meeting AIAG acceptance. A Multi-Agent Hyperbolic Framework for Legal Reasoning and Retrieval 2025 Research Paper / Legal AI, Geometric Deep Learning Built Hyperbolic Legal Networks (HGCN) by embedding 49,633 cases in a Poincaré ball to encode court authority radially, achieving 0.92 Precision@5 on legal retrieval. Designed a game-theoretic multi-agent pipeline with Nash-style coordination to resolve contradictory citations, and integrated adversarial hybrid retrieval. Neuro-Scheduling for Graph Segmentation (NSGS) 2024 CVPR '26 Submission / Neuromorphic Computing Designed an event-driven neuromorphic graph segmentation (NSGS) framework that models image regions as asynchronous computational units, facilitating inherent parallelism and reducing redundant operations by 38–62%. Achieved a 17.5x speedup and superior accuracy (65.8% avg. mIoU) over state-of-the-art models (YOLOv8m-seg).",
+  projects: "Other Projects Tiny Recursive Models (TRM) Based on arXiv:2510.04871. Re-implemented the Recursive Latent State architecture in PyTorch to handle complex reasoning tasks without increasing model size. Enhanced base implementation by integrating FlashAttention-2 and custom Triton kernels to fuse operations. ClerkTree Enterprise AI Claims Orchestration Platform (clerktree.com). Architected an event-driven multi-tenant system on AWS EKS with Apache Kafka and FastAPI. Engineered Agentic AI workflows via fine-tuned Mixtral-8x7B and Gemini Pro. NewSky Designed a pipeline to ingest and cluster topics from Bluesky API, synthesizing short conversational summaries. Built an automated daily digest generator with category grouping and abstractive summarization. Deployed via Flutter, PostgreSQL, Docker, and Kubernetes.",
+  skills: "Technical Skills & Achievements Technical Skills Languages: Python, Java, SQL, LaTeX Machine Learning: PyTorch, Scikit-learn, LangChain, Transformers, Gymnasium, Ollama Development: FastAPI, Docker, Kubernetes, AWS, Apache Kafka, Redis, Flutter, Git Data Science: Pandas, NumPy, GeoPandas, Matplotlib, NetworkX Scholastic Achievements Selected among 200 participants for the Bitcoin Talents Program by Frankfurt School Blockchain Center (Jan '25) Selected from over 16,000 global applicants for Harvard Aspire Institute Leadership Program (Nov '24) Achieved a score of 102 in the core test of Test für Ausländische Studierende (TestAS) (Apr '23) Selected for the Harvard College Project for Asian and International Relations (HPAIR) (Aug '23) Awarded Certificate of Appreciation by Defense Minister of India for board exam performance (2020, 2022) Key Courses Computer Science: Data Structures, Design & Analysis of Algorithms, Artificial Intelligence, Reinforcement Learning, Digital Image Processing, Robotics, Social & Information Networks, Parallel & Concurrent Prog., Operating Systems, Database Systems, Computer Networks, Distributed Systems Mathematics: Applied Linear Algebra, Probability & Statistics, Discrete Math, Theory of Computation, Mathematical Methods I"
+};
+
 export default function PortfolioClient() {
   const [activeTab, setActiveTab] = useState('home');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const matchQuery = (tab: string) => {
+    if (!searchQuery) return activeTab === tab;
+    return contentIndex[tab as keyof typeof contentIndex].toLowerCase().includes(searchQuery.toLowerCase());
+  };
+
+  const hasResults = searchQuery ? navLinks.some(link => matchQuery(link.id)) : true;
 
   return (
-    <div className={inter.className} style={{ minHeight: '100vh', backgroundColor: '#fff', color: '#333' }}>
+    <div className={inter.className} style={{ height: '100vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333' }}>
       <style>{`
         .nav-link {
           color: #bebebe;
@@ -115,22 +132,43 @@ export default function PortfolioClient() {
           {navLinks.map((link) => (
             <button 
               key={link.id} 
-              onClick={() => setActiveTab(link.id)} 
-              className={`nav-link ${activeTab === link.id ? 'active' : ''}`}
+              onClick={() => { setActiveTab(link.id); setSearchQuery(''); }} 
+              className={`nav-link ${(!searchQuery && activeTab === link.id) ? 'active' : ''}`}
             >
               {link.name}
             </button>
           ))}
-          {/* Search Box Icon restored */}
-          <svg className="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" strokeWidth="2" style={{ cursor: 'pointer' }}>
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="M21 21l-4.3-4.3"></path>
-          </svg>
+          {/* Search Box */}
+          <div style={{ position: 'relative' }}>
+            <svg style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', stroke: '#888' }} width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="M21 21l-4.3-4.3"></path>
+            </svg>
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                backgroundColor: '#1a1a1a',
+                border: '1px solid #333',
+                borderRadius: '16px',
+                padding: '4px 8px 4px 28px',
+                color: '#fff',
+                fontSize: '13px',
+                width: '120px',
+                outline: 'none',
+                transition: 'width 0.2s, border-color 0.2s'
+              }}
+              onFocus={(e) => { e.currentTarget.style.width = '160px'; e.currentTarget.style.borderColor = '#555'; }}
+              onBlur={(e) => { if (!searchQuery) { e.currentTarget.style.width = '120px'; e.currentTarget.style.borderColor = '#333'; } }}
+            />
+          </div>
         </div>
       </nav>
 
       {/* Hero Banner (Always partially visible or only on 'home'?) Let's make it only on 'home' or always visible but smaller for other tabs */}
-      {activeTab === 'home' && (
+      {matchQuery('home') && (
         <header className="hero" style={{ 
           backgroundColor: '#277093', 
           color: '#fff', 
@@ -148,7 +186,15 @@ export default function PortfolioClient() {
       {/* Main Content Area */}
       <main style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 20px', lineHeight: 1.8, fontSize: '16px', color: '#333' }}>
         
-        {activeTab === 'home' && (
+        {searchQuery && (
+          <div style={{ marginBottom: '40px', padding: '16px', backgroundColor: '#f9f9f9', borderRadius: '8px', borderLeft: '4px solid #277093' }}>
+            <h2 style={{ fontSize: '18px', margin: 0, fontWeight: 500, color: '#444' }}>
+              {hasResults ? `Search Results for "${searchQuery}"` : `No results found for "${searchQuery}"`}
+            </h2>
+          </div>
+        )}
+
+        {matchQuery('home') && (
           <section id="contact" style={{ marginBottom: '60px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Welcome</h2>
             <p style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -165,7 +211,7 @@ export default function PortfolioClient() {
           </section>
         )}
 
-        {activeTab === 'about' && (
+        {matchQuery('about') && (
           <section id="about">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Education</h2>
             <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
@@ -194,7 +240,7 @@ export default function PortfolioClient() {
           </section>
         )}
 
-        {activeTab === 'experience' && (
+        {matchQuery('experience') && (
           <section id="experience">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Experience</h2>
             <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
@@ -251,7 +297,7 @@ export default function PortfolioClient() {
           </section>
         )}
 
-        {activeTab === 'research' && (
+        {matchQuery('research') && (
           <section id="research">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Research &amp; Publications</h2>
             <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
@@ -324,7 +370,7 @@ export default function PortfolioClient() {
           </section>
         )}
 
-        {activeTab === 'projects' && (
+        {matchQuery('projects') && (
           <section id="projects">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Other Projects</h2>
             <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -354,7 +400,7 @@ export default function PortfolioClient() {
           </section>
         )}
 
-        {activeTab === 'skills' && (
+        {matchQuery('skills') && (
           <section id="skills">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Technical Skills &amp; Achievements</h2>
             
