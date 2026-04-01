@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import MacOsChrome from './MacOsChrome'
+import AppleMusic from './AppleMusic'
 
 const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
   ssr: false,
@@ -41,21 +42,40 @@ function TerminalDockIcon({ onClick, isActive }: { onClick: () => void, isActive
         outline: 'none',
       }}
     >
-      <div className="dock-icon">
-        <svg width="100%" height="100%" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Base rounded square */}
-          <rect x="2" y="2" width="60" height="60" rx="14" fill="#1C1C1E" />
-          {/* Top window bar */}
-          <path d="M2 16C2 8.26801 8.26801 2 16 2H48C55.732 2 62 8.26801 62 16V22H2V16Z" fill="#D2D2D2" />
-          {/* Traffic Light Buttons */}
-          <circle cx="10" cy="12" r="3.5" fill="#FF5F56" />
-          <circle cx="21" cy="12" r="3.5" fill="#FFBD2E" />
-          <circle cx="32" cy="12" r="3.5" fill="#27C93F" />
-          {/* Terminal Text `>_` */}
-          <text x="8" y="46" fill="#E5E5E5" fontFamily="Courier, monospace" fontSize="18" fontWeight="bold">&gt;_</text>
-          {/* Subtle outline highlight */}
-          <rect x="2" y="2" width="60" height="60" rx="14" stroke="#000000" strokeWidth="1" />
-        </svg>
+      <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+        <img 
+          src="/terminal-2021-06-03.png.webp" 
+          alt="Terminal" 
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+        />
+      </div>
+      <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
+    </button>
+  )
+}
+
+// Apple Music dock icon
+function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      title="Apple Music"
+      aria-label="Apple Music"
+      className="dock-item"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        padding: 0,
+        outline: 'none',
+      }}
+    >
+      <div className="dock-icon" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+        <img 
+          src="/apple-music-icon.svg" 
+          alt="Apple Music" 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+        />
       </div>
       <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
     </button>
@@ -123,6 +143,10 @@ export default function TerminalPage() {
   const [isMaximized, setIsMaximized] = useState(false)
   const [isClosed, setIsClosed] = useState(false)
 
+  const [isMusicOpen, setIsMusicOpen] = useState(false)
+  const [isMusicMinimized, setIsMusicMinimized] = useState(false)
+  const [isMusicMaximized, setIsMusicMaximized] = useState(false)
+
   const handleClose = useCallback(() => {
     setIsClosed(true)
   }, [])
@@ -140,6 +164,14 @@ export default function TerminalPage() {
     setIsMaximized(prev => !prev)
   }, [])
 
+  const handleOpenMusic = useCallback(() => {
+    setIsMusicOpen(true)
+    setIsMusicMinimized(false)
+  }, [])
+  const handleCloseMusic = useCallback(() => setIsMusicOpen(false), [])
+  const handleMinimizeMusic = useCallback(() => setIsMusicMinimized(true), [])
+  const handleMaximizeMusic = useCallback(() => setIsMusicMaximized(prev => !prev), [])
+
   const handleOpenResume = useCallback(() => {
     window.open('/resume.pdf', '_blank')
   }, [])
@@ -148,7 +180,7 @@ export default function TerminalPage() {
     window.open('/portfolio', '_blank')
   }, [])
 
-  const showDock = isMinimized || isClosed
+  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized)
 
   return (
     <div
@@ -226,6 +258,7 @@ export default function TerminalPage() {
         >
           <div className="mac-dock-container">
             <TerminalDockIcon onClick={handleRestore} isActive={!isClosed} />
+            <AppleMusicDockIcon onClick={handleOpenMusic} isActive={isMusicOpen && !isMusicMinimized} />
             <SafariDockIcon onClick={handleOpenPortfolio} />
             <PreviewDockIcon onClick={handleOpenResume} />
           </div>
@@ -233,7 +266,7 @@ export default function TerminalPage() {
       )}
 
       {/* Terminal window */}
-      {!showDock && (
+      {(!isMinimized && !isClosed) && (
         <MacOsChrome
           title="animesh — zsh — 80×24"
           onClose={handleClose}
@@ -242,15 +275,39 @@ export default function TerminalPage() {
           isMaximized={isMaximized}
           style={
             isMaximized
-              ? { width: '100%', height: '100%' }
+              ? { width: '100%', height: '100%', position: 'absolute' }
               : {
                   width: 'min(95vw, 900px)',
                   height: 'min(85dvh, 600px)',
                   margin: 'auto',
+                  position: 'absolute'
                 }
           }
         >
           <XtermTerminal />
+        </MacOsChrome>
+      )}
+
+      {/* Music window */}
+      {(isMusicOpen && !isMusicMinimized) && (
+        <MacOsChrome
+          title="Apple Music"
+          onClose={handleCloseMusic}
+          onMinimize={handleMinimizeMusic}
+          onMaximize={handleMaximizeMusic}
+          isMaximized={isMusicMaximized}
+          style={
+            isMusicMaximized
+              ? { width: '100%', height: '100%', position: 'absolute' }
+              : {
+                  width: 'min(95vw, 1100px)',
+                  height: 'min(85dvh, 700px)',
+                  margin: 'auto',
+                  position: 'absolute'
+                }
+          }
+        >
+          <AppleMusic />
         </MacOsChrome>
       )}
     </div>
