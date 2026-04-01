@@ -196,8 +196,6 @@ export default function TerminalPage() {
         justifyContent: isMinimized || isClosed ? 'flex-end' : 'center',
         padding: isMaximized && !isClosed && !isMinimized ? '0' : undefined,
         boxSizing: 'border-box',
-        overflow: 'hidden',
-        position: 'relative',
       }}
     >
       <style>{`
