@@ -1,215 +1,100 @@
-import Link from 'next/link'
-import MacOsChrome from '@/components/MacOsChrome'
-import type { Metadata } from 'next'
+import React from 'react';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Portfolio \u2014 Animesh",
-  description: 'Visual portfolio \u2014 Animesh',
-}
+  title: 'Animesh | Portfolio',
+  description: 'Animesh - Software Engineer',
+};
 
-const skills = {
-  Languages: ['TypeScript', 'JavaScript', 'Python', 'Go', 'SQL'],
-  Frontend: ['React', 'Next.js', 'Tailwind CSS', 'HTML/CSS'],
-  Backend: ['Node.js', 'Express', 'FastAPI', 'PostgreSQL', 'Redis'],
-  'DevOps & Tools': ['Docker', 'Git', 'GitHub Actions', 'Linux', 'Nginx'],
-}
+const navLinks = [
+  'Home',
+  'Overview',
+  'People',
+  'Research',
+  'Experience',
+  'Hobbies',
+  'Imprint',
+  'Privacy Policy',
+];
 
-const projects = [
-  {
-    name: 'Portfolio Site',
-    tech: 'Next.js · TypeScript · xterm.js · Tailwind',
-    desc: 'This very site. A terminal-first portfolio that runs inside a pixel-perfect macOS Terminal emulator with a full bash-like command interpreter and a mock virtual filesystem.',
-    link: '/',
-  },
-  {
-    name: 'Project Alpha',
-    tech: 'React · Node.js · PostgreSQL · Docker',
-    desc: 'Full-stack web application with real-time WebSocket features, containerized deployment with Docker Compose, and a CI/CD pipeline with GitHub Actions.',
-    link: null,
-  },
-  {
-    name: 'Project Beta',
-    tech: 'Python · FastAPI · Redis · React',
-    desc: 'High-performance REST API with sub-50ms p99 latency, Redis caching layer, comprehensive test coverage, and a React dashboard.',
-    link: null,
-  },
-  {
-    name: 'Project Gamma',
-    tech: 'Go · gRPC · Kubernetes',
-    desc: 'Distributed microservices system with gRPC communication, Kubernetes auto-scaling, distributed tracing with Jaeger, and Istio service mesh.',
-    link: null,
-  },
-]
-
-export default function Portfolio() {
+export default function PortfolioReplica() {
   return (
-    <div
-      style={{
-        width: '100vw',
-        minHeight: '100vh',
-        background: '#2C2C2C',
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        padding: '40px',
-        boxSizing: 'border-box',
-        overflowY: 'auto',
-      }}
-    >
-      <MacOsChrome
-        title="Animesh \u2014 portfolio \u2014 visual"
-        style={{ width: '100%', maxWidth: '860px' }}
-      >
-        <div
-          style={{
-            padding: '32px 40px',
-            fontFamily: '"SF Mono", Monaco, Menlo, Consolas, monospace',
-            color: '#F5F5F5',
-            overflowY: 'auto',
-          }}
-        >
-          {/* Back link */}
-          <div style={{ marginBottom: '32px' }}>
-            <Link
-              href="/"
-              style={{
-                color: '#686868',
-                textDecoration: 'none',
-                fontSize: '12px',
-              }}
-            >
-              <span style={{ color: '#1DC121' }}>animesh@MacBook</span>
-              <span style={{ color: '#0A2FC4' }}> ~</span>
-              <span style={{ color: '#F5F5F5' }}> % </span>
-              <span style={{ color: '#20C5C6' }}>cd ~/</span>
-            </Link>
-          </div>
-
-          {/* Header */}
-          <section style={{ marginBottom: '40px' }}>
-            <h1
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                margin: '0 0 4px',
-                letterSpacing: '-0.02em',
-                color: '#FFFFFF',
-              }}
-            >
-              Animesh
-            </h1>
-            <p style={{ fontSize: '14px', color: '#686868', margin: '0 0 16px' }}>
-              Software Engineer &amp; Developer &mdash; India
-            </p>
-            <p style={{ fontSize: '13px', color: '#C7C7C7', lineHeight: 1.7, maxWidth: '600px', margin: 0 }}>
-              I build things for the web. Passionate about clean code, great user experiences, and systems that scale. Currently open to new opportunities.
-            </p>
-            <div style={{ marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-              <a href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer" style={{ color: '#20C5C6', textDecoration: 'none', fontSize: '12px' }}>github.com/amethystani</a>
-              <a href="mailto:animesh@example.com" style={{ color: '#20C5C6', textDecoration: 'none', fontSize: '12px' }}>animesh@example.com</a>
-              <a href="/resume.pdf" target="_blank" style={{ color: '#FEBC2E', textDecoration: 'none', fontSize: '12px' }}>resume.pdf</a>
-            </div>
-          </section>
-
-          <Divider label="skills" />
-
-          {/* Skills */}
-          <section style={{ marginBottom: '40px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-              {Object.entries(skills).map(([category, items]) => (
-                <div key={category}>
-                  <p style={{ fontSize: '11px', color: '#686868', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {category}
-                  </p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                    {items.map(skill => (
-                      <span
-                        key={skill}
-                        style={{
-                          fontSize: '12px',
-                          padding: '3px 8px',
-                          borderRadius: '4px',
-                          background: 'rgba(255,255,255,0.06)',
-                          border: '1px solid rgba(255,255,255,0.1)',
-                          color: '#C7C7C7',
-                        }}
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <Divider label="projects" />
-
-          {/* Projects */}
-          <section style={{ marginBottom: '40px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {projects.map(project => (
-                <div
-                  key={project.name}
-                  style={{
-                    padding: '16px 20px',
-                    borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: 'rgba(255,255,255,0.03)',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#FFFFFF' }}>
-                      {project.link ? (
-                        <a href={project.link} style={{ color: '#FFFFFF', textDecoration: 'none' }}>{project.name}</a>
-                      ) : project.name}
-                    </span>
-                    <span style={{ fontSize: '11px', color: '#686868' }}>{project.tech}</span>
-                  </div>
-                  <p style={{ fontSize: '12px', color: '#9a9a9a', margin: 0, lineHeight: 1.6 }}>
-                    {project.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <Divider label="contact" />
-
-          {/* Contact */}
-          <section style={{ marginBottom: '32px' }}>
-            <p style={{ fontSize: '13px', color: '#C7C7C7', lineHeight: 1.7, margin: '0 0 12px' }}>
-              Open to interesting projects, collaborations, and opportunities.
-            </p>
-            <p style={{ fontSize: '13px', margin: 0 }}>
-              <a href="mailto:animesh@example.com" style={{ color: '#20C5C6', textDecoration: 'none' }}>animesh@example.com</a>
-            </p>
-          </section>
-
-          {/* Footer */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
-            <p style={{ fontSize: '11px', color: '#686868', margin: 0 }}>
-              <span style={{ color: '#1DC121' }}>animesh@MacBook</span>
-              <span style={{ color: '#0A2FC4' }}> ~/portfolio</span>
-              <span> % </span>
-              <Link href="/" style={{ color: '#20C5C6', textDecoration: 'none' }}>cd ~/</Link>
-              {'  '}
-              <span style={{ color: '#686868' }}># back to terminal</span>
-            </p>
-          </div>
+    <div style={{ fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', minHeight: '100vh', backgroundColor: '#fff', color: '#333' }}>
+      {/* Top Navbar */}
+      <nav style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        backgroundColor: '#000', 
+        color: '#fff', 
+        padding: '12px 24px',
+        fontSize: '14px'
+      }}>
+        <div>
+          <span style={{ fontSize: '18px', fontWeight: 300, color: '#e0e0e0' }}>Animesh</span>
         </div>
-      </MacOsChrome>
-    </div>
-  )
-}
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+          {navLinks.map((link, idx) => (
+            <a 
+              key={link} 
+              href="#" 
+              style={{ 
+                color: idx === 0 ? '#fff' : '#aaa', 
+                textDecoration: 'none',
+                fontWeight: idx === 0 ? 'bold' : 'normal',
+                transition: 'color 0.2s'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = idx === 0 ? '#fff' : '#aaa')}
+            >
+              {link}
+            </a>
+          ))}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#aaa" strokeWidth="2" style={{ cursor: 'pointer' }}>
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.3-4.3"></path>
+          </svg>
+        </div>
+      </nav>
 
-function Divider({ label }: { label: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-      <span style={{ fontSize: '11px', color: '#686868', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
-        # {label}
-      </span>
-      <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
+      {/* Hero Banner */}
+      <header style={{ 
+        backgroundColor: '#277093', 
+        color: '#fff', 
+        textAlign: 'center', 
+        padding: '60px 20px',
+        borderBottom: '1px solid #ddd'
+      }}>
+        <h1 style={{ fontSize: '42px', fontWeight: 300, margin: 0, letterSpacing: '0.02em' }}>Animesh</h1>
+      </header>
+
+      {/* Main Content Area */}
+      <main style={{ maxWidth: '960px', margin: '0 auto', padding: '40px 20px', lineHeight: 1.7, fontSize: '15px', color: '#222' }}>
+        <p style={{ marginBottom: '20px' }}>
+          I am a <strong>software engineer</strong> working in <strong>full-stack development</strong>. My work lies at the intersection of <strong>frontend architectures, backend scalability,</strong> and <strong>cloud orchestration</strong>, with the goal of developing solutions that contribute to high-performance, resilient applications.
+        </p>
+        
+        <p style={{ marginBottom: '20px' }}>
+          Currently, I'm working on complex web applications utilizing <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>React</a> and <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Next.js</a> alongside Node.js backends. Our aim is to understand under which conditions systems can scale efficiently while maintaining a clean, accessible layout and optimal user experience.
+        </p>
+
+        <p style={{ marginBottom: '20px' }}>
+          In the past year, I have focused heavily on building interactive visual experiences and simulated environments (like the terminal you just came from) where I combined graphical UI concepts with CLI functionalities. I have worked with <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>TypeScript</a> and <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>PostgreSQL</a> on producing high-resolution, data-driven interfaces by inferring best practices from modern design frameworks.
+        </p>
+
+        <p style={{ marginBottom: '20px' }}>
+          My recent projects involve distributed microservices systems with <a href="#" style={{ color: '#277093', textDecoration: 'none', borderBottom: '1px solid currentColor' }}>Go</a>, gRPC communication, Kubernetes auto-scaling, and Redis caching. During this time, I investigated the effects of network structure on rendering, state management, and human navigation. I collaborate with several amazing engineers on open-source initiatives and aim to keep learning every day.
+        </p>
+
+        <hr style={{ border: 0, borderTop: '1px solid #eee', margin: '40px 0' }} />
+        
+        <div style={{ textAlign: 'center' }}>
+          <Link href="/" style={{ color: '#277093', textDecoration: 'none', fontSize: '14px' }}>
+            ← Back to Terminal
+          </Link>
+        </div>
+      </main>
     </div>
-  )
+  );
 }
