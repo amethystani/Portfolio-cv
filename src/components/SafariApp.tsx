@@ -7,7 +7,7 @@ type Props = {
   navigationNonce?: number
 }
 
-function normalizeSafariUrl(rawUrl: any): string {
+function normalizeSafariUrl(rawUrl: unknown): string {
   const value = String(rawUrl || '').trim()
   const normalizedDomainValue = value.replace(/^https?:\/\//, '').replace(/^www\./, '')
 
@@ -83,17 +83,13 @@ export default function SafariApp({
 
   const navigateIframe = useCallback((nextUrl: string) => {
     const frame = iframeRef.current
-
     if (!frame) return
 
     const frameUrl = toFrameUrl(nextUrl)
 
     try {
-      if (frame.contentWindow) {
-        frame.contentWindow.location.href = frameUrl
-      } else {
-        frame.src = frameUrl
-      }
+      if (frame.contentWindow) frame.contentWindow.location.href = frameUrl
+      else frame.src = frameUrl
     } catch {
       frame.src = frameUrl
     }
@@ -109,11 +105,8 @@ export default function SafariApp({
 
     setIsLoading(true)
 
-    if (historyMode === 'push') {
-      pushHistoryEntry(normalizedUrl)
-    } else {
-      updateVisibleUrl(normalizedUrl)
-    }
+    if (historyMode === 'push') pushHistoryEntry(normalizedUrl)
+    else updateVisibleUrl(normalizedUrl)
 
     ignoreNextSyncRef.current = normalizedUrl
     navigateIframe(normalizedUrl)
@@ -121,7 +114,6 @@ export default function SafariApp({
 
   const syncFromIframe = useCallback(() => {
     const frameWindow = iframeRef.current?.contentWindow
-
     if (!frameWindow) return
 
     try {
@@ -145,7 +137,6 @@ export default function SafariApp({
     iframeListenerCleanupRef.current?.()
 
     const frameWindow = iframeRef.current?.contentWindow
-
     if (!frameWindow) return
 
     const handleLocationChange = () => {
@@ -185,7 +176,6 @@ export default function SafariApp({
 
     historyIndexRef.current -= 1
     const nextUrl = historyRef.current[historyIndexRef.current]
-
     setIsLoading(true)
     ignoreNextSyncRef.current = nextUrl
     updateVisibleUrl(nextUrl)
@@ -197,7 +187,6 @@ export default function SafariApp({
 
     historyIndexRef.current += 1
     const nextUrl = historyRef.current[historyIndexRef.current]
-
     setIsLoading(true)
     ignoreNextSyncRef.current = nextUrl
     updateVisibleUrl(nextUrl)
@@ -223,87 +212,196 @@ export default function SafariApp({
   }, [currentUrl])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#fff', borderRadius: '0 0 10px 10px', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', background: '#f6f6f6', borderBottom: '1px solid #ddd', gap: '12px' }}>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <button
-            onClick={goBack}
-            disabled={!canGoBack}
-            title="Go Back"
-            style={{ background: 'none', border: 'none', cursor: canGoBack ? 'pointer' : 'default', padding: '6px', color: canGoBack ? '#555' : '#b8b8b8' }}
-          >
-            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8.5 1L1.5 8L8.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            onClick={goForward}
-            disabled={!canGoForward}
-            title="Go Forward"
-            style={{ background: 'none', border: 'none', cursor: canGoForward ? 'pointer' : 'default', padding: '6px', color: canGoForward ? '#555' : '#b8b8b8' }}
-          >
-            <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            onClick={reload}
-            title="Reload page"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: '#666' }}
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-11.45l5.25 5.25" />
-            </svg>
-          </button>
-          <button
-            onClick={openHome}
-            title="Home"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: '#666' }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 11.5 12 4l9 7.5" />
-              <path d="M5 10.5V20h14v-9.5" />
-            </svg>
-          </button>
+    <div className="safari-shell">
+      <style>{`
+        .safari-shell {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          background: #ffffff;
+          overflow: hidden;
+        }
+        .safari-toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 10px 12px;
+          background: linear-gradient(180deg, #f7f7f8 0%, #efeff1 100%);
+          border-bottom: 1px solid #d7d7db;
+          flex-wrap: wrap;
+        }
+        .safari-toolbar-group {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .safari-control-cluster {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          padding: 3px;
+          border-radius: 999px;
+          background: #e5e5e8;
+          border: 1px solid #d3d4d8;
+        }
+        .safari-control {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 32px;
+          height: 32px;
+          border: none;
+          border-radius: 999px;
+          background: none;
+          color: #495057;
+          cursor: pointer;
+        }
+        .safari-control:disabled {
+          color: #aeb6be;
+          cursor: default;
+        }
+        .safari-address-form {
+          flex: 1 1 420px;
+          display: flex;
+          justify-content: center;
+          min-width: 0;
+        }
+        .safari-address-pill {
+          width: min(100%, 720px);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 0 14px;
+          min-height: 38px;
+          border-radius: 999px;
+          background: #ffffff;
+          border: 1px solid #d4d7dc;
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+        }
+        .safari-address-input {
+          flex: 1;
+          border: none;
+          background: transparent;
+          color: #2f353b;
+          font-size: 13px;
+          outline: none;
+          min-width: 0;
+        }
+        .safari-status {
+          font-size: 11px;
+          color: #7c8791;
+          white-space: nowrap;
+        }
+        .safari-action-button {
+          border: 1px solid #d3d6dc;
+          background: #ffffff;
+          color: #2f353b;
+          border-radius: 999px;
+          cursor: pointer;
+          padding: 8px 12px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .safari-frame-area {
+          flex: 1;
+          min-height: 0;
+          background: #ffffff;
+        }
+        .safari-frame {
+          width: 100%;
+          height: 100%;
+          border: none;
+          background: #ffffff;
+        }
+        .safari-mobile-bar {
+          display: none;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+          background: rgba(247,247,248,0.98);
+          border-top: 1px solid #d7d7db;
+          backdrop-filter: blur(18px);
+        }
+        @media (max-width: 768px) {
+          .safari-toolbar {
+            padding: 8px 10px;
+            gap: 8px;
+          }
+          .safari-toolbar-group--desktop {
+            display: none;
+          }
+          .safari-address-form {
+            flex-basis: 100%;
+          }
+          .safari-address-pill {
+            min-height: 36px;
+          }
+          .safari-mobile-bar {
+            display: flex;
+          }
+        }
+      `}</style>
+
+      <div className="safari-toolbar">
+        <div className="safari-toolbar-group safari-toolbar-group--desktop">
+          <div className="safari-control-cluster">
+            <button className="safari-control" onClick={goBack} disabled={!canGoBack} title="Back">
+              <svg width="12" height="16" viewBox="0 0 10 16" fill="none">
+                <path d="M8.5 1L1.5 8L8.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button className="safari-control" onClick={goForward} disabled={!canGoForward} title="Forward">
+              <svg width="12" height="16" viewBox="0 0 10 16" fill="none">
+                <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button className="safari-control" onClick={reload} title="Reload">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-11.45l5.25 5.25" />
+              </svg>
+            </button>
+            <button className="safari-control" onClick={openHome} title="Home">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11.5 12 4l9 7.5" />
+                <path d="M5 10.5V20h14v-9.5" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <form
+          className="safari-address-form"
           onSubmit={(event) => {
             event.preventDefault()
             navigateTo(addressValue)
           }}
-          style={{ flex: 1, display: 'flex', justifyContent: 'center' }}
         >
-          <div style={{ background: '#e9e9eb', borderRadius: '8px', padding: '0 12px', width: 'min(100%, 620px)', display: 'flex', alignItems: 'center', gap: '10px', border: '1px solid #d4d4d8' }}>
-            <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2.5 5V3.5C2.5 2.11929 3.61929 1 5 1C6.38071 1 7.5 2.11929 7.5 3.5V5M1.5 5H8.5C9.05228 5 9.5 5.44772 9.5 6V10.5C9.5 11.0523 9.05228 11.5 8.5 11.5H1.5C0.947715 11.5 0.5 11.0523 0.5 10.5V6C0.5 5.44772 0.947715 5 1.5 5Z" stroke="#888" strokeLinecap="round" strokeLinejoin="round" />
+          <div className="safari-address-pill">
+            <svg width="11" height="13" viewBox="0 0 10 12" fill="none">
+              <path d="M2.5 5V3.5C2.5 2.11929 3.61929 1 5 1C6.38071 1 7.5 2.11929 7.5 3.5V5M1.5 5H8.5C9.05228 5 9.5 5.44772 9.5 6V10.5C9.5 11.0523 9.05228 11.5 8.5 11.5H1.5C0.947715 11.5 0.5 11.0523 0.5 10.5V6C0.5 5.44772 0.947715 5 1.5 5Z" stroke="#7B8790" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <input
               value={addressValue}
               onChange={(event) => setAddressValue(event.target.value)}
               aria-label="Address bar"
               spellCheck={false}
-              style={{ flex: 1, border: 'none', background: 'transparent', color: '#333', fontSize: '13px', padding: '8px 0', outline: 'none' }}
+              className="safari-address-input"
             />
-            {isLoading && (
-              <div style={{ fontSize: '11px', color: '#888', whiteSpace: 'nowrap' }}>
-                Loading...
-              </div>
-            )}
+            <span className="safari-status">{isLoading ? 'Loading...' : 'Secure'}</span>
           </div>
         </form>
 
-        <div>
-          <button
-            onClick={openCurrentInNewTab}
-            style={{ background: '#007aff', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', fontWeight: 500, boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
-          >
+        <div className="safari-toolbar-group safari-toolbar-group--desktop">
+          <button className="safari-action-button" onClick={openCurrentInNewTab}>
             Open in new tab
           </button>
         </div>
       </div>
 
-      <div style={{ flex: 1, overflow: 'hidden', backgroundColor: '#fff' }}>
+      <div className="safari-frame-area">
         <iframe
           ref={iframeRef}
           src={toFrameUrl(currentUrl)}
@@ -311,9 +409,39 @@ export default function SafariApp({
             attachIframeListeners()
             syncFromIframe()
           }}
-          style={{ width: '100%', height: '100%', border: 'none' }}
-          title="Portfolio"
+          className="safari-frame"
+          title="Safari page"
         />
+      </div>
+
+      <div className="safari-mobile-bar">
+        <button className="safari-control" onClick={goBack} disabled={!canGoBack} title="Back">
+          <svg width="12" height="16" viewBox="0 0 10 16" fill="none">
+            <path d="M8.5 1L1.5 8L8.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button className="safari-control" onClick={goForward} disabled={!canGoForward} title="Forward">
+          <svg width="12" height="16" viewBox="0 0 10 16" fill="none">
+            <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+        <button className="safari-control" onClick={reload} title="Reload">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-11.45l5.25 5.25" />
+          </svg>
+        </button>
+        <button className="safari-control" onClick={openHome} title="Home">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 11.5 12 4l9 7.5" />
+            <path d="M5 10.5V20h14v-9.5" />
+          </svg>
+        </button>
+        <button className="safari-control" onClick={openCurrentInNewTab} title="Open">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 17L17 7" />
+            <path d="M8 7h9v9" />
+          </svg>
+        </button>
       </div>
     </div>
   )

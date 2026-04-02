@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 type Props = {
   requestedUrl?: string
@@ -10,13 +10,15 @@ type Props = {
 const MIN_ZOOM = 50
 const MAX_ZOOM = 200
 const ZOOM_STEP = 10
+const BASE_PAGE_WIDTH = 816
+const BASE_PAGE_HEIGHT = 1056
 
 function clampZoom(zoom: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
 }
 
-function buildPdfUrl(fileUrl: string, page: number, zoom: number): string {
-  return `${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&page=${page}&zoom=${zoom}`
+function buildPdfUrl(fileUrl: string, page: number): string {
+  return `${fileUrl}#toolbar=0&navpanes=0&scrollbar=0&page=${page}`
 }
 
 export default function PreviewApp({
@@ -24,10 +26,11 @@ export default function PreviewApp({
   navigationNonce = 0,
 }: Props) {
   const safeRequestedUrl = typeof requestedUrl === 'string' && requestedUrl ? requestedUrl : '/resume.pdf'
+  const stageRef = useRef<HTMLDivElement>(null)
   const [zoom, setZoom] = useState(100)
   const [page, setPage] = useState(1)
   const [rotation, setRotation] = useState(0)
-  const [showSidebar, setShowSidebar] = useState(true)
+  const [showSidebar, setShowSidebar] = useState(false)
 
   useEffect(() => {
     setZoom(100)
@@ -35,159 +38,380 @@ export default function PreviewApp({
     setRotation(0)
   }, [navigationNonce, safeRequestedUrl])
 
-  const pdfUrl = useMemo(() => buildPdfUrl(safeRequestedUrl, page, zoom), [page, safeRequestedUrl, zoom])
+  useEffect(() => {
+    const syncLayoutMode = () => {
+      setShowSidebar(window.innerWidth >= 960)
+    }
+
+    syncLayoutMode()
+    window.addEventListener('resize', syncLayoutMode)
+
+    return () => {
+      window.removeEventListener('resize', syncLayoutMode)
+    }
+  }, [])
+
+  const pdfUrl = useMemo(() => buildPdfUrl(safeRequestedUrl, page), [page, safeRequestedUrl])
+
+  const scale = zoom / 100
+  const scaledWidth = BASE_PAGE_WIDTH * scale
+  const scaledHeight = BASE_PAGE_HEIGHT * scale
+  const quarterTurn = rotation % 180 !== 0
+  const canvasWidth = quarterTurn ? scaledHeight : scaledWidth
+  const canvasHeight = quarterTurn ? scaledWidth : scaledHeight
+
+  const fitToWindow = useCallback(() => {
+    const stage = stageRef.current
+    if (!stage) return
+
+    const availableWidth = Math.max(240, stage.clientWidth - 32)
+    const availableHeight = Math.max(280, stage.clientHeight - 32)
+    const fitWidth = availableWidth / (quarterTurn ? BASE_PAGE_HEIGHT : BASE_PAGE_WIDTH)
+    const fitHeight = availableHeight / (quarterTurn ? BASE_PAGE_WIDTH : BASE_PAGE_HEIGHT)
+    setZoom(clampZoom(Math.floor(Math.min(fitWidth, fitHeight) * 100)))
+  }, [quarterTurn])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#ebebeb', borderRadius: '0 0 10px 10px', overflow: 'hidden' }}>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '8px 14px', background: '#f5f5f7', borderBottom: '1px solid #d1d1d6', justifyContent: 'space-between', gap: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <div className="preview-shell">
+      <style>{`
+        .preview-shell {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          background: #ebecef;
+          color: #20242a;
+          overflow: hidden;
+        }
+        .preview-toolbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 8px 14px;
+          background: linear-gradient(180deg, #f7f7f9 0%, #ededf1 100%);
+          border-bottom: 1px solid #d2d6dc;
+          flex-wrap: wrap;
+        }
+        .preview-toolbar-start,
+        .preview-toolbar-center,
+        .preview-toolbar-end {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .preview-filename {
+          font-size: 13px;
+          font-weight: 600;
+          color: #30363c;
+        }
+        .preview-group {
+          display: inline-flex;
+          align-items: center;
+          border-radius: 10px;
+          background: #e3e5ea;
+          border: 1px solid #d0d4da;
+          overflow: hidden;
+        }
+        .preview-button {
+          border: none;
+          background: none;
+          color: #49535c;
+          cursor: pointer;
+          padding: 7px 10px;
+          font-size: 12px;
+          line-height: 1;
+        }
+        .preview-button:disabled {
+          color: #9aa4ad;
+          cursor: default;
+        }
+        .preview-button + .preview-button,
+        .preview-page-input + .preview-button,
+        .preview-button + .preview-page-input {
+          border-left: 1px solid #d0d4da;
+        }
+        .preview-page-input {
+          width: 54px;
+          border: none;
+          background: transparent;
+          text-align: center;
+          font-size: 12px;
+          color: #2d3339;
+          outline: none;
+          padding: 7px 0;
+        }
+        .preview-pill-button {
+          border: 1px solid #d0d4da;
+          background: #ffffff;
+          color: #313840;
+          border-radius: 10px;
+          cursor: pointer;
+          padding: 7px 11px;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .preview-primary {
+          background: #0a84ff;
+          color: #ffffff;
+          border-color: #0a84ff;
+        }
+        .preview-body {
+          flex: 1;
+          min-height: 0;
+          display: flex;
+        }
+        .preview-sidebar {
+          width: 220px;
+          flex: 0 0 220px;
+          background: #f6f7f9;
+          border-right: 1px solid #d5d9df;
+          padding: 18px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+        .preview-sidebar-card {
+          background: #ffffff;
+          border: 1px solid #dde2e7;
+          border-radius: 14px;
+          padding: 13px;
+        }
+        .preview-sidebar-label {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #7a8590;
+          margin-bottom: 8px;
+        }
+        .preview-sidebar-text {
+          font-size: 13px;
+          color: #2f363d;
+          line-height: 1.65;
+        }
+        .preview-stage {
+          flex: 1;
+          min-width: 0;
+          min-height: 0;
+          overflow: auto;
+          background: linear-gradient(180deg, #eceef2 0%, #dfe3e9 100%);
+          padding: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+        }
+        .preview-canvas {
+          position: relative;
+          flex: 0 0 auto;
+          margin: auto;
+        }
+        .preview-page-shell {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform-origin: center center;
+          transition: transform 0.2s ease;
+        }
+        .preview-page-frame {
+          width: 100%;
+          height: 100%;
+          background: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 18px 42px rgba(16, 24, 40, 0.18);
+          overflow: hidden;
+        }
+        .preview-iframe {
+          width: 100%;
+          height: 100%;
+          border: none;
+          background: #ffffff;
+        }
+        @media (max-width: 900px) {
+          .preview-toolbar {
+            padding: 8px 10px;
+          }
+          .preview-toolbar-start,
+          .preview-toolbar-center,
+          .preview-toolbar-end {
+            width: 100%;
+            justify-content: flex-start;
+          }
+        }
+        @media (max-width: 768px) {
+          .preview-toolbar {
+            gap: 8px;
+          }
+          .preview-filename {
+            font-size: 12px;
+          }
+          .preview-button,
+          .preview-page-input,
+          .preview-pill-button {
+            font-size: 11px;
+          }
+          .preview-stage {
+            padding: 10px;
+          }
+        }
+      `}</style>
+
+      <div className="preview-toolbar">
+        <div className="preview-toolbar-start">
           <button
+            className="preview-pill-button"
             onClick={() => setShowSidebar((prev) => !prev)}
             title={showSidebar ? 'Hide sidebar' : 'Show sidebar'}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', color: '#555' }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="4" width="18" height="16" rx="2" />
-              <line x1="9" y1="4" x2="9" y2="20" />
-            </svg>
+            {showSidebar ? 'Sidebar On' : 'Sidebar Off'}
           </button>
-          <div style={{ fontSize: '13px', color: '#333', fontWeight: 600 }}>
-            resume.pdf
-          </div>
+          <div className="preview-filename">resume.pdf</div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', background: '#e3e3e8', borderRadius: '8px', overflow: 'hidden' }}>
+        <div className="preview-toolbar-center">
+          <div className="preview-group">
             <button
+              className="preview-button"
               onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-              style={{ background: 'none', border: 'none', borderRight: '1px solid #d1d1d6', padding: '6px 10px', fontSize: '13px', color: '#555', cursor: 'pointer' }}
             >
               Prev
             </button>
             <input
               aria-label="Page number"
+              className="preview-page-input"
               type="number"
               min={1}
               value={page}
               onChange={(event) => setPage(Math.max(1, Number(event.target.value) || 1))}
-              style={{ width: '54px', border: 'none', textAlign: 'center', fontSize: '12px', color: '#333', background: 'transparent', outline: 'none' }}
             />
             <button
+              className="preview-button"
               onClick={() => setPage((prev) => prev + 1)}
-              style={{ background: 'none', border: 'none', borderLeft: '1px solid #d1d1d6', padding: '6px 10px', fontSize: '13px', color: '#555', cursor: 'pointer' }}
             >
               Next
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', background: '#e3e3e8', borderRadius: '8px', overflow: 'hidden' }}>
+          <div className="preview-group">
             <button
+              className="preview-button"
               onClick={() => setZoom((prev) => clampZoom(prev - ZOOM_STEP))}
-              style={{ background: 'none', border: 'none', borderRight: '1px solid #d1d1d6', padding: '6px 12px', fontSize: '16px', color: '#555', cursor: 'pointer' }}
+              disabled={zoom <= MIN_ZOOM}
             >
               -
             </button>
             <button
+              className="preview-button"
               onClick={() => setZoom(100)}
-              style={{ background: 'none', border: 'none', padding: '6px 12px', fontSize: '12px', color: '#333', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
             >
               {zoom}%
             </button>
             <button
+              className="preview-button"
               onClick={() => setZoom((prev) => clampZoom(prev + ZOOM_STEP))}
-              style={{ background: 'none', border: 'none', borderLeft: '1px solid #d1d1d6', padding: '6px 12px', fontSize: '16px', color: '#555', cursor: 'pointer' }}
+              disabled={zoom >= MAX_ZOOM}
             >
               +
             </button>
           </div>
 
           <button
+            className="preview-pill-button"
             onClick={() => setRotation((prev) => (prev + 90) % 360)}
-            style={{ background: '#ffffff', border: '1px solid #d1d1d6', borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: '#333', cursor: 'pointer' }}
           >
             Rotate
           </button>
+
+          <button
+            className="preview-pill-button"
+            onClick={fitToWindow}
+          >
+            Fit
+          </button>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <div className="preview-toolbar-end">
           <button
+            className="preview-pill-button preview-primary"
             onClick={() => window.open(safeRequestedUrl, '_blank', 'noopener,noreferrer')}
-            style={{ background: '#007aff', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', fontWeight: 500, boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
           >
-            Open Original PDF
+            Open PDF
           </button>
           <a
             href={safeRequestedUrl}
             download
-            style={{ background: '#fff', color: '#333', border: '1px solid #d1d1d6', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 500, textDecoration: 'none' }}
+            className="preview-pill-button"
+            style={{ textDecoration: 'none' }}
           >
             Download
           </a>
         </div>
       </div>
 
-      <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-        {showSidebar && (
-          <aside style={{ width: '220px', background: '#f5f5f7', borderRight: '1px solid #d1d1d6', padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            <div>
-              <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#7d7d82', marginBottom: '8px' }}>Document</div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#222' }}>resume.pdf</div>
-              <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>Preview replica with working controls</div>
+      <div className="preview-body">
+        {showSidebar ? (
+          <aside className="preview-sidebar">
+            <div className="preview-sidebar-card">
+              <div className="preview-sidebar-label">Document</div>
+              <div className="preview-sidebar-text">resume.pdf</div>
             </div>
 
-            <div style={{ background: '#fff', border: '1px solid #dbdbe0', borderRadius: '12px', padding: '14px' }}>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Viewing state</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13px', color: '#333' }}>
-                <span>Page {page}</span>
-                <span>Zoom {zoom}%</span>
-                <span>Rotation {rotation}°</span>
+            <div className="preview-sidebar-card">
+              <div className="preview-sidebar-label">Viewing State</div>
+              <div className="preview-sidebar-text">
+                Page {page}
+                <br />
+                Zoom {zoom}%
+                <br />
+                Rotation {rotation}deg
               </div>
             </div>
 
-            <div style={{ background: '#fff', border: '1px solid #dbdbe0', borderRadius: '12px', padding: '14px' }}>
-              <div style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>Quick actions</div>
+            <div className="preview-sidebar-card">
+              <div className="preview-sidebar-label">Quick Actions</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <button
+                  className="preview-pill-button"
                   onClick={() => {
                     setPage(1)
                     setZoom(100)
                     setRotation(0)
                   }}
-                  style={{ background: '#f6f6f8', border: '1px solid #dedee3', borderRadius: '8px', padding: '8px 10px', textAlign: 'left', fontSize: '12px', cursor: 'pointer', color: '#333' }}
                 >
                   Reset View
                 </button>
                 <button
-                  onClick={() => setZoom(140)}
-                  style={{ background: '#f6f6f8', border: '1px solid #dedee3', borderRadius: '8px', padding: '8px 10px', textAlign: 'left', fontSize: '12px', cursor: 'pointer', color: '#333' }}
+                  className="preview-pill-button"
+                  onClick={fitToWindow}
                 >
-                  Fit Better in Window
+                  Fit to Window
                 </button>
               </div>
             </div>
           </aside>
-        )}
+        ) : null}
 
-        <div style={{ flex: 1, padding: '24px', overflow: 'auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', background: 'linear-gradient(180deg, #ededf0 0%, #e1e1e6 100%)' }}>
+        <div ref={stageRef} className="preview-stage">
           <div
-            style={{
-              width: '100%',
-              maxWidth: rotation % 180 === 0 ? '850px' : '1100px',
-              minHeight: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-              transform: `rotate(${rotation}deg) scale(${rotation % 180 === 0 ? 1 : 0.82})`,
-              transformOrigin: 'center top',
-              transition: 'transform 0.2s ease',
-            }}
+            className="preview-canvas"
+            style={{ width: `${canvasWidth}px`, height: `${canvasHeight}px` }}
           >
-            <iframe
-              key={`${pdfUrl}-${navigationNonce}`}
-              src={pdfUrl}
-              style={{ width: '100%', maxWidth: '850px', height: '100%', minHeight: '900px', background: '#fff', boxShadow: '0 18px 40px rgba(0,0,0,0.18)', border: 'none', borderRadius: '6px' }}
-              title="Resume PDF"
-            />
+            <div
+              className="preview-page-shell"
+              style={{
+                width: `${scaledWidth}px`,
+                height: `${scaledHeight}px`,
+                transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+              }}
+            >
+              <div className="preview-page-frame">
+                <iframe
+                  key={`${pdfUrl}-${navigationNonce}`}
+                  src={pdfUrl}
+                  className="preview-iframe"
+                  title="Resume PDF"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
