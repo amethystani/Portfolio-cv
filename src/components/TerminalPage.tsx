@@ -6,6 +6,8 @@ import Image from 'next/image'
 import MacOsChrome from './MacOsChrome'
 import AppleMusic from './AppleMusic'
 import Finder from './Finder'
+import SafariApp from './SafariApp'
+import PreviewApp from './PreviewApp'
 
 const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
   ssr: false,
@@ -122,7 +124,7 @@ function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActi
 }
 
 // macOS Preview dock icon SVG
-function PreviewDockIcon({ onClick }: { onClick: () => void }) {
+function PreviewDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -147,13 +149,13 @@ function PreviewDockIcon({ onClick }: { onClick: () => void }) {
           unoptimized
         />
       </div>
-      <div className="dock-dot" style={{ opacity: 0 }} />
+      <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
     </button>
   )
 }
 
 // macOS Safari dock icon
-function SafariDockIcon({ onClick }: { onClick: () => void }) {
+function SafariDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
       onClick={onClick}
@@ -178,7 +180,7 @@ function SafariDockIcon({ onClick }: { onClick: () => void }) {
           unoptimized
         />
       </div>
-      <div className="dock-dot" style={{ opacity: 0 }} />
+      <div className="dock-dot" style={{ opacity: isActive ? 1 : 0 }} />
     </button>
   )
 }
@@ -195,6 +197,14 @@ export default function TerminalPage() {
   const [isFinderOpen, setIsFinderOpen] = useState(false)
   const [isFinderMinimized, setIsFinderMinimized] = useState(false)
   const [isFinderMaximized, setIsFinderMaximized] = useState(false)
+
+  const [isSafariOpen, setIsSafariOpen] = useState(false)
+  const [isSafariMinimized, setIsSafariMinimized] = useState(false)
+  const [isSafariMaximized, setIsSafariMaximized] = useState(false)
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [isPreviewMinimized, setIsPreviewMinimized] = useState(false)
+  const [isPreviewMaximized, setIsPreviewMaximized] = useState(false)
 
   const handleClose = useCallback(() => {
     setIsClosed(true)
@@ -229,15 +239,23 @@ export default function TerminalPage() {
   const handleMinimizeFinder = useCallback(() => setIsFinderMinimized(true), [])
   const handleMaximizeFinder = useCallback(() => setIsFinderMaximized(prev => !prev), [])
 
-  const handleOpenResume = useCallback(() => {
-    window.open('/resume.pdf', '_blank')
+  const handleOpenSafari = useCallback(() => {
+    setIsSafariOpen(true)
+    setIsSafariMinimized(false)
   }, [])
+  const handleCloseSafari = useCallback(() => setIsSafariOpen(false), [])
+  const handleMinimizeSafari = useCallback(() => setIsSafariMinimized(true), [])
+  const handleMaximizeSafari = useCallback(() => setIsSafariMaximized(prev => !prev), [])
 
-  const handleOpenPortfolio = useCallback(() => {
-    window.open('/portfolio', '_blank')
+  const handleOpenPreview = useCallback(() => {
+    setIsPreviewOpen(true)
+    setIsPreviewMinimized(false)
   }, [])
+  const handleClosePreview = useCallback(() => setIsPreviewOpen(false), [])
+  const handleMinimizePreview = useCallback(() => setIsPreviewMinimized(true), [])
+  const handleMaximizePreview = useCallback(() => setIsPreviewMaximized(prev => !prev), [])
 
-  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized) && (!isFinderOpen || isFinderMinimized)
+  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized) && (!isFinderOpen || isFinderMinimized) && (!isSafariOpen || isSafariMinimized) && (!isPreviewOpen || isPreviewMinimized)
 
   return (
     <div
@@ -314,11 +332,11 @@ export default function TerminalPage() {
           }}
         >
           <div className="mac-dock-container">
-            <FinderDockIcon onClick={handleOpenFinder} isActive={isFinderOpen && !isFinderMinimized} />
+            <FinderDockIcon onClick={handleOpenFinder} isActive={isFinderOpen} />
             <TerminalDockIcon onClick={handleRestore} isActive={!isClosed} />
-            <AppleMusicDockIcon onClick={handleOpenMusic} isActive={isMusicOpen && !isMusicMinimized} />
-            <SafariDockIcon onClick={handleOpenPortfolio} />
-            <PreviewDockIcon onClick={handleOpenResume} />
+            <AppleMusicDockIcon onClick={handleOpenMusic} isActive={isMusicOpen} />
+            <SafariDockIcon onClick={handleOpenSafari} isActive={isSafariOpen} />
+            <PreviewDockIcon onClick={handleOpenPreview} isActive={isPreviewOpen} />
           </div>
         </div>
       )}
@@ -348,9 +366,61 @@ export default function TerminalPage() {
           <Finder 
             onOpenTerminal={handleRestore} 
             onOpenMusic={handleOpenMusic} 
-            onOpenResume={handleOpenResume} 
-            onOpenPortfolio={handleOpenPortfolio} 
+            onOpenResume={handleOpenPreview} 
+            onOpenPortfolio={handleOpenSafari} 
           />
+        </MacOsChrome>
+      )}
+
+      {/* Safari window */}
+      {(isSafariOpen && !isSafariMinimized) && (
+        <MacOsChrome
+          title="Safari"
+          onClose={handleCloseSafari}
+          onMinimize={handleMinimizeSafari}
+          onMaximize={handleMaximizeSafari}
+          isMaximized={isSafariMaximized}
+          style={
+            isSafariMaximized
+              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
+              : {
+                  width: 'min(95vw, 1000px)',
+                  height: 'min(85dvh, 700px)',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+                }
+          }
+        >
+          <SafariApp />
+        </MacOsChrome>
+      )}
+
+      {/* Preview window */}
+      {(isPreviewOpen && !isPreviewMinimized) && (
+        <MacOsChrome
+          title="Preview"
+          onClose={handleClosePreview}
+          onMinimize={handleMinimizePreview}
+          onMaximize={handleMaximizePreview}
+          isMaximized={isPreviewMaximized}
+          style={
+            isPreviewMaximized
+              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
+              : {
+                  width: 'min(90vw, 850px)',
+                  height: 'min(85dvh, 750px)',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+                }
+          }
+        >
+          <PreviewApp />
         </MacOsChrome>
       )}
 
