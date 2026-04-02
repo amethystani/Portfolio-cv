@@ -192,6 +192,12 @@ type AppLaunchRequest = {
   url?: string
 }
 
+const DOCK_HEIGHT = 76
+const DOCK_BOTTOM_PADDING = 8
+const DOCK_GAP = 20
+const DOCK_CLEARANCE = DOCK_HEIGHT + DOCK_BOTTOM_PADDING + DOCK_GAP
+const WINDOW_CENTER_LIFT = Math.round(DOCK_CLEARANCE / 2)
+
 export default function TerminalPage() {
   const [isMinimized, setIsMinimized] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
@@ -235,12 +241,20 @@ export default function TerminalPage() {
   const getWindowStyle = useCallback(
     (windowKey: WindowKey, isWindowMaximized: boolean, width: string, height: string) => (
       isWindowMaximized
-        ? { width: '100%', height: '100%', position: 'absolute' as const, top: 0, left: 0, zIndex: windowZ[windowKey] }
+        ? {
+            width: '100%',
+            height: `calc(100% - ${DOCK_CLEARANCE}px)`,
+            position: 'absolute' as const,
+            top: 0,
+            left: 0,
+            zIndex: windowZ[windowKey],
+          }
         : {
             width,
             height,
+            maxHeight: `calc(100dvh - ${DOCK_CLEARANCE + 24}px)`,
             position: 'absolute' as const,
-            top: '50%',
+            top: `calc(50% - ${WINDOW_CENTER_LIFT}px)`,
             left: '50%',
             transform: 'translate(-50%, -50%)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
