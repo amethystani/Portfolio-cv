@@ -194,9 +194,8 @@ type AppLaunchRequest = {
 
 const DOCK_HEIGHT = 76
 const DOCK_BOTTOM_PADDING = 8
-const DOCK_GAP = 20
+const DOCK_GAP = 8
 const DOCK_CLEARANCE = DOCK_HEIGHT + DOCK_BOTTOM_PADDING + DOCK_GAP
-const WINDOW_CENTER_LIFT = Math.round(DOCK_CLEARANCE / 2)
 
 export default function TerminalPage() {
   const [isMinimized, setIsMinimized] = useState(false)
@@ -254,9 +253,9 @@ export default function TerminalPage() {
             height,
             maxHeight: `calc(100dvh - ${DOCK_CLEARANCE + 24}px)`,
             position: 'absolute' as const,
-            top: `calc(50% - ${WINDOW_CENTER_LIFT}px)`,
+            bottom: `${DOCK_CLEARANCE}px`,
             left: '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translateX(-50%)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
             zIndex: windowZ[windowKey],
           }

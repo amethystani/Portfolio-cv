@@ -308,10 +308,32 @@ export default function XtermTerminal({ onOpenApp }: Props) {
   }
 
   return (
-    <div
-      ref={containerRef}
-      style={{ width: '100%', height: '100%', padding: '4px', boxSizing: 'border-box', background: '#1E1E1E' }}
-    />
+    <>
+      <style>{`
+        .terminal-surface,
+        .terminal-surface .xterm,
+        .terminal-surface .xterm-screen,
+        .terminal-surface .xterm-viewport {
+          background: #1E1E1E !important;
+        }
+
+        .terminal-surface .xterm {
+          height: 100%;
+        }
+      `}</style>
+      <div
+        ref={containerRef}
+        className="terminal-surface"
+        style={{
+          width: '100%',
+          height: '100%',
+          padding: '6px 8px 0',
+          boxSizing: 'border-box',
+          background: '#1E1E1E',
+          overflow: 'hidden',
+        }}
+      />
+    </>
   )
 }
 
