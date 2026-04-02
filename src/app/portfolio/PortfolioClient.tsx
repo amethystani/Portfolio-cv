@@ -160,6 +160,10 @@ export default function PortfolioClient() {
         .custom-anchor:hover {
           border-bottom: 1px solid #277093;
         }
+        .search-status {
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
         .project-card {
           padding: 24px;
           border-radius: 16px;
@@ -188,6 +192,8 @@ export default function PortfolioClient() {
           color: #44606d;
           font-size: 12px;
           font-weight: 600;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
         .project-feature-layout {
           display: grid;
@@ -205,52 +211,22 @@ export default function PortfolioClient() {
           margin-top: 10px;
         }
         .project-embed-shell {
-          overflow: hidden;
           border-radius: 18px;
           border: 1px solid #dce7ee;
-          background: linear-gradient(180deg, #ffffff 0%, #f6fafc 100%);
+          background: linear-gradient(180deg, #f6fafc 0%, #ffffff 100%);
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
-        }
-        .project-embed-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-          padding: 12px 14px;
-          background: rgba(255,255,255,0.92);
-          border-bottom: 1px solid #e5edf2;
-        }
-        .project-embed-frame {
-          width: 100%;
-          height: clamp(320px, 42vw, 430px);
-          border: none;
-          background: #fff;
-        }
-        .project-embed-scroll {
-          height: clamp(340px, 44vw, 460px);
-          overflow: auto;
-          background:
-            radial-gradient(circle at top, rgba(39, 112, 147, 0.08), transparent 32%),
-            linear-gradient(180deg, #eff4f7 0%, #ffffff 100%);
           display: flex;
           justify-content: center;
           padding: 18px;
         }
         .project-embed-image {
-          width: min(100%, 760px);
+          width: 100%;
+          max-width: 760px;
           height: auto;
           display: block;
           border-radius: 16px;
           background: #fff;
           box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
-        }
-        .project-embed-note {
-          padding: 10px 14px 14px;
-          font-size: 12px;
-          line-height: 1.55;
-          color: #5a6770;
-          border-top: 1px solid #e5edf2;
-          background: rgba(255,255,255,0.92);
         }
         .project-card-header {
           display: flex;
@@ -268,6 +244,8 @@ export default function PortfolioClient() {
           font-weight: 700;
           letter-spacing: 0.07em;
           text-transform: uppercase;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
         .project-type-badge.research {
           background: rgba(79, 91, 213, 0.1);
@@ -294,6 +272,8 @@ export default function PortfolioClient() {
           font-weight: 500;
           background: #f0f4f8;
           color: #556677;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
         .project-metric-row {
           display: flex;
@@ -310,6 +290,8 @@ export default function PortfolioClient() {
           background: #f0f4f8;
           color: #2d4a5a;
           border: 1px solid #dce7ee;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
         .project-link-badge {
           display: inline-flex;
@@ -323,6 +305,8 @@ export default function PortfolioClient() {
           border: 1px solid #c0d9e6;
           text-decoration: none;
           transition: background 0.18s, color 0.18s;
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
         .project-link-badge:hover {
           background: #277093;
@@ -372,11 +356,37 @@ export default function PortfolioClient() {
           width: min(980px, calc(100% - 40px));
           margin: 0 auto;
         }
+        .hero-subtitle {
+          margin: 16px auto 0;
+          font-size: 18px;
+          color: #e0f0f5;
+          font-weight: 300;
+          max-width: 720px;
+        }
+        .hero-location {
+          margin-top: 12px;
+          font-size: 16px;
+          color: #f1f8fb;
+          font-weight: 400;
+        }
         .contact-links {
           display: flex;
           gap: 16px;
           justify-content: center;
           flex-wrap: wrap;
+        }
+        .skills-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+          gap: 16px;
+          margin-bottom: 36px;
+        }
+        .skill-card {
+          padding: 18px 20px;
+          border-radius: 14px;
+          background: #fafbfc;
+          border: 1px solid #eaeaea;
+          min-width: 0;
         }
         .research-frame {
           width: 100%;
@@ -428,7 +438,11 @@ export default function PortfolioClient() {
           }
           .nav-search {
             width: 100%;
-            max-width: 260px;
+            max-width: none;
+          }
+          .nav-search-input,
+          .nav-search-input:focus {
+            width: 100%;
           }
           .content-shell {
             width: min(100%, calc(100% - 20px));
@@ -444,17 +458,39 @@ export default function PortfolioClient() {
             flex-wrap: wrap;
             justify-content: center;
           }
+          .project-embed-shell {
+            padding: 16px;
+          }
         }
         @media (max-width: 768px) {
+          .nav-wrapper {
+            padding: 14px 14px !important;
+            gap: 12px;
+          }
+          .nav-links {
+            gap: 10px 14px !important;
+          }
           .hero h1 {
             font-size: 32px !important;
           }
+          .hero-subtitle {
+            font-size: 16px;
+            margin-top: 14px;
+          }
+          .hero-location {
+            font-size: 14px;
+          }
           .hero {
-            padding: 60px 20px !important;
+            padding: 56px 16px !important;
+          }
+          .content-shell {
+            width: min(100%, calc(100% - 12px));
+            padding: 18px 0 52px;
+            gap: 16px;
           }
           .section-panel {
-            padding: 22px 18px;
-            border-radius: 20px;
+            padding: 20px 16px;
+            border-radius: 18px;
           }
           .grid-container {
             grid-template-columns: 1fr !important;
@@ -464,10 +500,71 @@ export default function PortfolioClient() {
             grid-template-columns: 1fr;
           }
           .nav-link {
-            font-size: 13px;
+            font-size: 12px;
+          }
+          .project-pill,
+          .project-metric-chip,
+          .project-link-badge,
+          .project-venue-badge {
+            font-size: 11px;
+            padding: 5px 8px;
+          }
+          .project-type-badge {
+            font-size: 9px;
+            letter-spacing: 0.05em;
+          }
+          .project-embed-shell {
+            padding: 12px;
+            border-radius: 14px;
+          }
+          .project-embed-image {
+            border-radius: 12px;
+          }
+          .skills-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 28px;
+          }
+          .skill-card {
+            padding: 16px;
           }
           .research-frame {
-            height: 260px;
+            height: 220px;
+          }
+          .footer-links span {
+            display: none;
+          }
+        }
+        @media (max-width: 520px) {
+          .nav-wrapper {
+            padding: 12px !important;
+          }
+          .nav-links {
+            gap: 8px 12px !important;
+          }
+          .content-shell {
+            width: calc(100% - 8px);
+            padding-top: 14px;
+          }
+          .section-panel {
+            padding: 18px 12px;
+            border-radius: 16px;
+          }
+          .hero h1 {
+            font-size: 28px !important;
+          }
+          .hero-subtitle {
+            font-size: 15px;
+          }
+          .project-meta,
+          .project-metric-row,
+          .project-links-row,
+          .contact-links,
+          .footer-links {
+            gap: 6px;
+          }
+          .project-embed-shell {
+            padding: 10px;
           }
         }
       `}</style>
@@ -531,10 +628,10 @@ export default function PortfolioClient() {
         }}>
           <div className="hero-inner">
             <h1 style={{ fontSize: '48px', fontWeight: 300, margin: 0, letterSpacing: '0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Animesh Mishra</h1>
-            <p style={{ margin: '16px auto 0', fontSize: '18px', color: '#e0f0f5', fontWeight: 300, maxWidth: '720px' }}>
+            <p className="hero-subtitle">
               Software, research, and systems work across ML, infrastructure, and product engineering.
             </p>
-            <p style={{ marginTop: '12px', fontSize: '16px', color: '#f1f8fb', fontWeight: 400 }}>
+            <p className="hero-location">
               Delhi, India | am847@snu.edu.in
             </p>
           </div>
@@ -546,7 +643,7 @@ export default function PortfolioClient() {
         
         {searchQuery && (
           <div style={{ padding: '16px 18px', backgroundColor: '#f9f9f9', borderRadius: '14px', border: '1px solid #e2edf3', borderLeft: '4px solid #277093' }}>
-            <h2 style={{ fontSize: '18px', margin: 0, fontWeight: 500, color: '#444' }}>
+            <h2 className="search-status" style={{ fontSize: '18px', margin: 0, fontWeight: 500, color: '#444' }}>
               {hasResults ? `Search Results for "${searchQuery}"` : `No results found for "${searchQuery}"`}
             </h2>
           </div>
@@ -740,7 +837,6 @@ export default function PortfolioClient() {
                     <span className="project-type-badge startup">Startup</span>
                     <span className="project-venue-badge">clerktree.com</span>
                   </div>
-                  <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; Live site</a>
                 </div>
                 <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '12px' }}>ClerkTree</strong>
                 <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
@@ -756,16 +852,7 @@ export default function PortfolioClient() {
                   <span className="project-pill">FastAPI</span>
                 </div>
                 <div className="project-embed-shell">
-                  <div className="project-embed-header">
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#3c5561' }}>clerktree.com</span>
-                    <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="custom-anchor" style={{ fontSize: '13px' }}>Open live site</a>
-                  </div>
-                  <div className="project-embed-scroll">
-                    <img src={CLERKTREE_SNAPSHOT_URL} alt="ClerkTree website snapshot" className="project-embed-image" loading="lazy" referrerPolicy="no-referrer" />
-                  </div>
-                  <div className="project-embed-note">
-                    Scroll inside the preview to inspect the site snapshot. The live page cannot render in a third-party iframe because ClerkTree sends <code>X-Frame-Options: SAMEORIGIN</code>.
-                  </div>
+                  <img src={CLERKTREE_SNAPSHOT_URL} alt="ClerkTree website snapshot" className="project-embed-image" loading="lazy" referrerPolicy="no-referrer" />
                 </div>
               </li>
 
@@ -940,32 +1027,32 @@ export default function PortfolioClient() {
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '6px' }}>Technical Skills &amp; Achievements</h2>
             <p style={{ margin: '0 0 28px 0', color: '#666', fontSize: '14px' }}>Languages, frameworks, and tooling across ML engineering, data infrastructure, and systems.</p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '36px' }}>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+            <div className="skills-grid">
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Languages</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Python (primary) &bull; SQL &bull; Java &bull; LaTeX</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>ML &amp; LLM Frameworks</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>PyTorch &bull; Triton kernels &bull; FlashAttention-2 &bull; HuggingFace Transformers &bull; XGBoost &bull; Scikit-learn &bull; ONNX Runtime &bull; LangChain &bull; Ollama &bull; Gymnasium</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Pretraining Data &amp; Corpus</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Datatrove &bull; FineWeb / FineWebEDU / FinePDFs &bull; NeMo DataDesigner &bull; SmolLM / Nemotron data strategies &bull; CommonCrawl processing &bull; Deduplication &amp; quality filtering</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Distributed Data Processing</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Apache Kafka &bull; Dask &bull; Spark (familiar) &bull; Large-scale ETL design &bull; Web scraping pipelines at scale</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Evaluation &amp; Ablations</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Multi-model ablation harnesses &bull; LLM-as-judge evaluation &bull; Factuality/validity audits &bull; ICC / ANOVA Gauge R&amp;R &bull; Benchmark design</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Infrastructure &amp; MLOps</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Docker &bull; Kubernetes &bull; AWS EKS &bull; FastAPI &bull; Redis &bull; Git &bull; Flutter</p>
               </div>
-              <div style={{ padding: '18px 20px', borderRadius: '14px', background: '#fafbfc', border: '1px solid #eaeaea' }}>
+              <div className="skill-card">
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#277093' }}>Data Science</h4>
                 <p style={{ margin: 0, fontSize: '14px', color: '#444', lineHeight: 1.7 }}>Pandas &bull; NumPy &bull; GeoPandas &bull; Matplotlib &bull; NetworkX &bull; Folium</p>
               </div>
