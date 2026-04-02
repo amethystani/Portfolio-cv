@@ -7,8 +7,8 @@ type Props = {
   navigationNonce?: number
 }
 
-function normalizeSafariUrl(rawUrl: string): string {
-  const value = rawUrl.trim()
+function normalizeSafariUrl(rawUrl: any): string {
+  const value = String(rawUrl || '').trim()
   const normalizedDomainValue = value.replace(/^https?:\/\//, '').replace(/^www\./, '')
 
   if (!value) return '/portfolio'
