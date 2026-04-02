@@ -1,9 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
 
 const navLinks = [
   { name: 'Home', id: 'home' },
@@ -86,7 +83,7 @@ export default function PortfolioClient() {
   };
 
   return (
-    <div className={inter.className} style={{ height: '100vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333' }}>
+    <div style={{ height: '100vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333', fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif' }}>
       <style>{`
         .nav-link {
           color: #bebebe;
