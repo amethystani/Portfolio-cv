@@ -1,6 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect, useRef, useState } from 'react';
 
 const navLinks = [
   { name: 'Home', id: 'home' },
@@ -27,42 +26,62 @@ function getTabFromHash(hash: string): string {
   return validTabs.has(normalized) ? normalized : 'home';
 }
 
+function readLocationState(): { tab: string; search: string } {
+  return {
+    tab: getTabFromHash(window.location.hash),
+    search: new URLSearchParams(window.location.search).get('q') ?? '',
+  };
+}
+
+function buildLocationUrl(tab: string, search: string): string {
+  const params = new URLSearchParams(window.location.search);
+
+  if (search) params.set('q', search);
+  else params.delete('q');
+
+  const nextSearch = params.toString();
+  return `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}#${tab}`;
+}
+
 export default function PortfolioClient() {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [hasSyncedLocation, setHasSyncedLocation] = useState(false);
 
+  const scrollPortfolioToTop = (behavior: ScrollBehavior = 'auto') => {
+    scrollContainerRef.current?.scrollTo({ top: 0, behavior });
+    window.scrollTo({ top: 0, behavior });
+  };
+
   useEffect(() => {
     const syncFromLocation = () => {
-      const nextTab = getTabFromHash(window.location.hash);
-      const nextSearch = new URLSearchParams(window.location.search).get('q') ?? '';
+      const { tab, search } = readLocationState();
 
-      setActiveTab(nextTab);
-      setSearchQuery(nextSearch);
+      setActiveTab(tab);
+      setSearchQuery(search);
       setHasSyncedLocation(true);
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      requestAnimationFrame(() => scrollPortfolioToTop('auto'));
     };
 
     syncFromLocation();
-    window.addEventListener('hashchange', syncFromLocation);
+    window.addEventListener('popstate', syncFromLocation);
 
     return () => {
-      window.removeEventListener('hashchange', syncFromLocation);
+      window.removeEventListener('popstate', syncFromLocation);
     };
   }, []);
 
   useEffect(() => {
     if (!hasSyncedLocation) return;
 
-    const params = new URLSearchParams(window.location.search);
+    window.history.replaceState(null, '', buildLocationUrl(activeTab, searchQuery));
+  }, [activeTab, hasSyncedLocation, searchQuery]);
 
-    if (searchQuery) params.set('q', searchQuery);
-    else params.delete('q');
-
-    const nextSearch = params.toString();
-    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`;
-    window.history.replaceState(null, '', nextUrl);
-  }, [hasSyncedLocation, searchQuery]);
+  useEffect(() => {
+    if (!hasSyncedLocation) return;
+    requestAnimationFrame(() => scrollPortfolioToTop('auto'));
+  }, [activeTab, hasSyncedLocation]);
 
   const matchQuery = (tab: string) => {
     if (!searchQuery) return activeTab === tab;
@@ -74,22 +93,29 @@ export default function PortfolioClient() {
   const activateTab = (tabId: string) => {
     setActiveTab(tabId);
     setSearchQuery('');
-
-    if (window.location.hash !== `#${tabId}`) {
-      window.location.hash = tabId;
-    }
-
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    window.history.pushState(null, '', buildLocationUrl(tabId, ''));
+    scrollPortfolioToTop('smooth');
   };
 
   return (
-    <div style={{ height: '100vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333', fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif' }}>
+    <div
+      ref={scrollContainerRef}
+      className="portfolio-root"
+      style={{ minHeight: '100vh', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333', fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif' }}
+    >
       <style>{`
+        .portfolio-root {
+          scroll-behavior: smooth;
+          overscroll-behavior-y: contain;
+          background:
+            radial-gradient(circle at top, rgba(39, 112, 147, 0.12), transparent 28%),
+            linear-gradient(180deg, #f7fbfd 0%, #ffffff 24%, #f8fafb 100%);
+        }
         .nav-link {
           color: #bebebe;
           text-decoration: none;
           font-weight: 400;
-          transition: color 0.2s ease, text-shadow 0.2s ease;
+          transition: color 0.2s ease, text-shadow 0.2s ease, transform 0.2s ease;
           font-size: 14px;
           background: none;
           border: none;
@@ -100,10 +126,27 @@ export default function PortfolioClient() {
         .nav-link:hover {
           color: #fff;
           text-shadow: 0 0 8px rgba(255,255,255,0.4);
+          transform: translateY(-1px);
         }
         .nav-link.active {
           color: #fff;
           font-weight: 600;
+        }
+        .nav-search-input {
+          background-color: #1a1a1a;
+          border: 1px solid #333;
+          border-radius: 16px;
+          padding: 8px 10px 8px 32px;
+          color: #fff;
+          font-size: 13px;
+          width: clamp(132px, 17vw, 188px);
+          outline: none;
+          transition: width 0.24s ease, border-color 0.24s ease, background-color 0.24s ease;
+        }
+        .nav-search-input:focus {
+          width: clamp(172px, 24vw, 240px);
+          border-color: #555;
+          background-color: #111;
         }
         .custom-anchor {
           color: #277093;
@@ -117,14 +160,61 @@ export default function PortfolioClient() {
         }
         .project-card {
           padding: 24px;
-          border-radius: 8px;
+          border-radius: 16px;
           border: 1px solid #eaeaea;
-          background: #fafafa;
-          transition: transform 0.2s, box-shadow 0.2s;
+          background: linear-gradient(180deg, #fbfbfb 0%, #f4f6f8 100%);
+          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
         }
         .project-card:hover {
           transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+          box-shadow: 0 16px 30px rgba(0,0,0,0.07);
+          border-color: #d9e5ec;
+        }
+        .content-shell {
+          width: min(1100px, calc(100% - 32px));
+          margin: 0 auto;
+          padding: clamp(32px, 4vw, 60px) clamp(8px, 2vw, 20px) 72px;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+        }
+        .section-panel {
+          padding: clamp(24px, 3vw, 36px);
+          border-radius: 24px;
+          background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(247,250,252,0.96) 100%);
+          border: 1px solid rgba(210, 223, 232, 0.8);
+          box-shadow: 0 18px 44px rgba(16, 24, 40, 0.06);
+          animation: panel-enter 0.28s ease;
+        }
+        .section-list {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+        }
+        .hero-inner {
+          width: min(980px, calc(100% - 40px));
+          margin: 0 auto;
+        }
+        .contact-links {
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+        .research-frame {
+          width: 100%;
+          height: clamp(280px, 48vw, 400px);
+          border: none;
+        }
+        @keyframes panel-enter {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .footer-link {
           color: #aaa;
@@ -134,6 +224,11 @@ export default function PortfolioClient() {
         .footer-link:hover {
           color: #fff;
         }
+        .footer-links {
+          display: flex;
+          gap: 16px;
+          margin-top: 8px;
+        }
         .nav-icon {
           stroke: #aaa;
           transition: stroke 0.2s ease;
@@ -141,21 +236,58 @@ export default function PortfolioClient() {
         .nav-icon:hover {
           stroke: #fff;
         }
-        @media (max-width: 768px) {
+        @media (max-width: 960px) {
           .nav-wrapper {
             flex-direction: column;
-            padding: 16px;
+            align-items: flex-start !important;
+            padding: 16px 20px !important;
             gap: 16px;
           }
           .nav-links {
             flex-wrap: wrap;
+            justify-content: flex-start !important;
+            gap: 18px !important;
+            width: 100%;
+          }
+          .nav-search {
+            width: 100%;
+            max-width: 260px;
+          }
+          .content-shell {
+            width: min(100%, calc(100% - 20px));
+            padding-top: 28px;
+            gap: 22px;
+          }
+          .timeline-row {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 4px;
+          }
+          .footer-links {
+            flex-wrap: wrap;
             justify-content: center;
           }
+        }
+        @media (max-width: 768px) {
           .hero h1 {
             font-size: 32px !important;
           }
+          .hero {
+            padding: 60px 20px !important;
+          }
+          .section-panel {
+            padding: 22px 18px;
+            border-radius: 20px;
+          }
           .grid-container {
             grid-template-columns: 1fr !important;
+            gap: 18px !important;
+          }
+          .nav-link {
+            font-size: 13px;
+          }
+          .research-frame {
+            height: 260px;
           }
         }
       `}</style>
@@ -165,13 +297,15 @@ export default function PortfolioClient() {
         display: 'flex', 
         justifyContent: 'space-between', 
         alignItems: 'center', 
-        backgroundColor: '#000', 
+        backgroundColor: 'rgba(8, 10, 14, 0.88)', 
         color: '#fff', 
         padding: '16px 32px',
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        boxShadow: '0 12px 28px rgba(0,0,0,0.12)',
+        backdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div>
           <span style={{ fontSize: '20px', fontWeight: 300, color: '#f0f0f0', letterSpacing: '0.5px' }}>Animesh</span>
@@ -187,29 +321,20 @@ export default function PortfolioClient() {
             </button>
           ))}
           {/* Search Box */}
-          <div style={{ position: 'relative' }}>
+          <div className="nav-search" style={{ position: 'relative' }}>
             <svg style={{ position: 'absolute', left: '8px', top: '50%', transform: 'translateY(-50%)', stroke: '#888' }} width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="M21 21l-4.3-4.3"></path>
             </svg>
             <input 
+              className="nav-search-input"
               type="text" 
               placeholder="Search..." 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                backgroundColor: '#1a1a1a',
-                border: '1px solid #333',
-                borderRadius: '16px',
-                padding: '4px 8px 4px 28px',
-                color: '#fff',
-                fontSize: '13px',
-                width: '120px',
-                outline: 'none',
-                transition: 'width 0.2s, border-color 0.2s'
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                requestAnimationFrame(() => scrollPortfolioToTop('auto'));
               }}
-              onFocus={(e) => { e.currentTarget.style.width = '160px'; e.currentTarget.style.borderColor = '#555'; }}
-              onBlur={(e) => { if (!searchQuery) { e.currentTarget.style.width = '120px'; e.currentTarget.style.borderColor = '#333'; } }}
             />
           </div>
         </div>
@@ -218,24 +343,29 @@ export default function PortfolioClient() {
       {/* Hero Banner (Always partially visible or only on 'home'?) Let's make it only on 'home' or always visible but smaller for other tabs */}
       {matchQuery('home') && (
         <header className="hero" style={{ 
-          backgroundColor: '#277093', 
+          background: 'linear-gradient(135deg, #2b6e96 0%, #4e83aa 50%, #6b9fc4 100%)',
           color: '#fff', 
           textAlign: 'center', 
           padding: '80px 20px',
-          boxShadow: 'inset 0 -10px 20px auto'
+          boxShadow: 'inset 0 -20px 50px rgba(5, 27, 41, 0.14)'
         }}>
-          <h1 style={{ fontSize: '48px', fontWeight: 300, margin: 0, letterSpacing: '0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Animesh Mishra</h1>
-          <p style={{ marginTop: '16px', fontSize: '18px', color: '#e0f0f5', fontWeight: 300 }}>
-            Delhi, India | am847@snu.edu.in
-          </p>
+          <div className="hero-inner">
+            <h1 style={{ fontSize: '48px', fontWeight: 300, margin: 0, letterSpacing: '0.02em', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Animesh Mishra</h1>
+            <p style={{ margin: '16px auto 0', fontSize: '18px', color: '#e0f0f5', fontWeight: 300, maxWidth: '720px' }}>
+              Software, research, and systems work across ML, infrastructure, and product engineering.
+            </p>
+            <p style={{ marginTop: '12px', fontSize: '16px', color: '#f1f8fb', fontWeight: 400 }}>
+              Delhi, India | am847@snu.edu.in
+            </p>
+          </div>
         </header>
       )}
 
       {/* Main Content Area */}
-      <main style={{ maxWidth: '900px', margin: '0 auto', padding: '60px 20px', lineHeight: 1.8, fontSize: '16px', color: '#333' }}>
+      <main className="content-shell" style={{ lineHeight: 1.8, fontSize: '16px', color: '#333' }}>
         
         {searchQuery && (
-          <div style={{ marginBottom: '40px', padding: '16px', backgroundColor: '#f9f9f9', borderRadius: '8px', borderLeft: '4px solid #277093' }}>
+          <div style={{ padding: '16px 18px', backgroundColor: '#f9f9f9', borderRadius: '14px', border: '1px solid #e2edf3', borderLeft: '4px solid #277093' }}>
             <h2 style={{ fontSize: '18px', margin: 0, fontWeight: 500, color: '#444' }}>
               {hasResults ? `Search Results for "${searchQuery}"` : `No results found for "${searchQuery}"`}
             </h2>
@@ -243,7 +373,7 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('home') && (
-          <section id="contact" style={{ marginBottom: '60px', textAlign: 'center' }}>
+          <section id="contact" className="section-panel" style={{ marginBottom: '60px', textAlign: 'center' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Welcome</h2>
             <p style={{ maxWidth: '600px', margin: '0 auto' }}>
               Hi, I&apos;m Animesh! Click on the navigation tabs above to explore my background, experience, research, and projects in a distinct sub-view without scrolling endlessly. 
@@ -252,7 +382,7 @@ export default function PortfolioClient() {
               I am always open to interesting projects, collaborations, and opportunities. You can reach out to me directly at: <br/>
               <a href="mailto:am847@snu.edu.in" className="custom-anchor" style={{ fontWeight: 600, fontSize: '18px', marginTop: '12px', display: 'inline-block' }}>am847@snu.edu.in</a>
             </div>
-            <div style={{ marginTop: '24px', display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <div className="contact-links" style={{ marginTop: '24px' }}>
               <a href="https://linkedin.com/in/animeshmishra0" target="_blank" rel="noopener noreferrer" className="custom-anchor">LinkedIn Profile</a>
               <a href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer" className="custom-anchor">GitHub Account</a>
             </div>
@@ -260,25 +390,25 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('about') && (
-          <section id="about">
+          <section id="about" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Education</h2>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+            <ul className="section-list">
               <li style={{ marginBottom: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>B.Tech in Computer Science and Engineering</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>Expected 2026</span>
                 </div>
                 <p style={{ margin: 0, color: '#444' }}>Shiv Nadar Institution of Eminence &bull; CGPA: 7.34</p>
               </li>
               <li style={{ marginBottom: '32px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Class XII (ISC)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2022</span>
                 </div>
                 <p style={{ margin: 0, color: '#444' }}>City Montessori School &bull; 91.25%</p>
               </li>
               <li>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Class X (ICSE)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2020</span>
                 </div>
@@ -289,11 +419,11 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('experience') && (
-          <section id="experience">
+          <section id="experience" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Experience</h2>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+            <ul className="section-list">
               <li style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Student Researcher (Part-time)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>May 2025 – Sep 2025</span>
                 </div>
@@ -306,7 +436,7 @@ export default function PortfolioClient() {
               </li>
               
               <li style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Quant Research Analyst Intern</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>Jun 2025 – Aug 2025</span>
                 </div>
@@ -318,7 +448,7 @@ export default function PortfolioClient() {
               </li>
 
               <li style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Intern (DCT-R&D Department)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>Sep 2024 – Dec 2024</span>
                 </div>
@@ -331,7 +461,7 @@ export default function PortfolioClient() {
               </li>
 
               <li>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong>Research Intern (Institute for Systems Studies and Analyses)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>May 2024 – Jul 2024</span>
                 </div>
@@ -346,12 +476,12 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('research') && (
-          <section id="research">
+          <section id="research" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Research &amp; Publications</h2>
-            <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
+            <ul className="section-list">
               
               <li style={{ marginBottom: '48px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong style={{ fontSize: '18px' }}>Spectral Sentinel: Scalable Byzantine-Robust Decentralized Federated Learning via Sketched Random Matrix Theory on Blockchain</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2025</span>
                 </div>
@@ -362,18 +492,18 @@ export default function PortfolioClient() {
                 </ul>
                 <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #eaeaea', background: '#fafafa' }}>
                   <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderBottom: '1px solid #eaeaea', fontSize: '14px', fontWeight: 600 }}>
-                    <a href="https://arxiv.org/abs/2512.12617v1" target="_blank" rel="noopener noreferrer" className="custom-anchor">arXiv:2512.12617v1</a> &rarr; Interactive Document
+                    <a href="https://arxiv.org/abs/2512.12617v1" target="_blank" rel="noopener noreferrer" className="custom-anchor">arXiv:2512.12617v1</a>
                   </div>
                   <iframe 
                     src="https://arxiv.org/html/2512.12617v1" 
-                    style={{ width: '100%', height: '400px', border: 'none' }}
+                    className="research-frame"
                     title="arXiv Preprint"
                   ></iframe>
                 </div>
               </li>
 
               <li style={{ marginBottom: '48px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong style={{ fontSize: '18px' }}>Reliability Analysis of Non-Bonded/Re-usable PZT Sensors for EMI-based SHM</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2024</span>
                 </div>
@@ -391,7 +521,7 @@ export default function PortfolioClient() {
               </li>
 
               <li style={{ marginBottom: '40px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong style={{ fontSize: '18px' }}>A Multi-Agent Hyperbolic Framework for Legal Reasoning and Retrieval</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2025</span>
                 </div>
@@ -403,7 +533,7 @@ export default function PortfolioClient() {
               </li>
 
               <li>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
                   <strong style={{ fontSize: '18px' }}>Neuro-Scheduling for Graph Segmentation (NSGS)</strong>
                   <span style={{ fontSize: '14px', color: '#666' }}>2024</span>
                 </div>
@@ -419,7 +549,7 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('projects') && (
-          <section id="projects">
+          <section id="projects" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Other Projects</h2>
             <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               
@@ -449,7 +579,7 @@ export default function PortfolioClient() {
         )}
 
         {matchQuery('skills') && (
-          <section id="skills">
+          <section id="skills" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '24px' }}>Technical Skills &amp; Achievements</h2>
             
             <h3 style={{ fontSize: '18px', margin: '0 0 12px 0', color: '#111' }}>Technical Skills</h3>
@@ -479,12 +609,6 @@ export default function PortfolioClient() {
         )}
 
         <hr style={{ border: 0, borderTop: '1px solid #e0e0e0', margin: '40px 0' }} />
-        
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <Link href="/" className="custom-anchor" style={{ fontSize: '15px', fontWeight: 600, padding: '12px 24px', backgroundColor: '#f0f5f8', borderRadius: '30px', display: 'inline-block' }}>
-            &larr; Return to macOS Terminal
-          </Link>
-        </div>
       </main>
 
       {/* Footer */}
@@ -498,7 +622,7 @@ export default function PortfolioClient() {
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
           <p style={{ margin: 0 }}>&copy; {new Date().getFullYear()} Animesh Mishra. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
+          <div className="footer-links">
             <a href="#" className="footer-link">Imprint</a>
             <span style={{ color: '#444' }}>|</span>
             <a href="#" className="footer-link">Privacy Policy</a>
