@@ -34,7 +34,7 @@ const XtermTerminal = dynamic(() => import('./XtermTerminal'), {
 function FinderDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick()}
       title="Finder"
       aria-label="Finder"
       className="dock-item"
@@ -65,7 +65,7 @@ function FinderDockIcon({ onClick, isActive }: { onClick: () => void, isActive?:
 function TerminalDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick()}
       title="Terminal"
       aria-label="Terminal"
       className="dock-item"
@@ -96,7 +96,7 @@ function TerminalDockIcon({ onClick, isActive }: { onClick: () => void, isActive
 function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick()}
       title="Apple Music"
       aria-label="Apple Music"
       className="dock-item"
@@ -127,7 +127,7 @@ function AppleMusicDockIcon({ onClick, isActive }: { onClick: () => void, isActi
 function PreviewDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick()}
       title="resume.pdf"
       aria-label="resume.pdf"
       className="dock-item"
@@ -158,7 +158,7 @@ function PreviewDockIcon({ onClick, isActive }: { onClick: () => void, isActive?
 function SafariDockIcon({ onClick, isActive }: { onClick: () => void, isActive?: boolean }) {
   return (
     <button
-      onClick={onClick}
+      onClick={() => onClick()}
       title="Portfolio Site"
       aria-label="Portfolio Site"
       className="dock-item"
@@ -293,10 +293,10 @@ export default function TerminalPage() {
     bringToFront('finder')
   }, [bringToFront])
 
-  const handleOpenSafari = useCallback((url = '/portfolio') => {
+  const handleOpenSafari = useCallback((url?: string) => {
     setIsSafariOpen(true)
     setIsSafariMinimized(false)
-    setSafariRequest(prev => ({ url, nonce: prev.nonce + 1 }))
+    setSafariRequest(prev => ({ url: typeof url === 'string' && url ? url : '/portfolio', nonce: prev.nonce + 1 }))
     bringToFront('safari')
   }, [bringToFront])
   const handleCloseSafari = useCallback(() => setIsSafariOpen(false), [])
@@ -306,10 +306,10 @@ export default function TerminalPage() {
     bringToFront('safari')
   }, [bringToFront])
 
-  const handleOpenPreview = useCallback((url = '/resume.pdf') => {
+  const handleOpenPreview = useCallback((url?: string) => {
     setIsPreviewOpen(true)
     setIsPreviewMinimized(false)
-    setPreviewRequest(prev => ({ url, nonce: prev.nonce + 1 }))
+    setPreviewRequest(prev => ({ url: typeof url === 'string' && url ? url : '/resume.pdf', nonce: prev.nonce + 1 }))
     bringToFront('preview')
   }, [bringToFront])
   const handleClosePreview = useCallback(() => setIsPreviewOpen(false), [])

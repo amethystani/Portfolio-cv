@@ -23,6 +23,7 @@ export default function PreviewApp({
   requestedUrl = '/resume.pdf',
   navigationNonce = 0,
 }: Props) {
+  const safeRequestedUrl = typeof requestedUrl === 'string' && requestedUrl ? requestedUrl : '/resume.pdf'
   const [zoom, setZoom] = useState(100)
   const [page, setPage] = useState(1)
   const [rotation, setRotation] = useState(0)
@@ -32,9 +33,9 @@ export default function PreviewApp({
     setZoom(100)
     setPage(1)
     setRotation(0)
-  }, [navigationNonce, requestedUrl])
+  }, [navigationNonce, safeRequestedUrl])
 
-  const pdfUrl = useMemo(() => buildPdfUrl(requestedUrl, page, zoom), [page, requestedUrl, zoom])
+  const pdfUrl = useMemo(() => buildPdfUrl(safeRequestedUrl, page, zoom), [page, safeRequestedUrl, zoom])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#ebebeb', borderRadius: '0 0 10px 10px', overflow: 'hidden' }}>
@@ -110,13 +111,13 @@ export default function PreviewApp({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            onClick={() => window.open(requestedUrl, '_blank', 'noopener,noreferrer')}
+            onClick={() => window.open(safeRequestedUrl, '_blank', 'noopener,noreferrer')}
             style={{ background: '#007aff', color: '#fff', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', fontWeight: 500, boxShadow: '0 1px 2px rgba(0,0,0,0.1)' }}
           >
             Open Original PDF
           </button>
           <a
-            href={requestedUrl}
+            href={safeRequestedUrl}
             download
             style={{ background: '#fff', color: '#333', border: '1px solid #d1d1d6', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', fontWeight: 500, textDecoration: 'none' }}
           >
