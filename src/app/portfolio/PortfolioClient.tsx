@@ -10,12 +10,14 @@ const navLinks = [
   { name: 'Skills', id: 'skills' }
 ];
 
+const CLERKTREE_SNAPSHOT_URL = 'https://image.thum.io/get/width/1400/crop/2200/https://clerktree.com';
+
 const contentIndex = {
   home: "Welcome Hi, I'm Animesh! Click on the navigation tabs above to explore my background, experience, research, and projects in a distinct sub-view without scrolling endlessly. I am always open to interesting projects, collaborations, and opportunities. You can reach out to me directly at: am847@snu.edu.in LinkedIn Profile GitHub Account Animesh Mishra Delhi, India",
   about: "Education B.Tech in Computer Science and Engineering Expected 2026 Shiv Nadar Institution of Eminence CGPA: 7.34 Class XII (ISC) 2022 City Montessori School 91.25% Class X (ICSE) 2020 City Montessori School 94.00%",
   experience: "Experience Student Researcher (Part-time) May 2025 – Sep 2025 Complexity Science Hub Vienna, Austria (Remote) Engineered a reproducible Python ETL to ingest and enrich physics-literature data from OpenAlex and APS APIs. Built joined research-graph tables across authors, institutions, fields, and time. Added demographic annotations for downstream bias slicing. Built a batched LLM evaluation harness to run parallel factuality and validity audits across 3 open-source models (Gemma 2 9B, LLaMA 3, Mixtral 8x7B). Standardized prompts and outputs to enable apples-to-apples comparisons. Implemented Evaluator and Auditor modules to compute error-rate and consistency metrics and graph-based similarity features from co-authorship networks. Quant Research Analyst Intern Jun 2025 – Aug 2025 ConsultAdd Services Pvt. Ltd. Pune, Maharashtra Designed and deployed high-volume data scraping pipelines for market intelligence, extracting over 500K records on unpartnered staffing firms. Constructed and backtested time-series predictive models (Prophet, XGBoost) to forecast staffing demand and role saturation over a 12-month horizon. Intern (DCT-R&D Department) Sep 2024 – Dec 2024 Exicom Group Developed Time-Series Predictive Models and an AI Assistant (EVAI) to forecast Electric Vehicle (EV) charging demand. Engineered a comprehensive Geospatial Feature Engineering Pipeline using OpenStreetMap, Folium, and GeoPandas to analyze charger placement optimization. Implemented an efficient MLOps workflow, including LangChain integration and containerized deployment via Ollama. Research Intern (Institute for Systems Studies and Analyses) May 2024 – Jul 2024 Defence Research & Development Organisation Designed and implemented a custom Genetic Algorithm (GA) with specialized fitness functions and mutation operators to solve a high-dimensional, constrained Vehicle Routing Problem (VRP). Used DBSCAN/K-Means clustering to segment complex mobility patterns, generating geospatial heatmap visualizations.",
   research: "Research & Publications Spectral Sentinel: Scalable Byzantine-Robust Decentralized Federated Learning via Sketched Random Matrix Theory on Blockchain 2025 Preprint / Systems + ML Designed an RMT-driven Byzantine detector by tracking gradient covariance eigenspectra against the Marchenko–Pastur law (KS test + tail anomalies), and scaled detection via Frequent Directions sketching with O(k²) memory for k<d. Proved (ε, δ)-Byzantine resilience with minimax-optimal convergence O(σf/√T + f²/T), and validated on Polygon testnet/mainnet. Reliability Analysis of Non-Bonded/Re-usable PZT Sensors for EMI-based SHM 2024 Elsevier Measurement (In Review) / Structural Health Monitoring Built a reliability/measurement-system framework for electromechanical impedance (EMI) signals across surface-bonded vs clamp-based PZT attachments. Quantified clamp-tightening regimes (free-free/open/partial/fully bonded), showing fully bonded clamp achieves ICC = 0.993 meeting AIAG acceptance. A Multi-Agent Hyperbolic Framework for Legal Reasoning and Retrieval 2025 Research Paper / Legal AI, Geometric Deep Learning Built Hyperbolic Legal Networks (HGCN) by embedding 49,633 cases in a Poincaré ball to encode court authority radially, achieving 0.92 Precision@5 on legal retrieval. Designed a game-theoretic multi-agent pipeline with Nash-style coordination to resolve contradictory citations, and integrated adversarial hybrid retrieval. Neuro-Scheduling for Graph Segmentation (NSGS) 2024 CVPR '26 Submission / Neuromorphic Computing Designed an event-driven neuromorphic graph segmentation (NSGS) framework that models image regions as asynchronous computational units, facilitating inherent parallelism and reducing redundant operations by 38–62%. Achieved a 17.5x speedup and superior accuracy (65.8% avg. mIoU) over state-of-the-art models (YOLOv8m-seg).",
-  projects: "Other Projects ClerkTree AI-powered workflow automation platform for claims and back-office operations (clerktree.com). Featured as a live embedded project preview, with enterprise workflow automation, claims orchestration, and reduced turnaround time messaging from the public site. Architected an event-driven multi-tenant system on AWS EKS with Apache Kafka and FastAPI. Engineered agentic AI workflows via fine-tuned Mixtral-8x7B and Gemini Pro. Tiny Recursive Models (TRM) Based on arXiv:2510.04871. Re-implemented the Recursive Latent State architecture in PyTorch to handle complex reasoning tasks without increasing model size. Enhanced base implementation by integrating FlashAttention-2 and custom Triton kernels to fuse operations. NewSky Designed a pipeline to ingest and cluster topics from Bluesky API, synthesizing short conversational summaries. Built an automated daily digest generator with category grouping and abstractive summarization. Deployed via Flutter, PostgreSQL, Docker, and Kubernetes.",
+  projects: "Other Projects ClerkTree AI-powered workflow automation platform for claims and back-office operations (clerktree.com). Shown with a centered scrollable site snapshot because the live site blocks third-party iframe embedding. Architected an event-driven multi-tenant system on AWS EKS with Apache Kafka and FastAPI. Engineered agentic AI workflows via fine-tuned Mixtral-8x7B and Gemini Pro. Tiny Recursive Models (TRM) Based on arXiv:2510.04871. Re-implemented the Recursive Latent State architecture in PyTorch to handle complex reasoning tasks without increasing model size. Enhanced base implementation by integrating FlashAttention-2 and custom Triton kernels to fuse operations. NewSky Designed a pipeline to ingest and cluster topics from Bluesky API, synthesizing short conversational summaries. Built an automated daily digest generator with category grouping and abstractive summarization. Deployed via Flutter, PostgreSQL, Docker, and Kubernetes.",
   skills: "Technical Skills & Achievements Technical Skills Languages: Python, Java, SQL, LaTeX Machine Learning: PyTorch, Scikit-learn, LangChain, Transformers, Gymnasium, Ollama Development: FastAPI, Docker, Kubernetes, AWS, Apache Kafka, Redis, Flutter, Git Data Science: Pandas, NumPy, GeoPandas, Matplotlib, NetworkX Scholastic Achievements Selected among 200 participants for the Bitcoin Talents Program by Frankfurt School Blockchain Center (Jan '25) Selected from over 16,000 global applicants for Harvard Aspire Institute Leadership Program (Nov '24) Achieved a score of 102 in the core test of Test für Ausländische Studierende (TestAS) (Apr '23) Selected for the Harvard College Project for Asian and International Relations (HPAIR) (Aug '23) Awarded Certificate of Appreciation by Defense Minister of India for board exam performance (2020, 2022) Key Courses Computer Science: Data Structures, Design & Analysis of Algorithms, Artificial Intelligence, Reinforcement Learning, Digital Image Processing, Robotics, Social & Information Networks, Parallel & Concurrent Prog., Operating Systems, Database Systems, Computer Networks, Distributed Systems Mathematics: Applied Linear Algebra, Probability & Statistics, Discrete Math, Theory of Computation, Mathematical Methods I"
 };
 
@@ -173,19 +175,6 @@ export default function PortfolioClient() {
           box-shadow: 0 16px 30px rgba(0,0,0,0.07);
           border-color: #d9e5ec;
         }
-        .project-kicker {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 10px;
-          border-radius: 999px;
-          background: rgba(39, 112, 147, 0.1);
-          color: #277093;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.04em;
-          text-transform: uppercase;
-        }
         .project-meta {
           display: flex;
           flex-wrap: wrap;
@@ -236,6 +225,32 @@ export default function PortfolioClient() {
           height: clamp(320px, 42vw, 430px);
           border: none;
           background: #fff;
+        }
+        .project-embed-scroll {
+          height: clamp(340px, 44vw, 460px);
+          overflow: auto;
+          background:
+            radial-gradient(circle at top, rgba(39, 112, 147, 0.08), transparent 32%),
+            linear-gradient(180deg, #eff4f7 0%, #ffffff 100%);
+          display: flex;
+          justify-content: center;
+          padding: 18px;
+        }
+        .project-embed-image {
+          width: min(100%, 760px);
+          height: auto;
+          display: block;
+          border-radius: 16px;
+          background: #fff;
+          box-shadow: 0 18px 42px rgba(15, 23, 42, 0.14);
+        }
+        .project-embed-note {
+          padding: 10px 14px 14px;
+          font-size: 12px;
+          line-height: 1.55;
+          color: #5a6770;
+          border-top: 1px solid #e5edf2;
+          background: rgba(255,255,255,0.92);
         }
         .content-shell {
           width: min(1100px, calc(100% - 32px));
@@ -624,7 +639,6 @@ export default function PortfolioClient() {
             <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
 
               <div className="project-card project-card-wide">
-                <span className="project-kicker">Featured Product Build</span>
                 <h3 style={{ fontSize: '18px', margin: '0 0 12px 0', color: '#111' }}>ClerkTree</h3>
                 <p style={{ fontSize: '14px', margin: 0, color: '#555', lineHeight: 1.7 }}>
                   ClerkTree presents itself publicly as an AI-powered workflow automation platform for claims and back-office operations. The live site highlights intelligent automation for enterprise operations and a faster end-to-end turnaround.
@@ -650,12 +664,18 @@ export default function PortfolioClient() {
                         Open live site
                       </a>
                     </div>
-                    <iframe
-                      src="https://clerktree.com"
-                      title="ClerkTree website preview"
-                      className="project-embed-frame"
-                      loading="lazy"
-                    ></iframe>
+                    <div className="project-embed-scroll">
+                      <img
+                        src={CLERKTREE_SNAPSHOT_URL}
+                        alt="ClerkTree website snapshot"
+                        className="project-embed-image"
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="project-embed-note">
+                      Scroll inside the preview to inspect the site snapshot. The live page itself cannot render in a third-party iframe because ClerkTree sends <code>X-Frame-Options: SAMEORIGIN</code>.
+                    </div>
                   </div>
                 </div>
               </div>
