@@ -731,62 +731,66 @@ export default function PortfolioClient() {
         {matchQuery('projects') && (
           <section id="projects" className="section-panel">
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: '#111', borderBottom: '2px solid #277093', paddingBottom: '8px', display: 'inline-block', marginBottom: '6px' }}>Projects</h2>
-            <p style={{ margin: '0 0 28px 0', color: '#666', fontSize: '14px' }}>Research prototypes, internship systems, and side projects &mdash; built end-to-end.</p>
-            <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <p style={{ margin: '0 0 36px 0', color: '#666', fontSize: '14px' }}>Research prototypes, internship systems, and side projects &mdash; built end-to-end.</p>
+            <ul className="section-list">
 
-              <div className="project-card project-card-wide">
-                <h3 style={{ fontSize: '18px', margin: '0 0 12px 0', color: '#111' }}>ClerkTree</h3>
-                <p style={{ fontSize: '14px', margin: 0, color: '#555', lineHeight: 1.7 }}>
-                  ClerkTree presents itself publicly as an AI-powered workflow automation platform for claims and back-office operations. The live site highlights intelligent automation for enterprise operations and a faster end-to-end turnaround.
-                </p>
-                <div className="project-meta">
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge startup">Startup</span>
+                    <span className="project-venue-badge">clerktree.com</span>
+                  </div>
+                  <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; Live site</a>
+                </div>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '12px' }}>ClerkTree</strong>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Built as an enterprise orchestration layer for claims and back-office workflows, matching the positioning currently shown on <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="custom-anchor">clerktree.com</a>.</li>
+                  <li>Architected the underlying platform as an event-driven, multi-tenant system on AWS EKS with Apache Kafka and FastAPI for scalable workflow routing and operational automation.</li>
+                  <li>Integrated agentic AI pipelines with fine-tuned Mixtral-8x7B and Gemini Pro to automate decision support, document handling, and complex enterprise task flows.</li>
+                </ul>
+                <div className="project-meta" style={{ marginBottom: '20px' }}>
                   <span className="project-pill">AI Workflow Automation</span>
                   <span className="project-pill">Claims Operations</span>
-                  <span className="project-pill">Back-Office Systems</span>
-                  <span className="project-pill">Live Site Embed</span>
+                  <span className="project-pill">AWS EKS / Kafka</span>
+                  <span className="project-pill">Mixtral-8x7B</span>
+                  <span className="project-pill">FastAPI</span>
                 </div>
-                <div className="project-feature-layout">
-                  <div>
-                    <ul className="project-points">
-                      <li>Built as an enterprise orchestration layer for claims and back-office workflows, matching the positioning currently shown on <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="custom-anchor">clerktree.com</a>.</li>
-                      <li>Architected the underlying platform as an event-driven, multi-tenant system on AWS EKS with Apache Kafka and FastAPI for scalable workflow routing and operational automation.</li>
-                      <li>Integrated agentic AI pipelines with fine-tuned Mixtral-8x7B and Gemini Pro to automate decision support, document handling, and complex enterprise task flows.</li>
-                    </ul>
+                <div className="project-embed-shell">
+                  <div className="project-embed-header">
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#3c5561' }}>clerktree.com</span>
+                    <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="custom-anchor" style={{ fontSize: '13px' }}>Open live site</a>
                   </div>
-                  <div className="project-embed-shell">
-                    <div className="project-embed-header">
-                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#3c5561' }}>clerktree.com</span>
-                      <a href="https://clerktree.com" target="_blank" rel="noopener noreferrer" className="custom-anchor" style={{ fontSize: '13px' }}>
-                        Open live site
-                      </a>
-                    </div>
-                    <div className="project-embed-scroll">
-                      <img
-                        src={CLERKTREE_SNAPSHOT_URL}
-                        alt="ClerkTree website snapshot"
-                        className="project-embed-image"
-                        loading="lazy"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div className="project-embed-note">
-                      Scroll inside the preview to inspect the site snapshot. The live page itself cannot render in a third-party iframe because ClerkTree sends <code>X-Frame-Options: SAMEORIGIN</code>.
-                    </div>
+                  <div className="project-embed-scroll">
+                    <img src={CLERKTREE_SNAPSHOT_URL} alt="ClerkTree website snapshot" className="project-embed-image" loading="lazy" referrerPolicy="no-referrer" />
+                  </div>
+                  <div className="project-embed-note">
+                    Scroll inside the preview to inspect the site snapshot. The live page cannot render in a third-party iframe because ClerkTree sends <code>X-Frame-Options: SAMEORIGIN</code>.
                   </div>
                 </div>
-              </div>
+              </li>
 
-              <div className="project-card type-research">
-                <div className="project-card-header">
-                  <span className="project-type-badge research">Research</span>
-                  <span className="project-venue-badge">CVPR &apos;26 Submission</span>
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge research">Research</span>
+                    <span className="project-venue-badge">CVPR &apos;26 Submission</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <a href="https://github.com/amethystani/NSGSAlgorithm" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>Neuro-Scheduling for Graph Segmentation (NSGS)</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '8px' }}>Neuro-Scheduling for Graph Segmentation (NSGS)</strong>
                 <div className="project-metric-row">
                   <span className="project-metric-chip">60.8&times; speedup</span>
                   <span className="project-metric-chip">65.8% mIoU</span>
                   <span className="project-metric-chip">4.4&times; less energy</span>
                 </div>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Designed an event-driven neuromorphic framework where image patches act as asynchronous computational units that fire when local activations exceed adaptive thresholds &mdash; eliminating the redundant computation in standard frame-by-frame inference, cutting operations by 38&ndash;62%.</li>
+                  <li>Built BIPS-PKD (Backbone-Integrated Partial Split + Progressive Knowledge Distillation): splits any segmentation backbone at a <em>learned</em> intermediate layer and replaces the heavy transformer tail with a distilled student head at inference &mdash; model-family-agnostic, no architecture surgery required.</li>
+                  <li>Benchmarked across 9 model families (EfficientSAM, SegFormer, Mask2Former, SAM2, PIDNet, YOLOv8/v12, DINOv3, MobileSAM); top result: EfficientSAM small at 60.8&times; speedup (~16 FPS on a 4-thread CPU, no GPU).</li>
+                  <li>Ships as a fully offline Android app (~500 MB bundled ONNX models) backed by a C++ lock-free SpikeQueue runtime with thermal-aware scheduling.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">Neuromorphic Computing</span>
                   <span className="project-pill">Image Segmentation</span>
@@ -794,28 +798,31 @@ export default function PortfolioClient() {
                   <span className="project-pill">ONNX / PyTorch</span>
                   <span className="project-pill">Android</span>
                 </div>
-                <ul className="project-points">
-                  <li>Designed an event-driven neuromorphic framework where image patches act as asynchronous computational units that fire when local activations exceed adaptive thresholds &mdash; eliminating the redundant computation in standard frame-by-frame inference, cutting operations by 38&ndash;62%.</li>
-                  <li>Built BIPS-PKD (Backbone-Integrated Partial Split + Progressive Knowledge Distillation): splits any segmentation backbone at a <em>learned</em> intermediate layer and replaces the heavy transformer tail with a distilled student head at inference &mdash; model-family-agnostic, no architecture surgery required.</li>
-                  <li>Benchmarked across 9 model families (EfficientSAM, SegFormer, Mask2Former, SAM2, PIDNet, YOLOv8/v12, DINOv3, MobileSAM); top result: EfficientSAM small at 60.8&times; speedup (~16 FPS on a 4-thread CPU, no GPU).</li>
-                  <li>Ships as a fully offline Android app (~500 MB bundled ONNX models) backed by a C++ lock-free SpikeQueue runtime with thermal-aware scheduling.</li>
-                </ul>
-                <div className="project-links-row">
-                  <a href="https://github.com/amethystani/NSGSAlgorithm" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
-                </div>
-              </div>
+              </li>
 
-              <div className="project-card type-research">
-                <div className="project-card-header">
-                  <span className="project-type-badge research">Research</span>
-                  <span className="project-venue-badge">arXiv:2512.12617</span>
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge research">Research</span>
+                    <span className="project-venue-badge">arXiv:2512.12617</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <a href="https://github.com/amethystani/blockchain_enabled_federated_learning-main" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
+                    <a href="https://arxiv.org/abs/2512.12617" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; arXiv</a>
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>Spectral Sentinel &mdash; Byzantine-Robust Federated Learning</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '8px' }}>Spectral Sentinel &mdash; Byzantine-Robust Federated Learning</strong>
                 <div className="project-metric-row">
                   <span className="project-metric-chip">78.4% accuracy</span>
                   <span className="project-metric-chip">38% Byzantine tolerance</span>
                   <span className="project-metric-chip">1,034&times; memory reduction</span>
                 </div>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Designed the first Byzantine-robust federated learning system grounded in Random Matrix Theory: detects poisoned gradients by comparing gradient covariance eigenspectra against the Marchenko&ndash;Pastur law via KS test + tail anomaly detection &mdash; a theoretical guarantee, not a heuristic filter.</li>
+                  <li>Proved a phase transition: detection is guaranteed when &sigma;&sup2;f&sup2; &lt; 0.25; extended to &sigma;&sup2;f&sup2; &lt; 0.35 with &epsilon;-DP (&epsilon;=8). Certified 38% Byzantine tolerance vs. 15% for CRFL/ByzShield baselines.</li>
+                  <li>Scaled to billion-parameter models via Frequent Directions sketching at O(k&sup2;) memory &mdash; 1,034&times; reduction at 1.5B params (9 TB &rarr; 8.7 GB). Layer-wise decomposition preserves 94%+ detection at 15&times; lower memory.</li>
+                  <li>Validated across 144 attack&ndash;aggregator settings (12 attacks &times; 12 configs); wins all 12 attack types at 78.4% mean accuracy vs. 48&ndash;63% baselines. Deployed and validated on Polygon testnet/mainnet.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">Random Matrix Theory</span>
                   <span className="project-pill">Byzantine-Robust FL</span>
@@ -823,29 +830,28 @@ export default function PortfolioClient() {
                   <span className="project-pill">Blockchain / Polygon</span>
                   <span className="project-pill">Federated Learning</span>
                 </div>
-                <ul className="project-points">
-                  <li>Designed the first Byzantine-robust federated learning system grounded in Random Matrix Theory: detects poisoned gradients by comparing gradient covariance eigenspectra against the Marchenko&ndash;Pastur law via KS test + tail anomaly detection &mdash; a theoretical guarantee, not a heuristic filter.</li>
-                  <li>Proved a phase transition: detection is guaranteed when &sigma;&sup2;f&sup2; &lt; 0.25; extended to &sigma;&sup2;f&sup2; &lt; 0.35 with &epsilon;-DP (&epsilon;=8). Certified 38% Byzantine tolerance vs. 15% for CRFL/ByzShield baselines.</li>
-                  <li>Scaled to billion-parameter models via Frequent Directions sketching at O(k&sup2;) memory &mdash; 1,034&times; reduction at 1.5B params (9 TB &rarr; 8.7 GB). Layer-wise decomposition preserves 94%+ detection at 15&times; lower memory.</li>
-                  <li>Validated across 144 attack&ndash;aggregator settings (12 attacks &times; 12 configs); wins all 12 attack types at 78.4% mean accuracy vs. 48&ndash;63% baselines. Deployed and validated on Polygon testnet/mainnet.</li>
-                </ul>
-                <div className="project-links-row">
-                  <a href="https://github.com/amethystani/blockchain_enabled_federated_learning-main" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
-                  <a href="https://arxiv.org/abs/2512.12617" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; arXiv</a>
-                </div>
-              </div>
+              </li>
 
-              <div className="project-card type-internship">
-                <div className="project-card-header">
-                  <span className="project-type-badge internship">Internship</span>
-                  <span className="project-venue-badge">Exicom Group &middot; DCT-R&amp;D</span>
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge internship">Internship</span>
+                    <span className="project-venue-badge">Exicom Group &middot; DCT-R&amp;D</span>
+                  </div>
+                  <a href="https://github.com/amethystani/EVPredAI" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>EVPredAI &mdash; EV Charging Demand Forecasting &amp; Placement</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '8px' }}>EVPredAI &mdash; EV Charging Demand Forecasting &amp; Placement</strong>
                 <div className="project-metric-row">
                   <span className="project-metric-chip">85% user satisfaction</span>
                   <span className="project-metric-chip">10+ feature dims</span>
                   <span className="project-metric-chip">100+ concurrent queries</span>
                 </div>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Built a multi-modal ensemble for EV charging station placement: XGBoost with Bayesian HPO over 20+ geospatial/temporal features, SARIMA for seasonal demand forecasting, Moran&apos;s I/LISA spatial autocorrelation for hotspot detection, and MCDA weighted overlay scoring.</li>
+                  <li>Leveraged NeMo DataDesigner to orchestrate synthetic data generation pipelines for EV demand forecasting &mdash; defining task schemas, configuring generation workflows, and running quality-filtering and deduplication passes to produce curated fine-tuning corpora.</li>
+                  <li>Fine-tuned a BERT/RoBERTa chatbot on 15,000+ EV charging conversations and 5,000+ Exicom-specific technical interactions using LoRA, with FAISS vector retrieval and TAPAS for tabular question answering; deployed via Ollama for 100+ concurrent queries.</li>
+                  <li>Engineered geospatial feature pipeline using OpenStreetMap/OSMnx, GeoPandas, and Folium; implemented automated feedback loop achieving 85% user satisfaction.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">XGBoost + Bayesian HPO</span>
                   <span className="project-pill">SARIMA</span>
@@ -854,28 +860,27 @@ export default function PortfolioClient() {
                   <span className="project-pill">LangChain / Ollama</span>
                   <span className="project-pill">GeoPandas</span>
                 </div>
-                <ul className="project-points">
-                  <li>Built a multi-modal ensemble for EV charging station placement: XGBoost with Bayesian HPO over 20+ geospatial/temporal features, SARIMA for seasonal demand forecasting, Moran&apos;s I/LISA spatial autocorrelation for hotspot detection, and MCDA weighted overlay scoring.</li>
-                  <li>Leveraged NeMo DataDesigner to orchestrate synthetic data generation pipelines for EV demand forecasting &mdash; defining task schemas, configuring generation workflows, and running quality-filtering and deduplication passes to produce curated fine-tuning corpora.</li>
-                  <li>Fine-tuned a BERT/RoBERTa chatbot on 15,000+ EV charging conversations and 5,000+ Exicom-specific technical interactions using LoRA, with FAISS vector retrieval and TAPAS for tabular question answering; deployed via Ollama for 100+ concurrent queries.</li>
-                  <li>Engineered geospatial feature pipeline using OpenStreetMap/OSMnx, GeoPandas, and Folium; implemented automated feedback loop achieving 85% user satisfaction.</li>
-                </ul>
-                <div className="project-links-row">
-                  <a href="https://github.com/amethystani/EVPredAI" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
-                </div>
-              </div>
+              </li>
 
-              <div className="project-card type-research">
-                <div className="project-card-header">
-                  <span className="project-type-badge research">Research</span>
-                  <span className="project-venue-badge">2025</span>
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge research">Research</span>
+                    <span className="project-venue-badge">2025</span>
+                  </div>
+                  <a href="https://github.com/amethystani/legalnexus-backend" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>LegalNexus &mdash; Hyperbolic Multi-Agent Legal Reasoning</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '8px' }}>LegalNexus &mdash; Hyperbolic Multi-Agent Legal Reasoning</strong>
                 <div className="project-metric-row">
                   <span className="project-metric-chip">0.92 Precision@5</span>
                   <span className="project-metric-chip">49,633 cases</span>
                   <span className="project-metric-chip">94% conflict resolution</span>
                 </div>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Built Hyperbolic Legal Networks (HGCN) embedding 49,633 cases in a Poincar&eacute; ball with radial court-authority encoding &mdash; capturing the hierarchical structure of legal precedent that Euclidean embeddings flatten. Achieved 0.92 Precision@5 on legal case retrieval.</li>
+                  <li>Designed a game-theoretic multi-agent pipeline (Linker / Interpreter / Conflict agents) with Nash-style coordination for resolving contradictory citations; achieves 94% citation conflict resolution.</li>
+                  <li>Integrated adversarial hybrid retrieval combining dense vector search with sparse BM25 re-ranking for robustness against out-of-distribution legal queries.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">Hyperbolic Graph Networks</span>
                   <span className="project-pill">Poincar&eacute; Ball Embeddings</span>
@@ -883,22 +888,21 @@ export default function PortfolioClient() {
                   <span className="project-pill">Game Theory</span>
                   <span className="project-pill">Legal AI</span>
                 </div>
-                <ul className="project-points">
-                  <li>Built Hyperbolic Legal Networks (HGCN) embedding 49,633 cases in a Poincar&eacute; ball with radial court-authority encoding &mdash; capturing the hierarchical structure of legal precedent that Euclidean embeddings flatten. Achieved 0.92 Precision@5 on legal case retrieval.</li>
-                  <li>Designed a game-theoretic multi-agent pipeline (Linker / Interpreter / Conflict agents) with Nash-style coordination for resolving contradictory citations; achieves 94% citation conflict resolution.</li>
-                  <li>Integrated adversarial hybrid retrieval combining dense vector search with sparse BM25 re-ranking for robustness against out-of-distribution legal queries.</li>
-                </ul>
-                <div className="project-links-row">
-                  <a href="https://github.com/amethystani/legalnexus-backend" target="_blank" rel="noopener noreferrer" className="project-link-badge">&#8599; GitHub</a>
-                </div>
-              </div>
+              </li>
 
-              <div className="project-card type-research">
-                <div className="project-card-header">
-                  <span className="project-type-badge research">Research</span>
-                  <span className="project-venue-badge">arXiv:2510.04871</span>
+              <li style={{ marginBottom: '48px', paddingBottom: '48px', borderBottom: '1px solid #eaeaea' }}>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <span className="project-type-badge research">Research</span>
+                    <span className="project-venue-badge">arXiv:2510.04871</span>
+                  </div>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>Tiny Recursive Models (TRM)</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '12px' }}>Tiny Recursive Models (TRM)</strong>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Re-implemented the Recursive Latent State architecture from arXiv:2510.04871 in PyTorch; confirmed constant VRAM footprint regardless of reasoning depth &mdash; the core property the paper claims.</li>
+                  <li>Integrated FlashAttention-2 and custom Triton kernels to fuse element-wise operations inside the recurrence loop, reducing memory bandwidth pressure during deep reasoning chains.</li>
+                  <li>Ran pretraining mixture experiments informed by SmolLM and Nemotron data strategies: domain weighting ablations and quality-filter configurations, using FineWebEDU and FinePDFs as reference distributions.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">PyTorch</span>
                   <span className="project-pill">FlashAttention-2</span>
@@ -906,18 +910,18 @@ export default function PortfolioClient() {
                   <span className="project-pill">SmolLM / Nemotron</span>
                   <span className="project-pill">FineWebEDU</span>
                 </div>
-                <ul className="project-points">
-                  <li>Re-implemented the Recursive Latent State architecture from arXiv:2510.04871 in PyTorch; confirmed constant VRAM footprint regardless of reasoning depth &mdash; the core property the paper claims.</li>
-                  <li>Integrated FlashAttention-2 and custom Triton kernels to fuse element-wise operations inside the recurrence loop, reducing memory bandwidth pressure during deep reasoning chains.</li>
-                  <li>Ran pretraining mixture experiments informed by SmolLM and Nemotron data strategies: domain weighting ablations and quality-filter configurations, using FineWebEDU and FinePDFs as reference distributions.</li>
-                </ul>
-              </div>
+              </li>
 
-              <div className="project-card type-side">
-                <div className="project-card-header">
+              <li>
+                <div className="timeline-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
                   <span className="project-type-badge side-project">Project</span>
                 </div>
-                <h3 style={{ fontSize: '18px', margin: '0 0 8px 0', color: '#111' }}>NewSky</h3>
+                <strong style={{ fontSize: '18px', color: '#111', display: 'block', marginBottom: '12px' }}>NewSky</strong>
+                <ul style={{ margin: '0 0 16px 0', color: '#44515a', lineHeight: 1.7, paddingLeft: '18px' }}>
+                  <li>Designed a pipeline to ingest and cluster topics from the Bluesky API, applying embedding-based clustering to group semantically related posts before synthesis.</li>
+                  <li>Built an automated daily digest generator with category grouping and abstractive summarization &mdash; compressing high-volume social feeds into short conversational summaries.</li>
+                  <li>Deployed via Flutter frontend, PostgreSQL for persistent storage, containerized with Docker and orchestrated with Kubernetes.</li>
+                </ul>
                 <div className="project-meta">
                   <span className="project-pill">Bluesky API</span>
                   <span className="project-pill">NLP Summarization</span>
@@ -925,14 +929,9 @@ export default function PortfolioClient() {
                   <span className="project-pill">PostgreSQL</span>
                   <span className="project-pill">Docker / Kubernetes</span>
                 </div>
-                <ul className="project-points">
-                  <li>Designed a pipeline to ingest and cluster topics from the Bluesky API, applying embedding-based clustering to group semantically related posts before synthesis.</li>
-                  <li>Built an automated daily digest generator with category grouping and abstractive summarization &mdash; compressing high-volume social feeds into short conversational summaries.</li>
-                  <li>Deployed via Flutter frontend, PostgreSQL for persistent storage, containerized with Docker and orchestrated with Kubernetes.</li>
-                </ul>
-              </div>
+              </li>
 
-            </div>
+            </ul>
           </section>
         )}
 
