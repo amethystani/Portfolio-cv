@@ -101,7 +101,7 @@ export default function PortfolioClient() {
     <div
       ref={scrollContainerRef}
       className="portfolio-root"
-      style={{ minHeight: '100vh', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333', fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif' }}
+      style={{ height: '100dvh', minHeight: '100dvh', overflowY: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333', fontFamily: '-apple-system, BlinkMacSystemFont, \"Segoe UI\", Helvetica, Arial, sans-serif' }}
     >
       <style>{`
         .portfolio-root {
