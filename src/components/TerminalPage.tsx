@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import MacOsChrome from './MacOsChrome'
@@ -185,6 +185,13 @@ function SafariDockIcon({ onClick, isActive }: { onClick: () => void, isActive?:
   )
 }
 
+type WindowKey = 'terminal' | 'music' | 'finder' | 'safari' | 'preview'
+
+type AppLaunchRequest = {
+  app: WindowKey
+  url?: string
+}
+
 export default function TerminalPage() {
   const [isMinimized, setIsMinimized] = useState(false)
   const [isMaximized, setIsMaximized] = useState(false)
@@ -206,6 +213,43 @@ export default function TerminalPage() {
   const [isPreviewMinimized, setIsPreviewMinimized] = useState(false)
   const [isPreviewMaximized, setIsPreviewMaximized] = useState(false)
 
+  const [windowZ, setWindowZ] = useState<Record<WindowKey, number>>({
+    terminal: 4,
+    music: 5,
+    finder: 1,
+    safari: 2,
+    preview: 3,
+  })
+  const [safariRequest, setSafariRequest] = useState({ url: '/portfolio', nonce: 0 })
+  const [previewRequest, setPreviewRequest] = useState({ url: '/resume.pdf', nonce: 0 })
+  const nextZRef = useRef(6)
+
+  const bringToFront = useCallback((windowKey: WindowKey) => {
+    setWindowZ((prev) => {
+      const next = nextZRef.current++
+      if (prev[windowKey] === next) return prev
+      return { ...prev, [windowKey]: next }
+    })
+  }, [])
+
+  const getWindowStyle = useCallback(
+    (windowKey: WindowKey, isWindowMaximized: boolean, width: string, height: string) => (
+      isWindowMaximized
+        ? { width: '100%', height: '100%', position: 'absolute' as const, top: 0, left: 0, zIndex: windowZ[windowKey] }
+        : {
+            width,
+            height,
+            position: 'absolute' as const,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+            zIndex: windowZ[windowKey],
+          }
+    ),
+    [windowZ]
+  )
+
   const handleClose = useCallback(() => {
     setIsClosed(true)
   }, [])
@@ -217,45 +261,85 @@ export default function TerminalPage() {
   const handleRestore = useCallback(() => {
     setIsClosed(false)
     setIsMinimized(false)
-  }, [])
+    bringToFront('terminal')
+  }, [bringToFront])
 
   const handleMaximize = useCallback(() => {
     setIsMaximized(prev => !prev)
-  }, [])
+    bringToFront('terminal')
+  }, [bringToFront])
 
   const handleOpenMusic = useCallback(() => {
     setIsMusicOpen(true)
     setIsMusicMinimized(false)
-  }, [])
+    bringToFront('music')
+  }, [bringToFront])
   const handleCloseMusic = useCallback(() => setIsMusicOpen(false), [])
   const handleMinimizeMusic = useCallback(() => setIsMusicMinimized(true), [])
-  const handleMaximizeMusic = useCallback(() => setIsMusicMaximized(prev => !prev), [])
+  const handleMaximizeMusic = useCallback(() => {
+    setIsMusicMaximized(prev => !prev)
+    bringToFront('music')
+  }, [bringToFront])
 
   const handleOpenFinder = useCallback(() => {
     setIsFinderOpen(true)
     setIsFinderMinimized(false)
-  }, [])
+    bringToFront('finder')
+  }, [bringToFront])
   const handleCloseFinder = useCallback(() => setIsFinderOpen(false), [])
   const handleMinimizeFinder = useCallback(() => setIsFinderMinimized(true), [])
-  const handleMaximizeFinder = useCallback(() => setIsFinderMaximized(prev => !prev), [])
+  const handleMaximizeFinder = useCallback(() => {
+    setIsFinderMaximized(prev => !prev)
+    bringToFront('finder')
+  }, [bringToFront])
 
-  const handleOpenSafari = useCallback(() => {
+  const handleOpenSafari = useCallback((url = '/portfolio') => {
     setIsSafariOpen(true)
     setIsSafariMinimized(false)
-  }, [])
+    setSafariRequest(prev => ({ url, nonce: prev.nonce + 1 }))
+    bringToFront('safari')
+  }, [bringToFront])
   const handleCloseSafari = useCallback(() => setIsSafariOpen(false), [])
   const handleMinimizeSafari = useCallback(() => setIsSafariMinimized(true), [])
-  const handleMaximizeSafari = useCallback(() => setIsSafariMaximized(prev => !prev), [])
+  const handleMaximizeSafari = useCallback(() => {
+    setIsSafariMaximized(prev => !prev)
+    bringToFront('safari')
+  }, [bringToFront])
 
-  const handleOpenPreview = useCallback(() => {
+  const handleOpenPreview = useCallback((url = '/resume.pdf') => {
     setIsPreviewOpen(true)
     setIsPreviewMinimized(false)
-  }, [])
+    setPreviewRequest(prev => ({ url, nonce: prev.nonce + 1 }))
+    bringToFront('preview')
+  }, [bringToFront])
   const handleClosePreview = useCallback(() => setIsPreviewOpen(false), [])
   const handleMinimizePreview = useCallback(() => setIsPreviewMinimized(true), [])
-  const handleMaximizePreview = useCallback(() => setIsPreviewMaximized(prev => !prev), [])
+  const handleMaximizePreview = useCallback(() => {
+    setIsPreviewMaximized(prev => !prev)
+    bringToFront('preview')
+  }, [bringToFront])
 
-  const showDock = (isMinimized || isClosed) && (!isMusicOpen || isMusicMinimized) && (!isFinderOpen || isFinderMinimized) && (!isSafariOpen || isSafariMinimized) && (!isPreviewOpen || isPreviewMinimized)
+  const handleTerminalOpenApp = useCallback((request: AppLaunchRequest) => {
+    switch (request.app) {
+      case 'terminal':
+        handleRestore()
+        break
+      case 'music':
+        handleOpenMusic()
+        break
+      case 'finder':
+        handleOpenFinder()
+        break
+      case 'safari':
+        handleOpenSafari(request.url)
+        break
+      case 'preview':
+        handleOpenPreview(request.url)
+        break
+    }
+  }, [handleOpenFinder, handleOpenMusic, handleOpenPreview, handleOpenSafari, handleRestore])
+
+  const showDock = true
 
   return (
     <div
@@ -268,7 +352,7 @@ export default function TerminalPage() {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: isMinimized || isClosed ? 'flex-end' : 'center',
+        justifyContent: 'center',
         padding: isMaximized && !isClosed && !isMinimized ? '0' : undefined,
         boxSizing: 'border-box',
       }}
@@ -316,7 +400,7 @@ export default function TerminalPage() {
         }
       `}</style>
 
-      {/* Dock bar - shown when minimized or closed */}
+      {/* Dock bar */}
       {showDock && (
         <div
           style={{
@@ -328,7 +412,7 @@ export default function TerminalPage() {
             justifyContent: 'center',
             alignItems: 'flex-end',
             paddingBottom: '8px',
-            zIndex: 100,
+            zIndex: 1000,
           }}
         >
           <div className="mac-dock-container">
@@ -345,23 +429,12 @@ export default function TerminalPage() {
       {(isFinderOpen && !isFinderMinimized) && (
         <MacOsChrome
           title="Finder"
+          onMouseDown={() => bringToFront('finder')}
           onClose={handleCloseFinder}
           onMinimize={handleMinimizeFinder}
           onMaximize={handleMaximizeFinder}
           isMaximized={isFinderMaximized}
-          style={
-            isFinderMaximized
-              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
-              : {
-                  width: 'min(90vw, 850px)',
-                  height: 'min(80dvh, 550px)',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-                }
-          }
+          style={getWindowStyle('finder', isFinderMaximized, 'min(90vw, 850px)', 'min(80dvh, 550px)')}
         >
           <Finder 
             onOpenTerminal={handleRestore} 
@@ -376,25 +449,14 @@ export default function TerminalPage() {
       {(isSafariOpen && !isSafariMinimized) && (
         <MacOsChrome
           title="Safari"
+          onMouseDown={() => bringToFront('safari')}
           onClose={handleCloseSafari}
           onMinimize={handleMinimizeSafari}
           onMaximize={handleMaximizeSafari}
           isMaximized={isSafariMaximized}
-          style={
-            isSafariMaximized
-              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
-              : {
-                  width: 'min(95vw, 1000px)',
-                  height: 'min(85dvh, 700px)',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-                }
-          }
+          style={getWindowStyle('safari', isSafariMaximized, 'min(95vw, 1000px)', 'min(85dvh, 700px)')}
         >
-          <SafariApp />
+          <SafariApp requestedUrl={safariRequest.url} navigationNonce={safariRequest.nonce} />
         </MacOsChrome>
       )}
 
@@ -402,25 +464,14 @@ export default function TerminalPage() {
       {(isPreviewOpen && !isPreviewMinimized) && (
         <MacOsChrome
           title="Preview"
+          onMouseDown={() => bringToFront('preview')}
           onClose={handleClosePreview}
           onMinimize={handleMinimizePreview}
           onMaximize={handleMaximizePreview}
           isMaximized={isPreviewMaximized}
-          style={
-            isPreviewMaximized
-              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
-              : {
-                  width: 'min(90vw, 850px)',
-                  height: 'min(85dvh, 750px)',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-                }
-          }
+          style={getWindowStyle('preview', isPreviewMaximized, 'min(90vw, 850px)', 'min(85dvh, 750px)')}
         >
-          <PreviewApp />
+          <PreviewApp requestedUrl={previewRequest.url} navigationNonce={previewRequest.nonce} />
         </MacOsChrome>
       )}
 
@@ -428,24 +479,14 @@ export default function TerminalPage() {
       {(!isMinimized && !isClosed) && (
         <MacOsChrome
           title="animesh — zsh — 80×24"
+          onMouseDown={() => bringToFront('terminal')}
           onClose={handleClose}
           onMinimize={handleMinimize}
           onMaximize={handleMaximize}
           isMaximized={isMaximized}
-          style={
-            isMaximized
-              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
-              : {
-                  width: 'min(95vw, 900px)',
-                  height: 'min(85dvh, 600px)',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)'
-                }
-          }
+          style={getWindowStyle('terminal', isMaximized, 'min(95vw, 900px)', 'min(85dvh, 600px)')}
         >
-          <XtermTerminal />
+          <XtermTerminal onOpenApp={handleTerminalOpenApp} />
         </MacOsChrome>
       )}
 
@@ -453,22 +494,12 @@ export default function TerminalPage() {
       {(isMusicOpen && !isMusicMinimized) && (
         <MacOsChrome
           title="Apple Music"
+          onMouseDown={() => bringToFront('music')}
           onClose={handleCloseMusic}
           onMinimize={handleMinimizeMusic}
           onMaximize={handleMaximizeMusic}
           isMaximized={isMusicMaximized}
-          style={
-            isMusicMaximized
-              ? { width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }
-              : {
-                  width: 'min(95vw, 1100px)',
-                  height: 'min(85dvh, 700px)',
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)'
-                }
-          }
+          style={getWindowStyle('music', isMusicMaximized, 'min(95vw, 1100px)', 'min(85dvh, 700px)')}
         >
           <AppleMusic />
         </MacOsChrome>

@@ -7,6 +7,7 @@ type Props = {
   children: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  onMouseDown?: () => void
   onClose?: () => void
   onMinimize?: () => void
   onMaximize?: () => void
@@ -18,6 +19,7 @@ export default function MacOsChrome({
   children,
   className = '',
   style,
+  onMouseDown,
   onClose,
   onMinimize,
   onMaximize,
@@ -28,6 +30,7 @@ export default function MacOsChrome({
   return (
     <div
       className={`flex flex-col overflow-hidden ${isMaximized ? '' : 'rounded-[10px]'} ${className}`}
+      onMouseDown={onMouseDown}
       style={{
         boxShadow: isMaximized ? 'none' : '0 20px 60px rgba(0, 0, 0, 0.75), 0 0 0 0.5px rgba(255,255,255,0.08)',
         background: '#1E1E1E',
@@ -50,9 +53,9 @@ export default function MacOsChrome({
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
-          {/* Close (Red) → Refresh */}
+          {/* Close (Red) */}
           <div
-            title="Refresh"
+            title="Close"
             role="button"
             tabIndex={0}
             onClick={onClose}

@@ -10,6 +10,7 @@ import {
   createInterpreterState,
   getPrompt,
   CLEAR_SENTINEL,
+  OPEN_APP_PREFIX,
   OPEN_URL_PREFIX,
   EDIT_PREFIX,
   type InterpreterState,
@@ -72,6 +73,15 @@ type EditorState = {
   statusMessage: string
 }
 
+type AppLaunchRequest = {
+  app: 'terminal' | 'finder' | 'music' | 'safari' | 'preview'
+  url?: string
+}
+
+type Props = {
+  onOpenApp?: (request: AppLaunchRequest) => void
+}
+
 function createEditorState(): EditorState {
   return {
     active: false, filePath: '', displayPath: '', lines: [''],
@@ -80,7 +90,7 @@ function createEditorState(): EditorState {
   }
 }
 
-export default function XtermTerminal() {
+export default function XtermTerminal({ onOpenApp }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitAddonRef = useRef<FitAddon | null>(null)
@@ -240,7 +250,11 @@ export default function XtermTerminal() {
           term.write('\r\n')
           const output = execute(buf, state)
           if (output === CLEAR_SENTINEL) { term.clear() }
-          else if (output.startsWith(OPEN_URL_PREFIX)) {
+          else if (output.startsWith(OPEN_APP_PREFIX)) {
+            const request = JSON.parse(output.slice(OPEN_APP_PREFIX.length)) as AppLaunchRequest
+            onOpenApp?.(request)
+            term.write(`\x1b[32mOpening ${request.url || request.app}...\x1b[0m\r\n`)
+          } else if (output.startsWith(OPEN_URL_PREFIX)) {
             const url = output.slice(OPEN_URL_PREFIX.length)
             if (url.startsWith('/portfolio')) window.location.href = url
             else window.open(url, '_blank')
@@ -284,7 +298,7 @@ export default function XtermTerminal() {
     })
 
     return () => { ro.disconnect(); term.dispose(); termRef.current = null }
-  }, [])
+  }, [onOpenApp])
 
   function updateSearch(term: Terminal, state: InterpreterState) {
     const q = searchQueryRef.current

@@ -10,6 +10,9 @@ type FinderProps = {
 
 export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOpenPortfolio }: FinderProps) {
   const [activeTab, setActiveTab] = useState('Applications');
+  const [history, setHistory] = useState(['Applications']);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const apps = [
     { name: 'Terminal', icon: '/terminal-2021-06-03.png.webp', action: onOpenTerminal },
@@ -30,6 +33,33 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
   ];
 
   const currentFiles = activeTab === 'Applications' ? apps : (activeTab === 'Documents' ? docs : []);
+  const visibleFiles = currentFiles.filter((file) => file.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const openTab = (nextTab: string) => {
+    if (history[historyIndex] === nextTab) {
+      setActiveTab(nextTab);
+      return;
+    }
+
+    const nextHistory = [...history.slice(0, historyIndex + 1), nextTab];
+    setActiveTab(nextTab);
+    setHistory(nextHistory);
+    setHistoryIndex(nextHistory.length - 1);
+  };
+
+  const goBack = () => {
+    if (historyIndex === 0) return;
+    const nextIndex = historyIndex - 1;
+    setHistoryIndex(nextIndex);
+    setActiveTab(history[nextIndex]);
+  };
+
+  const goForward = () => {
+    if (historyIndex >= history.length - 1) return;
+    const nextIndex = historyIndex + 1;
+    setHistoryIndex(nextIndex);
+    setActiveTab(history[nextIndex]);
+  };
 
   return (
     <>
@@ -82,7 +112,7 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
           {sidebarItems.map(item => (
             <div 
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => openTab(item.id)}
               style={{ 
                 padding: '6px 12px', 
                 margin: '0 8px 2px',
@@ -109,8 +139,12 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
           <div className="finder-toolbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                <button onClick={goBack} disabled={historyIndex === 0} style={{ background: 'none', border: 'none', padding: 0, cursor: historyIndex === 0 ? 'default' : 'pointer', color: historyIndex === 0 ? '#444' : '#999' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <button onClick={goForward} disabled={historyIndex >= history.length - 1} style={{ background: 'none', border: 'none', padding: 0, cursor: historyIndex >= history.length - 1 ? 'default' : 'pointer', color: historyIndex >= history.length - 1 ? '#444' : '#999' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
               </div>
               <span style={{ fontSize: '14px', fontWeight: 600 }}>{activeTab}</span>
             </div>
@@ -124,7 +158,12 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
                 width: '120px'
               }}>
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.3-4.3"></path></svg>
-                <span style={{ fontSize: '12px', color: '#999', marginLeft: '6px', display: 'flex' }}>Search</span>
+                <input
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search"
+                  style={{ fontSize: '12px', color: '#fff', marginLeft: '6px', display: 'flex', background: 'transparent', border: 'none', outline: 'none', width: '100%' }}
+                />
               </div>
             </div>
           </div>
@@ -139,12 +178,12 @@ export default function Finder({ onOpenTerminal, onOpenMusic, onOpenResume, onOp
             alignContent: 'flex-start',
             overflowY: 'auto'
           }}>
-            {currentFiles.length === 0 ? (
+            {visibleFiles.length === 0 ? (
               <div style={{ width: '100%', textAlign: 'center', color: '#666', marginTop: '60px' }}>
-                No files here.
+                {searchQuery ? 'No matching files.' : 'No files here.'}
               </div>
             ) : (
-              currentFiles.map(file => (
+              visibleFiles.map(file => (
                 <div 
                   key={file.name}
                   onClick={() => {

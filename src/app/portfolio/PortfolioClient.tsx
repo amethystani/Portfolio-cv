@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Inter } from 'next/font/google';
 
@@ -23,9 +23,49 @@ const contentIndex = {
   skills: "Technical Skills & Achievements Technical Skills Languages: Python, Java, SQL, LaTeX Machine Learning: PyTorch, Scikit-learn, LangChain, Transformers, Gymnasium, Ollama Development: FastAPI, Docker, Kubernetes, AWS, Apache Kafka, Redis, Flutter, Git Data Science: Pandas, NumPy, GeoPandas, Matplotlib, NetworkX Scholastic Achievements Selected among 200 participants for the Bitcoin Talents Program by Frankfurt School Blockchain Center (Jan '25) Selected from over 16,000 global applicants for Harvard Aspire Institute Leadership Program (Nov '24) Achieved a score of 102 in the core test of Test für Ausländische Studierende (TestAS) (Apr '23) Selected for the Harvard College Project for Asian and International Relations (HPAIR) (Aug '23) Awarded Certificate of Appreciation by Defense Minister of India for board exam performance (2020, 2022) Key Courses Computer Science: Data Structures, Design & Analysis of Algorithms, Artificial Intelligence, Reinforcement Learning, Digital Image Processing, Robotics, Social & Information Networks, Parallel & Concurrent Prog., Operating Systems, Database Systems, Computer Networks, Distributed Systems Mathematics: Applied Linear Algebra, Probability & Statistics, Discrete Math, Theory of Computation, Mathematical Methods I"
 };
 
+const validTabs = new Set(navLinks.map((link) => link.id));
+
+function getTabFromHash(hash: string): string {
+  const normalized = hash.replace(/^#/, '').trim().toLowerCase();
+  return validTabs.has(normalized) ? normalized : 'home';
+}
+
 export default function PortfolioClient() {
   const [activeTab, setActiveTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [hasSyncedLocation, setHasSyncedLocation] = useState(false);
+
+  useEffect(() => {
+    const syncFromLocation = () => {
+      const nextTab = getTabFromHash(window.location.hash);
+      const nextSearch = new URLSearchParams(window.location.search).get('q') ?? '';
+
+      setActiveTab(nextTab);
+      setSearchQuery(nextSearch);
+      setHasSyncedLocation(true);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
+    syncFromLocation();
+    window.addEventListener('hashchange', syncFromLocation);
+
+    return () => {
+      window.removeEventListener('hashchange', syncFromLocation);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasSyncedLocation) return;
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (searchQuery) params.set('q', searchQuery);
+    else params.delete('q');
+
+    const nextSearch = params.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`;
+    window.history.replaceState(null, '', nextUrl);
+  }, [hasSyncedLocation, searchQuery]);
 
   const matchQuery = (tab: string) => {
     if (!searchQuery) return activeTab === tab;
@@ -33,6 +73,17 @@ export default function PortfolioClient() {
   };
 
   const hasResults = searchQuery ? navLinks.some(link => matchQuery(link.id)) : true;
+
+  const activateTab = (tabId: string) => {
+    setActiveTab(tabId);
+    setSearchQuery('');
+
+    if (window.location.hash !== `#${tabId}`) {
+      window.location.hash = tabId;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
 
   return (
     <div className={inter.className} style={{ height: '100vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch', backgroundColor: '#fff', color: '#333' }}>
@@ -132,7 +183,7 @@ export default function PortfolioClient() {
           {navLinks.map((link) => (
             <button 
               key={link.id} 
-              onClick={() => { setActiveTab(link.id); setSearchQuery(''); }} 
+              onClick={() => activateTab(link.id)} 
               className={`nav-link ${(!searchQuery && activeTab === link.id) ? 'active' : ''}`}
             >
               {link.name}

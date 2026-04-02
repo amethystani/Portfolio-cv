@@ -20,6 +20,7 @@ const c = {
 
 export const CLEAR_SENTINEL = '\x00CLEAR\x00'
 export const OPEN_URL_PREFIX = '\x00OPEN:'
+export const OPEN_APP_PREFIX = '\x00APP:'
 export const EDIT_PREFIX = '\x00EDIT:'
 
 export type InterpreterState = {
@@ -452,12 +453,28 @@ function cmdCat(args: string[], state: InterpreterState, stdin: string): string 
 function cmdOpen(args: string[], state: InterpreterState): string {
   if (args.length === 0) return `${c.red}open: missing argument${c.reset}`
   const target = args[0]
-  if (target === 'portfolio') return OPEN_URL_PREFIX + '/portfolio'
+  if (target === 'portfolio' || target === 'safari') {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'safari', url: '/portfolio' })
+  }
+  if (target === 'preview') {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'preview', url: '/resume.pdf' })
+  }
+  if (target === 'finder') {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'finder' })
+  }
+  if (target === 'music' || target === 'apple-music' || target === 'apple_music') {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'music' })
+  }
+  if (target === 'terminal') {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'terminal' })
+  }
   if (target.startsWith('http://') || target.startsWith('https://')) return OPEN_URL_PREFIX + target
   const node = resolvePath(normalizePath(target, state.cwd), state.cwd)
   if (!node) return `${c.red}open: ${target}: No such file or directory${c.reset}`
   if (node.type === 'dir') return `${c.red}open: ${target}: Is a directory${c.reset}`
-  if (target.endsWith('.pdf')) return OPEN_URL_PREFIX + '/resume.pdf'
+  if (target.endsWith('.pdf')) {
+    return OPEN_APP_PREFIX + JSON.stringify({ app: 'preview', url: '/resume.pdf' })
+  }
   return `${c.yellow}Opening ${target}...${c.reset}\r\n` + node.content
 }
 
