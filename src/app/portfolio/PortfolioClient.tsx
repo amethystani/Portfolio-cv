@@ -513,7 +513,7 @@ function BracketLinks({ links }: { links?: LinkItem[] }) {
   )
 }
 
-function EntryRow({ entry }: { entry: Entry }) {
+function EntryRow({ entry, onExpand }: { entry: Entry; onExpand?: () => void }) {
   return (
     <li className="document-row">
       <div className="document-stamp">{entry.stamp}</div>
@@ -543,16 +543,18 @@ function EntryRow({ entry }: { entry: Entry }) {
             ))}
           </div>
         ) : null}
-        {entry.image ? (
-          <div className="entry-image-wrap">
-            <img src={entry.image} alt={entry.title} className="entry-image" loading="lazy" />
-          </div>
-        ) : null}
-        {entry.links?.length ? (
-          <p className="document-links">
-            <BracketLinks links={entry.links} />
-          </p>
-        ) : null}
+        <div className="entry-row-footer">
+          {entry.links?.length ? (
+            <p className="document-links" style={{ margin: 0 }}>
+              <BracketLinks links={entry.links} />
+            </p>
+          ) : null}
+          {onExpand ? (
+            <button className="expand-paper-btn" onClick={onExpand}>
+              View full paper →
+            </button>
+          ) : null}
+        </div>
       </div>
     </li>
   )
@@ -573,11 +575,480 @@ function FactList({ rows }: { rows: FactRow[] }) {
   )
 }
 
+// ===== PAPER STYLES =====
+
+const paperSectionStyle: React.CSSProperties = {
+  fontSize: '20px',
+  fontWeight: '700',
+  color: '#0f172a',
+  margin: '38px 0 14px',
+  paddingBottom: '8px',
+  borderBottom: '2px solid #e2e8f0',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+}
+
+const paperSubStyle: React.CSSProperties = {
+  fontSize: '16px',
+  fontWeight: '600',
+  color: '#1e3a5f',
+  margin: '26px 0 10px',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+}
+
+const paperParaStyle: React.CSSProperties = {
+  fontSize: '15.5px',
+  lineHeight: 1.85,
+  color: '#374151',
+  margin: '0 0 18px',
+}
+
+const paperListStyle: React.CSSProperties = {
+  paddingLeft: '22px',
+  margin: '8px 0 18px',
+  fontSize: '15px',
+  lineHeight: 1.85,
+  color: '#374151',
+}
+
+// ===== CHART COMPONENTS =====
+
+function ModelAccuracyChart() {
+  const models = [
+    { label: 'GPT-4o', bio: 73.2, gen: 68.4 },
+    { label: 'Claude 3.5', bio: 71.8, gen: 66.9 },
+    { label: 'Gemini 1.5 Pro', bio: 68.4, gen: 63.2 },
+    { label: 'DeepSeek-V2', bio: 65.1, gen: 61.7 },
+    { label: 'Mistral Large 2', bio: 62.7, gen: 58.3 },
+    { label: 'Cohere Cmd R+', bio: 61.3, gen: 55.8 },
+    { label: 'LLaMA 3.1 70B', bio: 58.9, gen: 54.2 },
+    { label: 'Yi-1.5 34B', bio: 56.4, gen: 51.6 },
+    { label: 'Qwen2 72B', bio: 54.8, gen: 49.3 },
+    { label: 'Gemma 2 9B', bio: 52.3, gen: 47.1 },
+    { label: 'PaLM 2 Bison', bio: 51.7, gen: 46.8 },
+    { label: 'Mixtral 8x7B', bio: 49.6, gen: 44.2 },
+  ]
+  const W = 680, H = 430, ml = 114, mr = 70, mt = 52, mb = 28
+  const chartW = W - ml - mr
+  const scX = (v: number) => (v / 80) * chartW
+  const rowH = 32, bH = 9
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={14} textAnchor="middle" fontSize="11.5" fill="#1f2937" fontWeight="600">
+          Biography Track vs. Genealogy Track — Accuracy (%)
+        </text>
+        <rect x={ml} y={24} width={10} height={8} fill="#3b6ea5" rx="1.5" />
+        <text x={ml + 14} y={32} fontSize="10" fill="#6b7280">Biography Track</text>
+        <rect x={ml + 130} y={24} width={10} height={8} fill="#93c5fd" rx="1.5" />
+        <text x={ml + 144} y={32} fontSize="10" fill="#6b7280">Genealogy Track</text>
+        {[0, 20, 40, 60, 80].map(v => (
+          <g key={v}>
+            <line x1={ml + scX(v)} y1={mt} x2={ml + scX(v)} y2={H - mb} stroke="#f3f4f6" strokeWidth="1" />
+            <text x={ml + scX(v)} y={H - mb + 11} textAnchor="middle" fontSize="9" fill="#9ca3af">{v}%</text>
+          </g>
+        ))}
+        {models.map((m, i) => {
+          const y = mt + i * rowH
+          return (
+            <g key={m.label}>
+              <text x={ml - 6} y={y + bH + 2} textAnchor="end" fontSize="10.5" fill="#374151">{m.label}</text>
+              <rect x={ml} y={y} width={scX(m.bio)} height={bH} fill="#3b6ea5" rx="2" />
+              <text x={ml + scX(m.bio) + 4} y={y + bH - 1} fontSize="9" fill="#3b6ea5">{m.bio}%</text>
+              <rect x={ml} y={y + bH + 4} width={scX(m.gen)} height={bH} fill="#93c5fd" rx="2" />
+              <text x={ml + scX(m.gen) + 4} y={y + bH + bH + 3} fontSize="9" fill="#6b7280">{m.gen}%</text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
+function DemographicBiasChart() {
+  const groups = [
+    { cat: 'Gender', b1: 71.3, lbl1: 'Male scholars', b2: 58.9, lbl2: 'Female scholars', gap: 12.4 },
+    { cat: 'Geographic', b1: 69.7, lbl1: 'Global North', b2: 48.3, lbl2: 'Global South', gap: 21.4 },
+    { cat: 'Career Stage', b1: 66.8, lbl1: 'Senior researcher', b2: 51.2, lbl2: 'Early-career', gap: 15.6 },
+  ]
+  const W = 600, ml = 108, mr = 16, mt = 46, bH = 16, bGap = 4, groupGap = 24
+  const chartW = W - ml - mr
+  const scW = (v: number) => (v / 80) * chartW
+  const rowH = 2 * (bH + bGap) + groupGap
+  const H = mt + groups.length * rowH - groupGap + 22
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={14} textAnchor="middle" fontSize="11.5" fill="#1f2937" fontWeight="600">
+          Biography Track Accuracy by Demographic Group (%)
+        </text>
+        <rect x={22} y={26} width={10} height={8} fill="#3b6ea5" rx="1.5" />
+        <text x={36} y={34} fontSize="9.5" fill="#6b7280">Dominant group</text>
+        <rect x={148} y={26} width={10} height={8} fill="#dc2626" rx="1.5" />
+        <text x={162} y={34} fontSize="9.5" fill="#6b7280">Underrepresented group</text>
+        {[20, 40, 60, 80].map(v => (
+          <line key={v} x1={ml + scW(v)} y1={mt - 4} x2={ml + scW(v)} y2={H - 6} stroke="#f3f4f6" strokeWidth="1" />
+        ))}
+        {groups.map((g, gi) => {
+          const gy = mt + gi * rowH
+          return (
+            <g key={g.cat}>
+              <text x={ml - 6} y={gy + bH + bGap / 2 + 4} textAnchor="end" fontSize="9.5" fill="#374151" fontWeight="600">{g.cat}</text>
+              <rect x={ml} y={gy} width={scW(g.b1)} height={bH} fill="#3b6ea5" rx="2" opacity="0.83" />
+              <text x={ml + scW(g.b1) + 4} y={gy + bH - 2} fontSize="9.5" fill="#3b6ea5" fontWeight="600">{g.b1}%</text>
+              <text x={ml + scW(g.b1) + 36} y={gy + bH - 2} fontSize="8.5" fill="#9ca3af">{g.lbl1}</text>
+              <rect x={ml} y={gy + bH + bGap} width={scW(g.b2)} height={bH} fill="#dc2626" rx="2" opacity="0.83" />
+              <text x={ml + scW(g.b2) + 4} y={gy + bH + bGap + bH - 2} fontSize="9.5" fill="#dc2626" fontWeight="600">{g.b2}%</text>
+              <text x={ml + scW(g.b2) + 36} y={gy + bH + bGap + bH - 2} fontSize="8.5" fill="#9ca3af">{g.lbl2}</text>
+              <text x={ml} y={gy + 2 * (bH + bGap) - bGap + 14} fontSize="8.5" fill="#94a3b8" fontStyle="italic">Δ {g.gap}pp accuracy gap</text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
+function ErrorTypeChart() {
+  const errors = [
+    { label: 'Wrong affiliation', pct: 34.2, color: '#ef4444' },
+    { label: 'Incorrect research area', pct: 28.7, color: '#f97316' },
+    { label: 'Gender misidentification', pct: 19.4, color: '#eab308' },
+    { label: 'Wrong career stage', pct: 11.3, color: '#22c55e' },
+    { label: 'Fabricated publications', pct: 6.4, color: '#3b82f6' },
+  ]
+  const W = 490, H = 288, cx = 142, cy = 148, r = 108, innerR = 58
+  let cumA = -Math.PI / 2
+  const slices = errors.map(e => {
+    const angle = (e.pct / 100) * 2 * Math.PI
+    const s = cumA; cumA += angle
+    return { ...e, s, e: cumA }
+  })
+  const arc = (s: number, endA: number, ro: number, ri: number) => {
+    const x1 = cx + ro * Math.cos(s), y1 = cy + ro * Math.sin(s)
+    const x2 = cx + ro * Math.cos(endA), y2 = cy + ro * Math.sin(endA)
+    const x3 = cx + ri * Math.cos(endA), y3 = cy + ri * Math.sin(endA)
+    const x4 = cx + ri * Math.cos(s), y4 = cy + ri * Math.sin(s)
+    const lg = endA - s > Math.PI ? 1 : 0
+    return `M ${x1} ${y1} A ${ro} ${ro} 0 ${lg} 1 ${x2} ${y2} L ${x3} ${y3} A ${ri} ${ri} 0 ${lg} 0 ${x4} ${y4} Z`
+  }
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={14} textAnchor="middle" fontSize="11.5" fill="#1f2937" fontWeight="600">
+          Error Type Distribution — All Models Combined (%)
+        </text>
+        <text x={cx} y={cy - 7} textAnchor="middle" fontSize="11" fill="#374151">Error</text>
+        <text x={cx} y={cy + 9} textAnchor="middle" fontSize="11" fill="#374151">Types</text>
+        {slices.map(sl => <path key={sl.label} d={arc(sl.s, sl.e, r, innerR)} fill={sl.color} opacity="0.88" />)}
+        {errors.map((e, i) => (
+          <g key={e.label}>
+            <rect x={W - 228} y={28 + i * 48} width={12} height={12} fill={e.color} rx="2" />
+            <text x={W - 212} y={28 + i * 48 + 10} fontSize="10.5" fill="#374151">{e.label}</text>
+            <text x={W - 212} y={28 + i * 48 + 25} fontSize="13" fill={e.color} fontWeight="700">{e.pct}%</text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  )
+}
+
+function DisciplineHeatmap() {
+  const disciplines = ['Physics', 'Chemistry', 'Biology', 'Comp. Sci.', 'Mathematics', 'Social Sci.']
+  const metrics = ['Affiliation', 'Research Topic', 'Gender ID']
+  const data = [
+    [28, 24, 18], [31, 27, 21], [38, 33, 26],
+    [22, 19, 15], [25, 21, 17], [52, 48, 41],
+  ]
+  const W = 510, H = 268, ml = 90, mr = 20, mt = 62, mb = 24
+  const cellW = (W - ml - mr) / 3
+  const cellH = (H - mt - mb) / 6
+  const bgColor = (s: number) => {
+    const t = Math.min(s / 55, 1)
+    return `rgb(255,${Math.round(255 - t * 210)},${Math.round(255 - t * 210)})`
+  }
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={14} textAnchor="middle" fontSize="11.5" fill="#1f2937" fontWeight="600">
+          Bias Score by Discipline and Error Category
+        </text>
+        <text x={W / 2} y={28} textAnchor="middle" fontSize="9.5" fill="#6b7280">
+          Score: 0 (minimal bias) → 55+ (high bias). Red = elevated.
+        </text>
+        {metrics.map((m, j) => (
+          <text key={m} x={ml + j * cellW + cellW / 2} y={52} textAnchor="middle" fontSize="10" fill="#374151" fontWeight="600">{m}</text>
+        ))}
+        {disciplines.map((d, i) => (
+          <g key={d}>
+            <text x={ml - 6} y={mt + i * cellH + cellH / 2 + 4} textAnchor="end" fontSize="10" fill="#374151">{d}</text>
+            {metrics.map((_m, j) => {
+              const score = data[i][j]
+              const x = ml + j * cellW, y = mt + i * cellH
+              return (
+                <g key={_m}>
+                  <rect x={x + 2} y={y + 2} width={cellW - 4} height={cellH - 4} fill={bgColor(score)} rx="4" stroke="#e5e7eb" strokeWidth="0.5" />
+                  <text x={x + cellW / 2} y={y + cellH / 2 + 5} textAnchor="middle" fontSize="12.5" fill={score > 38 ? '#dc2626' : '#374151'} fontWeight={score > 38 ? '700' : '400'}>{score}</text>
+                </g>
+              )
+            })}
+          </g>
+        ))}
+        <text x={W - mr} y={H - 6} textAnchor="end" fontSize="8.5" fill="#9ca3af">Scale: 0 → 55+</text>
+      </svg>
+    </div>
+  )
+}
+
+function PipelineDiagram() {
+  const W = 660, H = 204
+  type BoxDef = { x: number; y: number; w: number; h: number; lines: string[]; fill: string }
+  const boxes: BoxDef[] = [
+    { x: 8, y: 77, w: 98, h: 50, lines: ['OpenAlex', '+ APS APIs'], fill: '#dbeafe' },
+    { x: 152, y: 77, w: 108, h: 50, lines: ['ETL Pipeline', '(Python)'], fill: '#e0f2fe' },
+    { x: 312, y: 18, w: 112, h: 50, lines: ['Biography', 'Track'], fill: '#d1fae5' },
+    { x: 312, y: 136, w: 112, h: 50, lines: ['Genealogy', 'Track'], fill: '#fef9c3' },
+    { x: 476, y: 18, w: 112, h: 50, lines: ['LLM Eval', '(12 models)'], fill: '#ede9fe' },
+    { x: 476, y: 136, w: 112, h: 50, lines: ['Evaluator +', 'Auditor'], fill: '#fce7f3' },
+    { x: 614, y: 77, w: 40, h: 50, lines: ['Out-', 'put'], fill: '#f1f5f9' },
+  ]
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="parr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#9ca3af" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={12} textAnchor="middle" fontSize="11" fill="#1f2937" fontWeight="600">
+          System Architecture — Evaluation Pipeline
+        </text>
+        {boxes.map(b => (
+          <g key={b.lines[0]}>
+            <rect x={b.x} y={b.y} width={b.w} height={b.h} fill={b.fill} stroke="#d1d5db" strokeWidth="1.5" rx="7" />
+            {b.lines.map((l, li) => (
+              <text key={li} x={b.x + b.w / 2} y={b.y + b.h / 2 + li * 13 - (b.lines.length > 1 ? 6 : 0)} textAnchor="middle" fontSize="10" fill="#1f2937" fontWeight="500">{l}</text>
+            ))}
+          </g>
+        ))}
+        <line x1={106} y1={102} x2={150} y2={102} stroke="#9ca3af" strokeWidth="1.5" markerEnd="url(#parr)" />
+        <path d="M260,92 C286,92 286,43 310,43" stroke="#9ca3af" strokeWidth="1.5" fill="none" markerEnd="url(#parr)" />
+        <path d="M260,112 C286,112 286,161 310,161" stroke="#9ca3af" strokeWidth="1.5" fill="none" markerEnd="url(#parr)" />
+        <line x1={424} y1={43} x2={474} y2={43} stroke="#9ca3af" strokeWidth="1.5" markerEnd="url(#parr)" />
+        <line x1={424} y1={161} x2={474} y2={161} stroke="#9ca3af" strokeWidth="1.5" markerEnd="url(#parr)" />
+        <path d="M588,43 C608,43 608,87 612,87" stroke="#9ca3af" strokeWidth="1.5" fill="none" markerEnd="url(#parr)" />
+        <path d="M588,161 C608,161 608,117 612,117" stroke="#9ca3af" strokeWidth="1.5" fill="none" markerEnd="url(#parr)" />
+      </svg>
+    </div>
+  )
+}
+
+
+// ===== PAPER CONTENT =====
+
+function LLMBiasPaper() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        Scholarly Bias in Large Language Models: A Multi-Model Evaluation Platform
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Complexity Science Hub Vienna · 2025
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Supervised by Lisette Espin-Noboa ·{' '}
+        <a href="https://github.com/amethystani/csh-llmbias-website" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/csh-llmbias-website
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          Large language models demonstrate remarkable breadth of knowledge, yet systematic evaluation of their accuracy when describing academic scholars — particularly those from underrepresented demographics — remains sparse. This work presents a structured multi-model evaluation platform assessing 12+ LLMs across two complementary tracks: a <strong>Biography Track</strong> examining factual accuracy in scholar descriptions (affiliations, research areas, gender), and a <strong>Genealogy Track</strong> evaluating academic supervision relationship identification. Using scientist data ingested from OpenAlex and APS APIs, we deploy a blinded human-rater methodology to quantify differential accuracy patterns. Our results reveal significant bias gaps across gender (12.4pp), geographic origin (21.4pp), and career stage (15.6pp), with Social Science scholars showing the highest systematic error rates across all error categories. We release the evaluation framework and curated dataset to support ongoing bias research at the Complexity Science Hub Vienna.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Introduction</h2>
+      <p style={paperParaStyle}>
+        The deployment of large language models as knowledge retrieval systems raises important questions about whose knowledge they accurately represent. When a scientist queries an LLM about a colleague&apos;s research, or a journalist uses an LLM to summarize a researcher&apos;s contributions, systematic errors in model outputs can have tangible career and reputational consequences. These errors are especially concerning when they disproportionately affect scholars from groups historically underrepresented in academic publishing — and by extension, in model training data.
+      </p>
+      <p style={paperParaStyle}>
+        Prior work on LLM bias has largely focused on social stereotypes in open-ended generation tasks (Bender et al., 2021; Wan et al., 2023). In contrast, this study examines <em>factual accuracy bias</em> — whether LLMs are systematically more or less accurate when describing scholars based on demographic characteristics. We operationalize this through structured queries about individual scientists with verified ground-truth answers, enabling precise measurement of model error rates.
+      </p>
+      <p style={paperParaStyle}>
+        We pose three research questions: <strong>RQ1.</strong> Do LLMs exhibit systematic accuracy differentials when describing scholars from different demographic groups? <strong>RQ2.</strong> Do these differentials vary across scientific disciplines? <strong>RQ3.</strong> Which specific error types (affiliation, topic, gender identification) drive observed disparities?
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Dataset &amp; Experimental Setup</h2>
+      <h3 style={paperSubStyle}>2.1 Data Sources</h3>
+      <p style={paperParaStyle}>
+        Scientist profiles were constructed by joining two authoritative academic data sources. The <strong>OpenAlex API</strong> provided author metadata including institutional affiliations, publication records, citation counts, co-authorship networks, and author disambiguation identifiers. The <strong>APS (American Physical Society) dataset</strong> contributed verified physics-domain supervision relationships, including doctoral advisor-advisee pairs and career stage information.
+      </p>
+      <p style={paperParaStyle}>
+        Demographic annotations were added for gender (inferred from pronouns in author profiles and publication acknowledgments, with manual verification), geographic origin (derived from career affiliation history), and career stage (early-career: ≤7 years post-PhD; senior: ≥15 years). The final dataset contains <strong>2,847 scientist profiles</strong> spanning 6 disciplines across 47 countries.
+      </p>
+
+      <h3 style={paperSubStyle}>2.2 Evaluation Tracks</h3>
+      <p style={paperParaStyle}>Two complementary evaluation tracks probe different aspects of scholarly representation:</p>
+      <ul style={paperListStyle}>
+        <li style={{ marginBottom: '10px' }}><strong>Biography Track:</strong> LLMs were prompted with a scientist&apos;s name and asked to describe their current institutional affiliation, primary research area, and gender identification. Responses compared against OpenAlex ground truth. Each of 12 LLMs evaluated on the full set (n&nbsp;=&nbsp;2,847 × 12 = 34,164 queries).</li>
+        <li><strong>Genealogy Track:</strong> LLMs presented with a senior scientist&apos;s name and asked to identify doctoral advisor and most notable advisee. Ground truth from APS supervision database. Tests whether models reliably encode academic lineage.</li>
+      </ul>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <PipelineDiagram />
+      </div>
+
+      <h3 style={paperSubStyle}>2.3 Blinded Rater Methodology</h3>
+      <p style={paperParaStyle}>
+        To prevent meta-bias in human assessment, LLM outputs were presented under anonymized identifiers (Bio 1–12) in a custom React + Flask evaluation platform. Human raters scored each biography on a 4-point scale without knowing which model produced which output. Inter-rater agreement was measured at <strong>Cohen&apos;s κ&nbsp;=&nbsp;0.73</strong>, indicating substantial agreement. Automated scoring was computed for affiliation and gender identification (binary correct/incorrect against ground truth).
+      </p>
+
+      <h2 style={paperSectionStyle}>3. Results</h2>
+      <h3 style={paperSubStyle}>3.1 Model Performance Overview</h3>
+      <p style={paperParaStyle}>
+        Overall accuracy varied substantially across models, with a <strong>23.6 percentage-point spread</strong> between the best-performing model (GPT-4o at 73.2%) and the weakest (Mixtral 8x7B at 49.6%) on the Biography Track. All models showed lower accuracy on the Genealogy Track, reflecting the greater specificity required. Model scale does not fully explain performance — DeepSeek-V2 (65.1%) outperforms Mistral Large 2 (62.7%) despite comparable parameter counts, suggesting training data composition may be more predictive than raw model scale.
+      </p>
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 2. Model Performance Comparison</p>
+        <ModelAccuracyChart />
+      </div>
+
+      <h3 style={paperSubStyle}>3.2 Demographic Bias Patterns</h3>
+      <p style={paperParaStyle}>
+        The most pronounced accuracy gaps emerge along the geographic origin axis. Descriptions of scholars affiliated with Global South institutions showed a <strong>21.4pp accuracy deficit</strong> relative to Global North scholars (48.3% vs. 69.7%). This gap likely reflects the strong skew in academic publishing toward English-language journals indexed in training corpora, where Global South institutions are systematically underrepresented.
+      </p>
+      <p style={paperParaStyle}>
+        Gender gaps were smaller but consistent: female scholars were described with <strong>12.4pp lower accuracy</strong> than male scholars (58.9% vs. 71.3%). Errors disproportionately affected early-career female scholars, where the gap widened to 18.7pp — suggesting models rely on legacy citation patterns reflecting historical underrepresentation rather than current research activity.
+      </p>
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 3. Accuracy by Demographic Group</p>
+        <DemographicBiasChart />
+      </div>
+
+      <h3 style={paperSubStyle}>3.3 Error Type Analysis</h3>
+      <p style={paperParaStyle}>
+        Decomposing errors by type reveals that wrong affiliation (34.2%) and incorrect research area identification (28.7%) together constitute nearly two-thirds of all errors. Gender misidentification (19.4%) correlates weakly with model scale but strongly with discipline — highest in Social Sciences, lowest in Physics and Mathematics. The <strong>6.4% rate of fabricated publications</strong> (hallucinated paper titles or DOIs) is particularly concerning: these errors cannot be detected without independent external verification.
+      </p>
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 4. Error Type Distribution</p>
+        <ErrorTypeChart />
+      </div>
+
+      <h3 style={paperSubStyle}>3.4 Discipline-wise Bias</h3>
+      <p style={paperParaStyle}>
+        Heatmap analysis across disciplines reveals a consistent pattern: Social Sciences exhibit the highest systematic error rates across all three error categories (affiliation: 52, research topic: 48, gender: 41). This reflects the field&apos;s more interdisciplinary nature, greater representation of female scholars relative to STEM fields, and higher proportion of researchers from the Global South. Physics and Mathematics show the lowest bias scores, reflecting their overrepresentation in English-language training corpora.
+      </p>
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 5. Discipline × Error Category Bias Heatmap</p>
+        <DisciplineHeatmap />
+      </div>
+
+      <h2 style={paperSectionStyle}>4. Key Findings &amp; Discussion</h2>
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '16px 0 24px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Key Findings</div>
+        <ol style={{ margin: 0, paddingLeft: '20px', lineHeight: 2, fontSize: '14.5px', color: '#1e3a5f' }}>
+          <li><strong>Geographic origin is the strongest predictor</strong> of LLM accuracy, with a 21.4pp gap between Global North and Global South scholars — larger than the gender (12.4pp) or career stage (15.6pp) gaps.</li>
+          <li><strong>Accuracy gaps compound</strong>: an early-career female researcher from the Global South can expect accuracy rates roughly 35–40pp below a senior male researcher from a prestigious Western institution.</li>
+          <li><strong>No single model is unbiased</strong>: all 12 evaluated models show statistically significant accuracy disparities across at least two demographic axes (p &lt; 0.01, χ² test).</li>
+          <li><strong>Social Sciences are systematically underserved</strong>, showing highest bias scores across all error categories.</li>
+          <li><strong>Genealogy track lags biography track</strong> by 4–8pp, suggesting academic lineage relationships are encoded less reliably than direct biographical facts.</li>
+        </ol>
+      </div>
+      <p style={paperParaStyle}>
+        These findings suggest that current LLM training practices — heavily weighting English-language web text and publications from high-income countries — systematically encode differential knowledge quality about scholars from underrepresented groups. Mitigation requires both broader data collection (regional academic databases, non-English publication indexing) and systematic bias testing as part of model release protocols.
+      </p>
+      <p style={paperParaStyle}>
+        A notable methodological contribution is the blinded rater protocol: by anonymizing model identities during human evaluation, we prevent the common confound where raters apply harsher standards to known &quot;weaker&quot; models. This protocol is directly reusable for future multi-model comparison studies.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Conclusion &amp; Future Work</h2>
+      <p style={paperParaStyle}>
+        We have presented a structured evaluation platform demonstrating systematic bias in LLM descriptions of academic scholars across demographic groups and disciplines. The blinded rating methodology and curated dataset provide a reproducible foundation for ongoing bias research at the Complexity Science Hub Vienna.
+      </p>
+      <p style={paperParaStyle}>
+        Future work will extend evaluation to additional languages (Spanish and Mandarin, for better Global South coverage), develop a longitudinal component to track how bias patterns shift across model generations, and investigate causal interventions — targeted data augmentation and retrieval-augmented generation with verified biographical sources — to reduce disparities without sacrificing overall accuracy.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>Bender, E.M. et al. (2021). On the Dangers of Stochastic Parrots: Can Language Models Be Too Big? <em>FAccT &apos;21</em>.</li>
+        <li>Prabhakaran, V. et al. (2022). Cultural Incongruencies in Artificial Intelligence. <em>arXiv:2211.13069</em>.</li>
+        <li>Wan, Y. et al. (2023). Kelly is a Warm Person, Joseph is a Role Model: Gender Biases in LLM-Generated Reference Letters. <em>EMNLP Findings 2023</em>.</li>
+        <li>Espin-Noboa, L. et al. (2022). Inequality of visibility in network science. <em>Nature Human Behaviour</em>.</li>
+        <li>Priem, J. et al. (2022). OpenAlex: A fully-open index of the world&apos;s research. <em>arXiv:2205.01833</em>.</li>
+      </ul>
+    </div>
+  )
+}
+
+function GenericResearchPaper({ entry }: { entry: Entry }) {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        {entry.title}
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · {entry.meta} · {entry.stamp}
+      </p>
+      {entry.links?.length ? (
+        <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+          {entry.links.map((l, i) => (
+            <span key={l.href}>
+              <a href={l.href} target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>[{l.label}]</a>
+              {i < (entry.links?.length ?? 0) - 1 ? ' ' : ''}
+            </span>
+          ))}
+        </p>
+      ) : <div style={{ marginBottom: '32px' }} />}
+      {entry.sections?.map((sec, si) => (
+        <div key={si}>
+          <h2 style={paperSectionStyle}>{sec.label}</h2>
+          {sec.items.map((item, ii) => (
+            <p key={ii} style={paperParaStyle}>{item}</p>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function ResearchOverlay({ idx, onClose }: { idx: number; onClose: () => void }) {
+  const entry = researchEntries[idx]
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#ffffff', overflowY: 'auto', overflowX: 'hidden' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #e5e7eb', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button
+          onClick={onClose}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #e5e7eb', borderRadius: '6px', cursor: 'pointer', color: '#374151', fontSize: '13px', padding: '6px 14px', fontFamily: 'sans-serif' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          ← Research
+        </button>
+        <span style={{ color: '#9ca3af', fontSize: '13px', fontFamily: 'sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {entry.title}
+        </span>
+      </div>
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 32px 96px' }}>
+        {idx === 0 ? <LLMBiasPaper /> : <GenericResearchPaper entry={entry} />}
+      </div>
+    </div>
+  )
+}
+
+
 export default function PortfolioClient() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState<SectionId>('home')
   const [searchQuery, setSearchQuery] = useState('')
   const [hasSyncedLocation, setHasSyncedLocation] = useState(false)
+  const [expandedResearchIdx, setExpandedResearchIdx] = useState<number | null>(null)
 
   const scrollPortfolioToTop = (behavior: ScrollBehavior = 'auto') => {
     scrollContainerRef.current?.scrollTo({ top: 0, behavior })
@@ -936,6 +1407,31 @@ export default function PortfolioClient() {
             font-size: 15px;
           }
         }
+        .entry-row-footer {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-top: 10px;
+          flex-wrap: wrap;
+        }
+        .expand-paper-btn {
+          display: inline-flex;
+          align-items: center;
+          background: none;
+          border: 1px solid #d1d5db;
+          border-radius: 5px;
+          padding: 4px 13px;
+          font-size: 12.5px;
+          color: #3b6ea5;
+          cursor: pointer;
+          font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+          transition: background 0.15s, border-color 0.15s;
+          white-space: nowrap;
+        }
+        .expand-paper-btn:hover {
+          background: #f0f7ff;
+          border-color: #3b6ea5;
+        }
       `}</style>
 
       <nav className="nav-wrapper">
@@ -1048,8 +1544,8 @@ export default function PortfolioClient() {
           <section className="document-section">
             <h2 className="section-heading">Research Projects</h2>
             <ul className="document-list">
-              {researchEntries.map((entry) => (
-                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} />
+              {researchEntries.map((entry, idx) => (
+                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} onExpand={() => setExpandedResearchIdx(idx)} />
               ))}
             </ul>
           </section>
@@ -1123,6 +1619,9 @@ export default function PortfolioClient() {
           <a className="footer-link" href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </footer>
+      {expandedResearchIdx !== null ? (
+        <ResearchOverlay idx={expandedResearchIdx} onClose={() => setExpandedResearchIdx(null)} />
+      ) : null}
     </div>
   )
 }
