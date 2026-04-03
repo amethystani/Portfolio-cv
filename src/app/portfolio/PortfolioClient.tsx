@@ -454,10 +454,20 @@ const sectionSearchText: Record<SectionId, string> = {
     .map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')}`)
     .join(' '),
   research: researchEntries
-    .map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')} ${(entry.links ?? []).map((link) => link.label).join(' ')}`)
+    .map(
+      (entry) =>
+        `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')} ${(entry.sections ?? [])
+          .map((section) => `${section.label} ${section.items.join(' ')}`)
+          .join(' ')} ${(entry.links ?? []).map((link) => link.label).join(' ')}`
+    )
     .join(' '),
   projects: projectEntries
-    .map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')} ${(entry.links ?? []).map((link) => link.label).join(' ')}`)
+    .map(
+      (entry) =>
+        `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')} ${(entry.sections ?? [])
+          .map((section) => `${section.label} ${section.items.join(' ')}`)
+          .join(' ')} ${(entry.links ?? []).map((link) => link.label).join(' ')}`
+    )
     .join(' '),
   skills: `${skillRows.map((row) => `${row.label} ${row.text}`).join(' ')} ${courseworkRows
     .map((row) => `${row.label} ${row.text}`)
@@ -842,6 +852,211 @@ function PipelineDiagram() {
   )
 }
 
+function BFLSystemDiagram() {
+  const W = 720
+  const H = 250
+  const boxes = [
+    { x: 18, y: 92, w: 122, h: 74, title: 'Local Clients', lines: ['Train on private data', 'Honest + Byzantine mix'], fill: '#e0f2fe', stroke: '#38bdf8' },
+    { x: 174, y: 92, w: 132, h: 74, title: 'FD Sketch', lines: ['Compress G into k-dim', 'O(k²) memory'], fill: '#ede9fe', stroke: '#8b5cf6' },
+    { x: 340, y: 92, w: 146, h: 74, title: 'Spectral Sentinel', lines: ['MP upper edge λ+', 'KS + tail anomaly test'], fill: '#fef3c7', stroke: '#f59e0b' },
+    { x: 520, y: 92, w: 120, h: 74, title: 'Filter + Aggregate', lines: ['Drop suspicious updates', 'Mean over honest set'], fill: '#dcfce7', stroke: '#22c55e' },
+  ] as const
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="bfl-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Spectral Sentinel: decentralized federated learning loop
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          Detect adversarial gradients before aggregation, then anchor round state on-chain.
+        </text>
+
+        <rect x="486" y="32" width="186" height="52" rx="12" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" />
+        <text x="579" y="54" textAnchor="middle" fontSize="11" fill="#1d4ed8" fontWeight="700">Blockchain Consensus</text>
+        <text x="579" y="70" textAnchor="middle" fontSize="10" fill="#1e40af">Store round hash, honest set, shared state</text>
+
+        {boxes.map((box) => (
+          <g key={box.title}>
+            <rect x={box.x} y={box.y} width={box.w} height={box.h} rx="14" fill={box.fill} stroke={box.stroke} strokeWidth="2" />
+            <text x={box.x + box.w / 2} y={box.y + 24} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+              {box.title}
+            </text>
+            {box.lines.map((line, index) => (
+              <text
+                key={line}
+                x={box.x + box.w / 2}
+                y={box.y + 44 + index * 15}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#475569"
+              >
+                {line}
+              </text>
+            ))}
+          </g>
+        ))}
+
+        <line x1="140" y1="129" x2="172" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <line x1="306" y1="129" x2="338" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <line x1="486" y1="129" x2="518" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+
+        <path d="M580 84 L580 90" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <path d="M640 128 C675 128 688 128 700 128" stroke="#ec4899" strokeWidth="2" fill="none" markerEnd="url(#bfl-arrow)" />
+        <rect x="604" y="100" width="96" height="58" rx="14" fill="#fce7f3" stroke="#ec4899" strokeWidth="2" />
+        <text x="652" y="122" textAnchor="middle" fontSize="12" fill="#9d174d" fontWeight="700">Global Model</text>
+        <text x="652" y="140" textAnchor="middle" fontSize="10" fill="#9d174d">wₜ → wₜ₊₁</text>
+
+        <text x="258" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Sketch once per round</text>
+        <text x="414" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Reject if eigenspectrum leaves honest bulk</text>
+        <text x="579" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Polygon / BFT-style write-once audit trail</text>
+      </svg>
+    </div>
+  )
+}
+
+function SpectralSentinelDiagram() {
+  const W = 700
+  const H = 272
+  const chartX = 54
+  const chartY = 52
+  const chartW = 430
+  const chartH = 170
+  const lambdaPlusX = chartX + chartW * 0.68
+  const honestBulk = [
+    [chartX + 4, chartY + chartH - 10],
+    [chartX + 34, chartY + chartH - 48],
+    [chartX + 88, chartY + chartH - 108],
+    [chartX + 156, chartY + chartH - 142],
+    [chartX + 236, chartY + chartH - 112],
+    [chartX + 286, chartY + chartH - 74],
+    [chartX + 320, chartY + chartH - 26],
+    [chartX + 320, chartY + chartH],
+    [chartX + 4, chartY + chartH],
+  ]
+  const honestPath = honestBulk.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point[0]} ${point[1]}`).join(' ') + ' Z'
+  const spikes = [
+    { x: lambdaPlusX + 30, h: 82 },
+    { x: lambdaPlusX + 72, h: 126 },
+    { x: lambdaPlusX + 114, h: 92 },
+  ]
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Spectral detection intuition
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          Honest updates stay inside the Marchenko-Pastur bulk; Byzantine clients create tail spikes beyond λ+.
+        </text>
+
+        <line x1={chartX} y1={chartY + chartH} x2={chartX + chartW} y2={chartY + chartH} stroke="#94a3b8" strokeWidth="1.6" />
+        <line x1={chartX} y1={chartY + chartH} x2={chartX} y2={chartY} stroke="#94a3b8" strokeWidth="1.6" />
+        <text x={chartX + chartW / 2} y={chartY + chartH + 26} textAnchor="middle" fontSize="10" fill="#64748b">Gram eigenvalue λ</text>
+        <text x={18} y={chartY + chartH / 2} transform={`rotate(-90 18 ${chartY + chartH / 2})`} textAnchor="middle" fontSize="10" fill="#64748b">density</text>
+
+        {[0.2, 0.4, 0.6, 0.8].map((tick) => (
+          <line
+            key={tick}
+            x1={chartX + chartW * tick}
+            y1={chartY}
+            x2={chartX + chartW * tick}
+            y2={chartY + chartH}
+            stroke="#e2e8f0"
+            strokeWidth="1"
+            strokeDasharray="4 5"
+          />
+        ))}
+
+        <path d={honestPath} fill="#93c5fd" opacity="0.75" stroke="#2563eb" strokeWidth="2" />
+        <text x={chartX + 182} y={chartY + 34} textAnchor="middle" fontSize="11" fill="#1d4ed8" fontWeight="700">Honest bulk</text>
+
+        <line x1={lambdaPlusX} y1={chartY + 8} x2={lambdaPlusX} y2={chartY + chartH} stroke="#0f172a" strokeWidth="2" strokeDasharray="7 6" />
+        <text x={lambdaPlusX + 6} y={chartY + 18} fontSize="10" fill="#0f172a" fontWeight="700">λ+</text>
+        <text x={lambdaPlusX - 2} y={chartY + chartH + 16} textAnchor="end" fontSize="9.5" fill="#64748b">MP upper edge</text>
+
+        {spikes.map((spike, index) => (
+          <g key={spike.x}>
+            <rect x={spike.x} y={chartY + chartH - spike.h} width="20" height={spike.h} rx="5" fill="#fb7185" opacity="0.9" />
+            <text x={spike.x + 10} y={chartY + chartH - spike.h - 8} textAnchor="middle" fontSize="9" fill="#be123c" fontWeight="700">
+              b{index + 1}
+            </text>
+          </g>
+        ))}
+
+        <rect x="518" y="60" width="154" height="58" rx="12" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
+        <text x="595" y="82" textAnchor="middle" fontSize="11" fill="#c2410c" fontWeight="700">KS goodness-of-fit</text>
+        <text x="595" y="99" textAnchor="middle" fontSize="10" fill="#7c2d12">Compare empirical spectrum to MP law</text>
+
+        <rect x="518" y="130" width="154" height="58" rx="12" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.8" />
+        <text x="595" y="152" textAnchor="middle" fontSize="11" fill="#b91c1c" fontWeight="700">Tail anomaly test</text>
+        <text x="595" y="169" textAnchor="middle" fontSize="10" fill="#7f1d1d">Flag eigenvalues that escape the honest bulk</text>
+
+        <rect x="518" y="200" width="154" height="42" rx="12" fill="#ecfccb" stroke="#84cc16" strokeWidth="1.8" />
+        <text x="595" y="219" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Phase transition</text>
+        <text x="595" y="234" textAnchor="middle" fontSize="10" fill="#4d7c0f">Detectable when σ²f² &lt; 0.25</text>
+      </svg>
+    </div>
+  )
+}
+
+function BFLResultsDiagram() {
+  const W = 720
+  const H = 286
+  const cards = [
+    { x: 18, y: 42, w: 212, h: 206, title: 'Robust accuracy', subtitle: 'Mean over 144 attack-aggregator settings' },
+    { x: 254, y: 42, w: 212, h: 206, title: 'Certified tolerance', subtitle: 'Byzantine fraction before breakdown' },
+    { x: 490, y: 42, w: 212, h: 206, title: 'Memory at 1.5B params', subtitle: 'Full covariance vs FD sketch' },
+  ] as const
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Benchmark summary
+        </text>
+        <text x={W / 2} y={34} textAnchor="middle" fontSize="10" fill="#64748b">
+          The page focuses on the paper&apos;s headline system metrics instead of screenshotting raw plots.
+        </text>
+
+        {cards.map((card) => (
+          <g key={card.title}>
+            <rect x={card.x} y={card.y} width={card.w} height={card.h} rx="16" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+            <text x={card.x + 18} y={card.y + 26} fontSize="12" fill="#0f172a" fontWeight="700">{card.title}</text>
+            <text x={card.x + 18} y={card.y + 43} fontSize="9.5" fill="#64748b">{card.subtitle}</text>
+          </g>
+        ))}
+
+        <rect x="42" y="132" width="150" height="16" rx="8" fill="#e2e8f0" />
+        <rect x="42" y="132" width="98" height="16" rx="8" fill="#cbd5e1" />
+        <rect x="42" y="132" width="128" height="16" rx="8" fill="#94a3b8" opacity="0.65" />
+        <rect x="42" y="168" width="160" height="20" rx="10" fill="#2563eb" />
+        <text x="42" y="124" fontSize="10" fill="#475569">Prior defenses: 48% to 63%</text>
+        <text x="42" y="162" fontSize="10" fill="#1d4ed8">Spectral Sentinel: 78.4%</text>
+        <text x="182" y="183" textAnchor="end" fontSize="10" fill="#eff6ff" fontWeight="700">78.4</text>
+
+        <rect x="278" y="176" width="58" height="34" rx="10" fill="#cbd5e1" />
+        <rect x="352" y="122" width="58" height="88" rx="10" fill="#16a34a" />
+        <text x="307" y="168" textAnchor="middle" fontSize="10" fill="#475569">Baseline</text>
+        <text x="381" y="114" textAnchor="middle" fontSize="10" fill="#166534">Spectral Sentinel</text>
+        <text x="307" y="197" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">15%</text>
+        <text x="381" y="174" textAnchor="middle" fontSize="12" fill="#f0fdf4" fontWeight="700">38%</text>
+
+        <rect x="522" y="92" width="54" height="110" rx="10" fill="#e5e7eb" />
+        <rect x="612" y="186" width="54" height="16" rx="10" fill="#7c3aed" />
+        <text x="549" y="84" textAnchor="middle" fontSize="10" fill="#475569">Full covariance</text>
+        <text x="639" y="178" textAnchor="middle" fontSize="10" fill="#6d28d9">FD sketch</text>
+        <text x="549" y="218" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">9 TB</text>
+        <text x="639" y="218" textAnchor="middle" fontSize="12" fill="#6d28d9" fontWeight="700">8.7 GB</text>
+        <text x="594" y="238" textAnchor="middle" fontSize="11" fill="#6d28d9" fontWeight="700">1034× smaller</text>
+      </svg>
+    </div>
+  )
+}
+
 
 // ===== PAPER CONTENT =====
 
@@ -982,6 +1197,146 @@ function LLMBiasPaper() {
   )
 }
 
+function BlockchainFLPaper() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        Byzantine-Robust Decentralized Federated Learning on Blockchain
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Systems + ML preprint · 2025
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Spectral Sentinel research track ·{' '}
+        <a href="https://arxiv.org/abs/2512.12617" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          arXiv:2512.12617
+        </a>{' '}
+        ·{' '}
+        <a href="https://github.com/amethystani/blockchain_enabled_federated_learning-main" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/blockchain_enabled_federated_learning-main
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          Federated learning becomes fragile when malicious clients can poison gradient updates and when a central server acts as a single point of failure. This paper introduces <strong>Spectral Sentinel</strong>, a decentralized defense that combines <strong>Random Matrix Theory</strong>, <strong>Frequent Directions sketching</strong>, and <strong>blockchain-based round coordination</strong>. The core idea is to test whether the eigenspectrum of client gradient covariance still matches the honest Marchenko-Pastur bulk; deviations in the spectral tail expose Byzantine behavior before aggregation. The system is designed for large models by sketching gradients at <strong>O(k²)</strong> memory, then anchoring aggregation state on-chain for auditability and serverless coordination. Across <strong>144 attack-aggregator settings</strong>, the method reports <strong>78.4% mean robustness accuracy</strong>, <strong>38% Byzantine tolerance</strong>, and a <strong>1,034× memory reduction</strong> at 1.5B parameters versus full covariance tracking.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Research Question</h2>
+      <p style={paperParaStyle}>
+        The project starts from a simple systems question: <strong>can decentralized federated learning reject poisoned gradients without relying on a trusted coordinator?</strong> Classical federated learning assumes an aggregation server that receives client updates and applies a robust rule such as Krum or geometric median. That assumption breaks in adversarial environments. If the server is compromised, or if the defense is only heuristic, the entire training loop becomes brittle.
+      </p>
+      <p style={paperParaStyle}>
+        The paper therefore targets two constraints at once. First, the defense should be <strong>Byzantine-robust</strong> against malicious clients using gradient corruption attacks. Second, the protocol should be <strong>decentralized</strong>, with blockchain infrastructure providing shared state and auditability instead of a trusted server. The design goal is not just to patch one attack, but to build a defense whose detection rule is tied to the geometry of honest gradients rather than ad hoc score thresholds.
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Problem Setting</h2>
+      <p style={paperParaStyle}>
+        In this setting, each client trains locally and sends a model update or gradient summary to the network. Honest clients contribute noisy but statistically coherent gradients. Byzantine clients can instead submit updates crafted to steer the global model away from the optimum, destabilize convergence, or hide within the honest population. The hard part is that strong attacks can mimic the scale of normal updates while quietly shifting their covariance structure.
+      </p>
+      <p style={paperParaStyle}>
+        A second difficulty is scale. For modern transformer-size models, explicitly maintaining gradient covariance is prohibitively expensive. This is where the paper&apos;s structure matters: the same detector must work for high-dimensional updates, tolerate non-IID client data, and fit inside a decentralized training loop that writes only compact shared state to chain.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 1. End-to-end decentralized training loop</p>
+        <BFLSystemDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>3. Solution Overview</h2>
+      <h3 style={paperSubStyle}>3.1 Spectral Sentinel</h3>
+      <p style={paperParaStyle}>
+        Spectral Sentinel treats the matrix of client gradients as a statistical object rather than a bag of vectors. Under honest behavior, the Gram matrix follows the familiar <em>Marchenko-Pastur</em> shape: most eigenvalues live inside a predictable bulk, and the upper edge <em>λ+</em> acts as a boundary for normal variation. Byzantine updates disturb this structure, typically by creating excess mass in the spectral tail.
+      </p>
+      <p style={paperParaStyle}>
+        The detector therefore performs two checks. A <strong>KS goodness-of-fit test</strong> measures how far the observed eigenspectrum deviates from the honest bulk, while a <strong>tail anomaly test</strong> flags outlier eigenvalues that escape the expected support. Only updates that remain consistent with the honest spectral profile are kept for aggregation.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 2. Why the detector works</p>
+        <SpectralSentinelDiagram />
+      </div>
+
+      <h3 style={paperSubStyle}>3.2 Sketching for Large Models</h3>
+      <p style={paperParaStyle}>
+        Direct covariance tracking is impossible for billion-parameter models, so the method compresses gradients with <strong>Frequent Directions</strong>. Instead of storing the full matrix, the protocol keeps a compact sketch of width <em>k</em> and reconstructs the spectral signal from that approximation. The paper frames this as the difference between a theoretically elegant detector that would otherwise be intractable and a detector that is actually deployable.
+      </p>
+      <p style={paperParaStyle}>
+        The reported scaling result is the clearest systems contribution: at <strong>1.5B parameters</strong>, full covariance tracking would require roughly <strong>9 TB</strong>, while the sketch-based variant needs only <strong>8.7 GB</strong>. The writeup also claims that layer-wise decomposition preserves <strong>94%+ detection quality</strong> while cutting memory further, making the method practical for transformer attention, MLP, and embedding blocks.
+      </p>
+
+      <h3 style={paperSubStyle}>3.3 Blockchain Coordination</h3>
+      <p style={paperParaStyle}>
+        The blockchain layer is not there for decoration. It replaces the trusted coordinator with a shared, append-only control plane. Each round records compact metadata such as the model hash, filtered client set, and round state, allowing participants to agree on which updates were accepted without introducing a central server that can silently rewrite training history.
+      </p>
+      <p style={paperParaStyle}>
+        In the paper&apos;s framing, this gives the protocol a systems property that many robust FL defenses skip: <strong>auditability</strong>. Once a round is committed, Byzantine rollback is prevented by the consensus layer. The project notes deployment and validation on <strong>Polygon testnet/mainnet</strong>, which positions the work as a hybrid of robust statistics and decentralized systems engineering rather than only a model-side defense.
+      </p>
+
+      <h2 style={paperSectionStyle}>4. Algorithmic Core</h2>
+      <p style={paperParaStyle}>
+        The algorithm can be read as a four-step loop. <strong>(1)</strong> Clients compute local updates. <strong>(2)</strong> Updates are compressed into a sketch and converted into a covariance proxy. <strong>(3)</strong> The spectral detector estimates whether the observed eigenvalue distribution still matches honest behavior. <strong>(4)</strong> Only the accepted client subset is aggregated, and the resulting round state is committed on-chain before the next iteration.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Signal:</strong> use gradient covariance eigenspectra instead of per-client scalar heuristics.</li>
+        <li><strong>Decision rule:</strong> combine a KS fit test with explicit tail anomaly detection.</li>
+        <li><strong>Scalability:</strong> sketch gradients with Frequent Directions so spectral reasoning survives high dimension.</li>
+        <li><strong>Decentralization:</strong> publish model/round metadata through a blockchain consensus layer rather than a trusted server.</li>
+      </ul>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '16px 0 24px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Theory Signal</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.85, color: '#1e3a5f' }}>
+          The paper&apos;s strongest theoretical claim is a <strong>phase transition</strong>: Byzantine detection is guaranteed when <strong>σ²f² &lt; 0.25</strong>, and the regime extends to <strong>σ²f² &lt; 0.35</strong> when calibrated Gaussian noise is added for <strong>ε-DP with ε = 8</strong>. That matters because it turns the detector into a statistics-backed condition on the adversarial fraction and noise scale, not just an empirical heuristic.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>5. Experimental Protocol</h2>
+      <p style={paperParaStyle}>
+        Evaluation spans <strong>144 attack-aggregator settings</strong>, described as <strong>12 attack types × 12 configurations</strong>. The project explicitly references attacks such as <strong>MinMax</strong>, <strong>Gaussian</strong>, <strong>Label Flip</strong>, and <strong>ALIE</strong>, and compares Spectral Sentinel against conventional robust FL baselines including FedAvg, Krum, Geometric Median, and prior Byzantine defenses such as CRFL and ByzShield.
+      </p>
+      <p style={paperParaStyle}>
+        This breadth is important because many defenses look good under one attack but collapse when the adversary or the aggregation rule changes. The evaluation philosophy here is closer to systems stress-testing: robustness has to survive across attack families, not just on a single curated benchmark.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 3. Headline results</p>
+        <BFLResultsDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>6. Results &amp; Takeaways</h2>
+      <p style={paperParaStyle}>
+        The page-level summary is straightforward. Spectral Sentinel reaches <strong>78.4% mean accuracy</strong> across the 144 evaluated settings, outperforming prior defenses reported in the <strong>48% to 63%</strong> range. More importantly, the method claims <strong>38% Byzantine tolerance</strong> compared with roughly <strong>15%</strong> for CRFL/ByzShield-style baselines, which is a materially different operating regime.
+      </p>
+      <p style={paperParaStyle}>
+        On the systems side, the result that stands out is memory. Robust covariance-based filtering is usually dismissed as too expensive for large models, but the sketching argument changes that trade-off enough to be interesting in practice. Going from <strong>9 TB to 8.7 GB</strong> at 1.5B parameters is what makes the rest of the pipeline plausible. Without that compression step, the spectral detector would remain mostly theoretical.
+      </p>
+      <p style={paperParaStyle}>
+        The broader takeaway is that the work does not treat decentralization and robustness as separate concerns. The blockchain layer handles coordination and auditability, while the spectral layer handles adversarial statistics. That pairing gives the paper its identity: it is not merely a new aggregator, and it is not merely a blockchain wrapper around ordinary federated learning.
+      </p>
+
+      <h2 style={paperSectionStyle}>7. Why This Matters</h2>
+      <p style={paperParaStyle}>
+        Most robust federated learning papers pick one side of the problem. They either improve the defense rule while keeping a central server, or they decentralize the system without a principled adversarial filter. This work is more ambitious: it tries to show that the <strong>statistical geometry of honest gradients</strong> can drive the defense while the <strong>coordination plane moves on-chain</strong>.
+      </p>
+      <p style={paperParaStyle}>
+        From a portfolio perspective, that makes the project unusually cross-disciplinary. It combines random matrix theory, distributed optimization, sketching algorithms, and blockchain systems. The custom diagrams on this page focus on that systems synthesis, because that is the real contribution behind the paper&apos;s headline numbers.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>Marchenko, V.A. and Pastur, L.A. (1967). Distribution of eigenvalues for some sets of random matrices.</li>
+        <li>Liberty, E. (2013). Simple and deterministic matrix sketching.</li>
+        <li>Blanchard, P. et al. (2017). Machine learning with adversaries: Byzantine tolerant gradient descent.</li>
+        <li>Karimireddy, S.P. et al. (2022). Byzantine-robust learning on heterogeneous datasets via bucketing.</li>
+        <li>Mishra, A. (2025). Byzantine-Robust Decentralized Federated Learning on Blockchain. arXiv:2512.12617.</li>
+      </ul>
+    </div>
+  )
+}
+
 function GenericResearchPaper({ entry }: { entry: Entry }) {
   return (
     <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
@@ -1036,7 +1391,13 @@ function ResearchOverlay({ idx, onClose }: { idx: number; onClose: () => void })
         </span>
       </div>
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 32px 96px' }}>
-        {idx === 0 ? <LLMBiasPaper /> : <GenericResearchPaper entry={entry} />}
+        {entry.title === 'Scholarly Bias in LLMs: Multi-Model Evaluation Platform' ? (
+          <LLMBiasPaper />
+        ) : entry.title === 'Byzantine-Robust Decentralized Federated Learning on Blockchain' ? (
+          <BlockchainFLPaper />
+        ) : (
+          <GenericResearchPaper entry={entry} />
+        )}
       </div>
     </div>
   )
