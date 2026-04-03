@@ -29,6 +29,8 @@ type FactRow = {
   text: string
 }
 
+type LegalPage = 'imprint' | 'privacy'
+
 const navLinks: Array<{ id: SectionId; name: string }> = [
   { id: 'home', name: 'Home' },
   { id: 'about', name: 'About' },
@@ -190,7 +192,7 @@ const researchEntries: Entry[] = [
       {
         label: 'Approach',
         items: [
-          'Embedded 49,633 cases in a Poincaré ball using HGCNs — radial position encodes court authority, angular position captures semantic similarity.',
+          'Embedded 49,634 cases in a Poincaré ball using HGCNs — radial position encodes court authority, angular position captures semantic similarity.',
           'Three specialized agents (Linker, Interpreter, Conflict) coordinate via Nash Equilibrium to resolve citation conflicts. Combined five retrieval algorithms (semantic, structural, citation-weighted, hyperbolic, GNN-enhanced) through adversarial prosecutor-defense-judge simulation.',
           'Temporal decay scoring with a "resurrection" boost for re-cited old precedents; Toulmin argumentation extraction decomposes claims, grounds, warrants, and rebuttals.',
         ],
@@ -198,7 +200,7 @@ const researchEntries: Entry[] = [
       {
         label: 'Results',
         items: [
-          'Precision@5 of 0.92; 94% citation conflict resolution; Gromov delta of 0.029 — 13.7× better hierarchical structure capture vs. Euclidean baseline.',
+          'Precision@5 of 0.896; 98.3% citation conflict resolution; Gromov delta of 0.029 — 13.7× better hierarchical structure capture vs. Euclidean baseline, with a +62.4% resurrection effect for re-cited precedents.',
         ],
       },
     ],
@@ -1060,6 +1062,198 @@ function BFLResultsDiagram() {
   )
 }
 
+function LegalHyperbolicDiagram() {
+  const W = 840
+  const H = 300
+  const cx = 620
+  const cy = 165
+  const r = 92
+  const courtPoints = [
+    { x: cx - 10, y: cy - 8, label: 'Supreme', color: '#2563eb' },
+    { x: cx + 18, y: cy - 38, label: 'High', color: '#7c3aed' },
+    { x: cx - 58, y: cy + 22, label: 'District', color: '#ec4899' },
+    { x: cx + 52, y: cy + 34, label: 'District', color: '#ec4899' },
+  ] as const
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Why hyperbolic geometry fits legal precedent
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          LegalNexus maps authority to radius and semantic similarity to angle, instead of flattening everything into one Euclidean neighborhood.
+        </text>
+
+        <rect x="34" y="66" width="284" height="192" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <text x="176" y="92" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Flat Euclidean space</text>
+        <text x="176" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">Authority and semantic context mix together</text>
+        <circle cx="110" cy="170" r="13" fill="#2563eb" opacity="0.9" />
+        <circle cx="162" cy="148" r="13" fill="#7c3aed" opacity="0.82" />
+        <circle cx="198" cy="188" r="13" fill="#ec4899" opacity="0.82" />
+        <circle cx="236" cy="156" r="13" fill="#ec4899" opacity="0.62" />
+        <circle cx="138" cy="210" r="13" fill="#2563eb" opacity="0.5" />
+        <path d="M110 170 C142 160 168 154 198 188" stroke="#94a3b8" strokeWidth="1.8" fill="none" strokeDasharray="5 6" />
+        <path d="M162 148 C190 130 216 132 236 156" stroke="#94a3b8" strokeWidth="1.8" fill="none" strokeDasharray="5 6" />
+        <text x="176" y="236" textAnchor="middle" fontSize="10" fill="#64748b">Hierarchy becomes noisy and hard to preserve</text>
+
+        <rect x="358" y="66" width="448" height="192" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <text x="582" y="92" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Poincaré ball representation</text>
+        <text x="582" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">Small radius = higher authority, angle = semantic neighborhood</text>
+        <circle cx={cx} cy={cy} r={r} fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <circle cx={cx} cy={cy} r="62" fill="none" stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="4 5" />
+        <circle cx={cx} cy={cy} r="32" fill="none" stroke="#bfdbfe" strokeWidth="1.5" strokeDasharray="4 5" />
+        <line x1={cx} y1={cy} x2={cx + 70} y2={cy - 48} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
+        <text x={cx + 80} y={cy - 54} fontSize="9.5" fill="#64748b">angle = legal topic / semantics</text>
+        <line x1={cx} y1={cy} x2={cx} y2={cy - 90} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
+        <text x={cx + 10} y={cy - 96} fontSize="9.5" fill="#64748b">radius = court authority</text>
+
+        {courtPoints.map((point) => (
+          <g key={`${point.label}-${point.x}`}>
+            <circle cx={point.x} cy={point.y} r="10" fill={point.color} />
+            <text x={point.x + 14} y={point.y + 4} fontSize="9.5" fill="#334155">{point.label}</text>
+          </g>
+        ))}
+
+        <text x="735" y="188" textAnchor="middle" fontSize="10" fill="#64748b">validation radii</text>
+        <text x="735" y="206" textAnchor="middle" fontSize="9.5" fill="#2563eb">Supreme 0.540</text>
+        <text x="735" y="222" textAnchor="middle" fontSize="9.5" fill="#7c3aed">High 0.575</text>
+        <text x="735" y="238" textAnchor="middle" fontSize="9.5" fill="#ec4899">District 0.619</text>
+      </svg>
+    </div>
+  )
+}
+
+function LegalAgentDebateDiagram() {
+  const W = 860
+  const H = 320
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="legal-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Multi-agent debate loop for graph construction
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          Linker proposes edges, Interpreter labels them, Conflict removes cycles and contradictions until the graph stabilizes.
+        </text>
+
+        <rect x="52" y="86" width="176" height="90" rx="18" fill="#dbeafe" stroke="#3b82f6" strokeWidth="2" />
+        <text x="140" y="112" textAnchor="middle" fontSize="12" fill="#1e3a8a" fontWeight="700">Linker Agent</text>
+        <text x="140" y="132" textAnchor="middle" fontSize="10" fill="#1e40af">7 regex patterns + LLM reasoning</text>
+        <text x="140" y="148" textAnchor="middle" fontSize="10" fill="#1e40af">proposes citation candidates</text>
+
+        <rect x="342" y="70" width="176" height="106" rx="18" fill="#ede9fe" stroke="#8b5cf6" strokeWidth="2" />
+        <text x="430" y="96" textAnchor="middle" fontSize="12" fill="#5b21b6" fontWeight="700">Interpreter Agent</text>
+        <text x="430" y="116" textAnchor="middle" fontSize="10" fill="#6d28d9">classifies edge semantics</text>
+        <text x="430" y="132" textAnchor="middle" fontSize="10" fill="#6d28d9">FOLLOW · DISTINGUISH</text>
+        <text x="430" y="148" textAnchor="middle" fontSize="10" fill="#6d28d9">OVERRULE</text>
+
+        <rect x="632" y="86" width="176" height="90" rx="18" fill="#fee2e2" stroke="#ef4444" strokeWidth="2" />
+        <text x="720" y="112" textAnchor="middle" fontSize="12" fill="#991b1b" fontWeight="700">Conflict Agent</text>
+        <text x="720" y="132" textAnchor="middle" fontSize="10" fill="#b91c1c">detects cycles, contradictions,</text>
+        <text x="720" y="148" textAnchor="middle" fontSize="10" fill="#b91c1c">authority inversions</text>
+
+        <rect x="296" y="214" width="268" height="60" rx="16" fill="#dcfce7" stroke="#22c55e" strokeWidth="2" />
+        <text x="430" y="238" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Stable precedent graph</text>
+        <text x="430" y="256" textAnchor="middle" fontSize="10" fill="#15803d">Conflict-resolved knowledge graph used for retrieval</text>
+
+        <circle cx="430" cy="190" r="36" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        <text x="430" y="184" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Shared</text>
+        <text x="430" y="199" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Graph State</text>
+
+        <line x1="228" y1="131" x2="392" y2="178" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="430" y1="176" x2="430" y2="154" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="632" y1="131" x2="468" y2="178" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="430" y1="226" x2="430" y2="214" stroke="#22c55e" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+
+        <path d="M394 200 C340 214 286 216 206 184" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
+        <path d="M466 200 C520 214 574 216 654 184" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
+        <text x="190" y="212" fontSize="9.5" fill="#64748b">payoff feedback</text>
+        <text x="636" y="212" fontSize="9.5" fill="#64748b">best-response update</text>
+
+        <text x="430" y="298" textAnchor="middle" fontSize="10" fill="#64748b">
+          Repo docs describe the loop as a Nash-style equilibrium process over graph quality, precision, and conflict penalties.
+        </text>
+      </svg>
+    </div>
+  )
+}
+
+function LegalRetrievalDiagram() {
+  const W = 880
+  const H = 320
+  const signalCards = [
+    { x: 230, y: 80, w: 130, h: 40, label: 'Semantic', sub: 'embedding similarity', fill: '#dbeafe', stroke: '#3b82f6' },
+    { x: 230, y: 132, w: 130, h: 40, label: 'Structural', sub: 'graph traversal', fill: '#ede9fe', stroke: '#8b5cf6' },
+    { x: 230, y: 184, w: 130, h: 40, label: 'Citation', sub: 'authority weighting', fill: '#fee2e2', stroke: '#ef4444' },
+    { x: 376, y: 80, w: 130, h: 40, label: 'Hyperbolic', sub: 'Poincaré distance', fill: '#fef3c7', stroke: '#f59e0b' },
+    { x: 376, y: 132, w: 130, h: 40, label: 'GNN', sub: 'message-passing refinement', fill: '#dcfce7', stroke: '#22c55e' },
+  ] as const
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="retr-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Retrieval, argumentation, and validation stack
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          LegalNexus combines multiple search signals, then layers temporal scoring and Toulmin extraction on top of the ranked cases.
+        </text>
+
+        <rect x="36" y="118" width="138" height="72" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="105" y="144" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Legal query</text>
+        <text x="105" y="163" textAnchor="middle" fontSize="10" fill="#64748b">facts, issue, precedent need</text>
+
+        {signalCards.map((card) => (
+          <g key={card.label}>
+            <rect x={card.x} y={card.y} width={card.w} height={card.h} rx="14" fill={card.fill} stroke={card.stroke} strokeWidth="1.8" />
+            <text x={card.x + card.w / 2} y={card.y + 16} textAnchor="middle" fontSize="10.5" fill="#0f172a" fontWeight="700">{card.label}</text>
+            <text x={card.x + card.w / 2} y={card.y + 30} textAnchor="middle" fontSize="9" fill="#475569">{card.sub}</text>
+          </g>
+        ))}
+
+        <rect x="546" y="110" width="138" height="88" rx="18" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <text x="615" y="136" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Hybrid ranker</text>
+        <text x="615" y="154" textAnchor="middle" fontSize="10" fill="#2563eb">fuses 5 signals into</text>
+        <text x="615" y="170" textAnchor="middle" fontSize="10" fill="#2563eb">top-k candidate precedents</text>
+
+        <rect x="716" y="82" width="132" height="62" rx="16" fill="#f3e8ff" stroke="#a855f7" strokeWidth="2" />
+        <text x="782" y="107" textAnchor="middle" fontSize="11" fill="#7e22ce" fontWeight="700">Toulmin layer</text>
+        <text x="782" y="124" textAnchor="middle" fontSize="9.5" fill="#7e22ce">claim · ground · warrant</text>
+
+        <rect x="716" y="156" width="132" height="62" rx="16" fill="#ecfccb" stroke="#84cc16" strokeWidth="2" />
+        <text x="782" y="181" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Temporal scorer</text>
+        <text x="782" y="198" textAnchor="middle" fontSize="9.5" fill="#4d7c0f">decay + resurrection boost</text>
+
+        <rect x="716" y="232" width="132" height="52" rx="16" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="782" y="252" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Validated output</text>
+        <text x="782" y="269" textAnchor="middle" fontSize="9.5" fill="#64748b">ranked, interpretable precedents</text>
+
+        <line x1="174" y1="154" x2="228" y2="154" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#retr-arrow)" />
+        <line x1="360" y1="100" x2="546" y2="136" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="360" y1="152" x2="546" y2="154" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="360" y1="204" x2="546" y2="172" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="506" y1="100" x2="546" y2="126" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="506" y1="152" x2="546" y2="162" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="684" y1="136" x2="716" y2="113" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="684" y1="154" x2="716" y2="187" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="782" y1="218" x2="782" y2="232" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+
+        <text x="110" y="296" fontSize="10" fill="#64748b">49,634 cases · 768-dim embeddings · 3 court levels · 4 legal topics</text>
+        <text x="500" y="296" fontSize="10" fill="#64748b">Validation: P@5 0.896 · NDCG@10 0.893 · conflict resolution 98.3% · Gromov δ 0.029</text>
+      </svg>
+    </div>
+  )
+}
+
 
 // ===== PAPER CONTENT =====
 
@@ -1340,6 +1534,137 @@ function BlockchainFLPaper() {
   )
 }
 
+function LegalNexusPaper() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        Multi-Agent Hyperbolic Framework for Legal Reasoning &amp; Retrieval
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Legal AI, Geometric Deep Learning · 2025
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Repo-grounded research page ·{' '}
+        <a href="https://github.com/amethystani/legalnexus-backend" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/legalnexus-backend
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          LegalNexus is a research-grade legal retrieval and reasoning system built around a simple claim: <strong>legal precedent is hierarchical, relational, and adversarial</strong>, so the retrieval stack should reflect that structure explicitly. The framework combines <strong>Hyperbolic Graph Convolutional Networks</strong> in a <strong>Poincaré ball</strong>, a <strong>three-agent graph construction loop</strong>, a <strong>five-signal hybrid retrieval system</strong>, <strong>Toulmin argument extraction</strong>, and <strong>temporal resurrection scoring</strong> for older but still-cited precedents. The repository README and validation reports describe evaluation on <strong>49,634 legal cases</strong> with <strong>768-dimensional embeddings</strong>, reporting <strong>Precision@5 = 0.896</strong>, <strong>NDCG@10 = 0.893</strong>, <strong>MAP@100 = 0.816</strong>, <strong>Gromov δ = 0.029</strong>, <strong>98.3% citation conflict resolution</strong>, and a <strong>+62.4% resurrection effect</strong> for re-cited old cases.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Research Question</h2>
+      <p style={paperParaStyle}>
+        Traditional legal search systems collapse a hard problem into vector similarity: embed a query, embed a case, and rank by closeness. That misses the actual shape of legal reasoning. Courts operate in authority hierarchies, precedents cite and override each other, and good legal research requires not only finding similar text but also surfacing the strongest supporting and opposing authorities.
+      </p>
+      <p style={paperParaStyle}>
+        This project therefore asks a sharper question: <strong>can legal retrieval become materially better if the model encodes hierarchy, argument structure, and citation conflict directly rather than treating cases as flat documents?</strong> LegalNexus answers that by combining geometric deep learning with multi-agent graph refinement and retrieval fusion.
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Dataset And Problem Setting</h2>
+      <p style={paperParaStyle}>
+        The repo documents a corpus of <strong>49,634 legal cases</strong> embedded into a <strong>768-dimensional space</strong>, with metadata spanning <strong>three court levels</strong> and <strong>four legal topic clusters</strong> across a long time range. The working assumption is that legal citation networks are not random graphs. They behave more like structured hierarchies: higher courts sit nearer the center of authority, while lower courts branch outward.
+      </p>
+      <p style={paperParaStyle}>
+        That matters because the retrieval problem is not only about topical similarity. A useful system has to respect <strong>court authority</strong>, <strong>citation structure</strong>, <strong>temporal relevance</strong>, and <strong>argument semantics</strong> at the same time. The framework uses all four.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 1. Hyperbolic hierarchy encoding</p>
+        <LegalHyperbolicDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>3. Hyperbolic Representation</h2>
+      <p style={paperParaStyle}>
+        The first core move is geometric. Instead of forcing legal precedent into Euclidean space, LegalNexus uses <strong>Hyperbolic GCNs</strong> and embeds cases inside a <strong>Poincaré ball</strong>. The repo README describes the intuition directly: the <strong>radial coordinate</strong> captures authority, while the <strong>angular coordinate</strong> captures semantic similarity. In other words, being close to the center means being institutionally important; being close by angle means being about similar legal issues.
+      </p>
+      <p style={paperParaStyle}>
+        The validation report backs that story with a concrete court-radius ordering: <strong>Supreme Court = 0.540</strong>, <strong>High Court = 0.575</strong>, <strong>District Court = 0.619</strong>. That monotonic pattern is exactly what the geometry is supposed to recover. The same report gives <strong>Gromov δ = 0.029</strong> versus a random baseline of <strong>0.404</strong>, which the project interprets as <strong>13.7× better tree-likeness</strong> than the baseline comparison.
+      </p>
+      <p style={paperParaStyle}>
+        The technical implication is important: hierarchy is not bolted on as a metadata feature after retrieval. It is built into the space itself. That gives the downstream search and reasoning modules a representation that already “knows” something about judicial structure before the first ranking step happens.
+      </p>
+
+      <h2 style={paperSectionStyle}>4. Multi-Agent Graph Construction</h2>
+      <p style={paperParaStyle}>
+        The repo does not stop at embeddings. It also treats citation graph construction as a coordination problem between specialized agents. The documented design uses three roles: a <strong>Linker</strong> that proposes candidate citations, an <strong>Interpreter</strong> that labels the edge semantics, and a <strong>Conflict</strong> agent that detects cycles, contradictions, and authority inversions.
+      </p>
+      <p style={paperParaStyle}>
+        The architecture docs frame this as a <strong>Nash-style best-response loop</strong>. Each agent updates its output with reference to the shared graph state until no single player can improve the joint state alone. Whether or not one wants to take the game-theoretic formalism literally, the engineering point is clear: the graph is refined through repeated critique rather than a single extraction pass.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 2. Three-agent graph refinement loop</p>
+        <LegalAgentDebateDiagram />
+      </div>
+
+      <p style={paperParaStyle}>
+        The repository materials assign concrete jobs to those agents. Linker uses citation pattern extraction and model reasoning to propose candidate edges. Interpreter assigns legal relationship types such as <strong>FOLLOW</strong>, <strong>DISTINGUISH</strong>, and <strong>OVERRULE</strong>. Conflict acts as a critic, removing logical inconsistencies. In the validation report, this machinery resolves <strong>1,193 of 1,214 detected conflicts</strong>, a <strong>98.3%</strong> success rate.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Hybrid Retrieval And Legal Reasoning</h2>
+      <p style={paperParaStyle}>
+        Retrieval is also intentionally plural. The main README describes a <strong>five-part hybrid retriever</strong>: semantic search, structural graph search, citation-weighted authority scoring, hyperbolic nearest-neighbor search, and GNN-enhanced retrieval. The point is not merely to ensemble more models; it is to assemble different legal signals that matter for precedent.
+      </p>
+      <p style={paperParaStyle}>
+        On top of that, the system layers two reasoning-oriented modules. The first is a <strong>Toulmin extractor</strong> that decomposes legal text into claims, grounds, warrants, backing, and rebuttals. The second is a <strong>temporal scorer</strong> that discounts stale authority but boosts old cases that continue to receive citations. This “resurrection” mechanism reflects something real about law: some precedents age out, while others become canonical and return to relevance.
+      </p>
+
+      <div style={{ background: '#fafafa', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 20px', margin: '24px 0' }}>
+        <p style={{ fontSize: '11.5px', color: '#6b7280', margin: '0 0 10px', fontFamily: 'sans-serif', fontWeight: 600 }}>Figure 3. Retrieval and reasoning stack</p>
+        <LegalRetrievalDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>6. Algorithmic Notes</h2>
+      <p style={paperParaStyle}>
+        The repo README exposes the retrieval internals more concretely than most portfolio pages do. The GNN pipeline is described as a <strong>4-layer graph network</strong> with <strong>k = 150 neighbors</strong> and skip-connected message aggregation. The evaluation stack then computes Precision, NDCG, MAP, hierarchy validation, Gromov hyperbolicity, Toulmin extraction accuracy, temporal scoring effects, and citation conflict resolution under one consolidated evaluation run.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Geometry:</strong> Poincaré distance and Möbius operations support message passing in hyperbolic space.</li>
+        <li><strong>Retrieval:</strong> multiple legal signals are fused rather than trusting one similarity function.</li>
+        <li><strong>Argument structure:</strong> Toulmin extraction makes the returned precedent set more inspectable.</li>
+        <li><strong>Time-awareness:</strong> old but still-cited cases are boosted through resurrection scoring instead of being discarded by age alone.</li>
+      </ul>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '16px 0 24px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Key Validation Metrics</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.95, color: '#1e3a5f' }}>
+          <strong>Precision@5:</strong> 0.896 · <strong>Precision@10:</strong> 0.889 · <strong>NDCG@10:</strong> 0.893 · <strong>MAP@100:</strong> 0.816 · <strong>Gromov δ:</strong> 0.029 · <strong>Toulmin accuracy:</strong> 100% · <strong>Conflict resolution:</strong> 98.3% · <strong>Resurrection effect:</strong> +62.4%
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>7. Results And Interpretation</h2>
+      <p style={paperParaStyle}>
+        The retrieval metrics are strong enough to make the system interesting on their own: <strong>Precision@5 = 0.896</strong> means nearly nine of every ten cases surfaced in the top five are relevant under the project&apos;s evaluation setup. But the more distinctive result is how many different properties are validated together. The repo does not present LegalNexus as “just” another reranker. It presents it as a system where <strong>hierarchy preservation</strong>, <strong>citation consistency</strong>, <strong>argument extraction</strong>, and <strong>temporal relevance</strong> are all first-class objectives.
+      </p>
+      <p style={paperParaStyle}>
+        That bundled framing is what separates the project from ordinary legal search demos. A Euclidean embedding model might recover semantic neighbors. A citation graph might recover authority. A text parser might recover argument spans. LegalNexus tries to make those pieces reinforce each other rather than live in separate pipelines.
+      </p>
+
+      <h2 style={paperSectionStyle}>8. Why This Research Matters</h2>
+      <p style={paperParaStyle}>
+        Legal retrieval is one of the clearest cases where geometry and systems design both matter. A search result is only useful if it is not just semantically similar, but procedurally defensible: authority must be respected, contradictions need to be surfaced, and the legal theory behind a result should be inspectable. Hyperbolic geometry helps with the first part, while the agent loop and Toulmin layer help with the second.
+      </p>
+      <p style={paperParaStyle}>
+        From a research perspective, the project is compelling because it sits at the boundary of <strong>Legal AI</strong>, <strong>Geometric Deep Learning</strong>, <strong>information retrieval</strong>, and <strong>multi-agent reasoning</strong>. It is the kind of work that is interesting not only for benchmark scores, but because it proposes a structured way to think about legal precedent as a hierarchy-plus-argument problem rather than a document search problem.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>LegalNexus Backend README and validation materials in the public repository.</li>
+        <li>Nickel, M. and Kiela, D. (2017). Poincaré Embeddings for Learning Hierarchical Representations.</li>
+        <li>Ganea, O.-E., Becigneul, G., and Hofmann, T. (2018). Hyperbolic Neural Networks.</li>
+        <li>Nash, J. (1951). Non-Cooperative Games.</li>
+        <li>Toulmin, S. (1958). The Uses of Argument.</li>
+      </ul>
+    </div>
+  )
+}
+
 function GenericResearchPaper({ entry }: { entry: Entry }) {
   return (
     <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
@@ -1398,8 +1723,240 @@ function ResearchOverlay({ idx, onClose }: { idx: number; onClose: () => void })
           <LLMBiasPaper />
         ) : entry.title === 'Byzantine-Robust Decentralized Federated Learning on Blockchain' ? (
           <BlockchainFLPaper />
+        ) : entry.title === 'Multi-Agent Hyperbolic Framework for Legal Reasoning & Retrieval' ? (
+          <LegalNexusPaper />
         ) : (
           <GenericResearchPaper entry={entry} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function LegalOverlay({
+  page,
+  onClose,
+  onSwitch,
+}: {
+  page: LegalPage
+  onClose: () => void
+  onSwitch: (nextPage: LegalPage) => void
+}) {
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [])
+
+  const title = page === 'imprint' ? 'Imprint' : 'Privacy Policy'
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#ffffff', overflowY: 'auto', overflowX: 'hidden' }}>
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          background: 'rgba(255,255,255,0.97)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '10px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0 }}>
+          <button
+            onClick={onClose}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'none',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              color: '#374151',
+              fontSize: '13px',
+              padding: '6px 14px',
+              fontFamily: 'sans-serif',
+            }}
+          >
+            ← Back
+          </button>
+          <span style={{ color: '#9ca3af', fontSize: '13px', fontFamily: 'sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {title}
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontFamily: 'sans-serif' }}>
+          <button
+            onClick={() => onSwitch('imprint')}
+            style={{
+              border: '1px solid #d1d5db',
+              borderRadius: '999px',
+              padding: '6px 12px',
+              background: page === 'imprint' ? '#eff6ff' : 'transparent',
+              color: page === 'imprint' ? '#1d4ed8' : '#475569',
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+          >
+            Imprint
+          </button>
+          <button
+            onClick={() => onSwitch('privacy')}
+            style={{
+              border: '1px solid #d1d5db',
+              borderRadius: '999px',
+              padding: '6px 12px',
+              background: page === 'privacy' ? '#eff6ff' : 'transparent',
+              color: page === 'privacy' ? '#1d4ed8' : '#475569',
+              fontSize: '12px',
+              cursor: 'pointer',
+            }}
+          >
+            Privacy Policy
+          </button>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 32px 96px', fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+        <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+          {title}
+        </h1>
+        <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+          Animesh Mishra · Personal portfolio website
+        </p>
+        <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+          Last updated for the current portfolio build.
+        </p>
+
+        {page === 'imprint' ? (
+          <>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Operator Notice</div>
+              <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+                This website is operated as a personal portfolio and research showcase. It is intended to present academic work, engineering projects, public profiles, and contact information in a structured format for recruiters, collaborators, and other professional visitors.
+              </p>
+            </div>
+
+            <h2 style={paperSectionStyle}>1. Site Operator</h2>
+            <p style={paperParaStyle}>
+              The person responsible for this website and its editorial content is <strong>Animesh Mishra</strong>, based in <strong>Delhi, India</strong>. The portfolio is maintained directly by the site operator and is used to publish information about research, software engineering work, publications, project links, and selected professional background details.
+            </p>
+            <p style={paperParaStyle}>
+              Primary contact: <a className="inline-link" href="mailto:am847@snu.edu.in">am847@snu.edu.in</a>. Public professional profiles linked from this website include{' '}
+              <a className="inline-link" href="https://linkedin.com/in/animeshmishra0" target="_blank" rel="noopener noreferrer">LinkedIn</a> and{' '}
+              <a className="inline-link" href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer">GitHub</a>.
+            </p>
+
+            <h2 style={paperSectionStyle}>2. Scope Of The Website</h2>
+            <p style={paperParaStyle}>
+              This site is informational in nature. It does not offer paid subscriptions, public user accounts, community posting features, or transactional services. Its purpose is limited to presenting portfolio content and enabling direct contact through external links or the operator&apos;s published email address.
+            </p>
+            <p style={paperParaStyle}>
+              Content on the website may include project descriptions, research summaries, links to third-party repositories, publication pages, resumes, and other professional materials. Some of that content necessarily reflects ongoing work, experiments, preprints, or public-facing summaries that may evolve over time.
+            </p>
+
+            <h2 style={paperSectionStyle}>3. Responsibility For Content</h2>
+            <p style={paperParaStyle}>
+              The operator is responsible for original content published directly on this website. Reasonable care is taken to keep technical and professional information current, but no guarantee is made that every page, date, metric, or external link will always remain complete, current, or error-free. Research summaries, in particular, may simplify methods or ongoing results for presentation purposes.
+            </p>
+            <p style={paperParaStyle}>
+              If you believe any statement on this website is materially inaccurate, infringes rights, or should be clarified or removed, contact the operator using the email address above. Legitimate correction requests will be reviewed in good faith.
+            </p>
+
+            <h2 style={paperSectionStyle}>4. External Links And Third-Party Destinations</h2>
+            <p style={paperParaStyle}>
+              This website links to third-party platforms including GitHub, LinkedIn, arXiv, and other externally hosted destinations. Those sites are operated independently and maintain their own terms, availability, privacy practices, and data collection behavior. Following a link from this portfolio transfers you to the respective third-party service.
+            </p>
+            <p style={paperParaStyle}>
+              The presence of an external link is intended as a reference or portfolio citation only. It should not be read as an endorsement of all content, security posture, or policies of the linked service.
+            </p>
+
+            <h2 style={paperSectionStyle}>5. Intellectual Property And Reuse</h2>
+            <p style={paperParaStyle}>
+              Unless otherwise indicated, the original text, layout decisions, portfolio summaries, and custom explanatory diagrams on this website are created for this portfolio and should not be reproduced at scale or republished as if authored by another party. Project names, research titles, repository names, third-party logos, and externally hosted assets remain subject to the rights of their respective owners.
+            </p>
+            <p style={paperParaStyle}>
+              If you wish to reference or quote material from this site for professional or academic purposes, the preferred approach is to cite the relevant public repository, publication link, or contact the operator directly for permission where appropriate.
+            </p>
+
+            <h2 style={paperSectionStyle}>6. Technical Delivery</h2>
+            <p style={paperParaStyle}>
+              The site is delivered as a web application and may rely on hosting, CDN, or infrastructure providers to serve pages and static assets. Those providers may process ordinary network-level technical data required for secure delivery, such as IP address, request path, timestamp, user agent, and related server log information.
+            </p>
+            <p style={paperParaStyle}>
+              This imprint page is meant to identify the operator and explain the editorial nature of the site. It is not intended to replace jurisdiction-specific legal advice. If a specific legal notice is required for a collaboration, removal request, or compliance inquiry, contact the operator directly.
+            </p>
+          </>
+        ) : (
+          <>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Privacy Summary</div>
+              <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+                The portfolio is primarily informational. The application code for this site does not intentionally add analytics trackers, ad scripts, public user accounts, or portfolio-page cookie banners. The main personal data flow occurs if you choose to contact the operator or visit third-party links.
+              </p>
+            </div>
+
+            <h2 style={paperSectionStyle}>1. What This Website Does</h2>
+            <p style={paperParaStyle}>
+              This website is a personal portfolio used to display professional information, research summaries, project links, a resume, and related materials. Visitors can browse content without creating an account and without submitting data through a public contact form on the portfolio page itself.
+            </p>
+            <p style={paperParaStyle}>
+              Some interactive elements exist for navigation and presentation, such as tab switching, search filtering within the portfolio, and modal-style overlays for research pages and legal pages. These interactions are handled client-side for user experience and do not, by themselves, create a public profile for the visitor.
+            </p>
+
+            <h2 style={paperSectionStyle}>2. Data Processed When You Visit</h2>
+            <p style={paperParaStyle}>
+              Like most websites, technical request data may be processed by the hosting or delivery infrastructure in order to serve the page and maintain basic security. This can include information such as IP address, browser type, operating system, request time, referrer, requested URL, and similar log-level metadata.
+            </p>
+            <p style={paperParaStyle}>
+              This site may also expose ordinary URL-level state when you use built-in navigation, such as the currently selected section hash or a search query string used to filter content on the portfolio page. That URL state is part of the browser request context and can therefore appear in standard access logs maintained by infrastructure providers.
+            </p>
+
+            <h2 style={paperSectionStyle}>3. Cookies, Tracking, And Analytics</h2>
+            <p style={paperParaStyle}>
+              Based on the current portfolio application code, this website does <strong>not intentionally deploy third-party analytics scripts, advertising trackers, or portfolio-page cookie consent tooling</strong>. It also does not intentionally create visitor accounts or persist personal marketing profiles.
+            </p>
+            <p style={paperParaStyle}>
+              That said, standard browser behavior, hosting-layer caching, and third-party destinations you choose to open from this site may still involve their own cookies or logging mechanisms once you leave this portfolio or interact with external services.
+            </p>
+
+            <h2 style={paperSectionStyle}>4. Contact By Email</h2>
+            <p style={paperParaStyle}>
+              If you contact the operator through the published email address, the personal data you provide in that email will be processed for the purpose of reviewing and responding to your message. This can include your name, email address, organization, message content, attachments, and any other information you choose to include.
+            </p>
+            <p style={paperParaStyle}>
+              Email communication is handled outside the portfolio application itself and will be subject to the practices of the mail providers and clients involved in sending and receiving the message.
+            </p>
+
+            <h2 style={paperSectionStyle}>5. External Links And Embedded Destinations</h2>
+            <p style={paperParaStyle}>
+              This portfolio contains links to third-party services such as GitHub, LinkedIn, arXiv, and other external resources. When you click those links, you leave this site and interact directly with the destination service. That service may collect usage data according to its own policies and technical setup.
+            </p>
+            <p style={paperParaStyle}>
+              Visitors should review the privacy and terms documentation of the relevant third-party platform when using those services. This website does not control third-party processing once you move outside the portfolio domain.
+            </p>
+
+            <h2 style={paperSectionStyle}>6. Data Retention And Correction Requests</h2>
+            <p style={paperParaStyle}>
+              The portfolio itself is designed to minimize personal data collection. Any data retained by the operator will usually arise only from direct communications, administrative follow-up, or ordinary technical hosting logs maintained for reliability and abuse prevention.
+            </p>
+            <p style={paperParaStyle}>
+              If you want to request correction or removal of personal information displayed on the site, or if you want to ask how a direct communication has been handled, contact <a className="inline-link" href="mailto:am847@snu.edu.in">am847@snu.edu.in</a>. Requests will be reviewed in good faith and addressed where appropriate.
+            </p>
+
+            <h2 style={paperSectionStyle}>7. Policy Scope</h2>
+            <p style={paperParaStyle}>
+              This privacy policy describes the portfolio as it is currently implemented in this codebase. If the application later adds analytics, forms, authentication, newsletters, file uploads, or other new processing features, this notice should be updated to reflect those changes before relying on it as a complete statement of data handling.
+            </p>
+          </>
         )}
       </div>
     </div>
@@ -1413,6 +1970,7 @@ export default function PortfolioClient() {
   const [searchQuery, setSearchQuery] = useState('')
   const [hasSyncedLocation, setHasSyncedLocation] = useState(false)
   const [expandedResearchIdx, setExpandedResearchIdx] = useState<number | null>(null)
+  const [expandedLegalPage, setExpandedLegalPage] = useState<LegalPage | null>(null)
 
   const scrollPortfolioToTop = (behavior: ScrollBehavior = 'auto') => {
     scrollContainerRef.current?.scrollTo({ top: 0, behavior })
@@ -1459,12 +2017,6 @@ export default function PortfolioClient() {
     setSearchQuery('')
     window.history.pushState(null, '', buildLocationUrl(tabId, ''))
     scrollPortfolioToTop('smooth')
-  }
-
-  const scrollToLegal = (sectionId: 'imprint' | 'privacy') => {
-    requestAnimationFrame(() => {
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    })
   }
 
   const pageTitle = searchQuery ? 'Search' : activeTab === 'home' ? 'Animesh Mishra' : navLinks.find((link) => link.id === activeTab)?.name
@@ -1690,26 +2242,6 @@ export default function PortfolioClient() {
         }
         .inline-link:hover {
           text-decoration: underline;
-        }
-        .legal-section {
-          margin-top: 52px;
-          padding-top: 26px;
-          border-top: 1px solid #e5ebf0;
-        }
-        .legal-copy {
-          margin: 0;
-          font-size: 15px;
-          line-height: 1.8;
-          color: #475560;
-        }
-        .legal-list {
-          margin: 12px 0 0 18px;
-          padding: 0;
-          color: #475560;
-        }
-        .legal-list li {
-          margin: 6px 0;
-          line-height: 1.75;
         }
         .footer {
           background: #0d1216;
@@ -1942,49 +2474,21 @@ export default function PortfolioClient() {
             </ul>
           </section>
         ) : null}
-
-        <section id="imprint" className="document-section legal-section">
-          <h2 className="section-heading">Imprint</h2>
-          <p className="legal-copy">
-            This website is the personal portfolio of Animesh Mishra. It presents academic, engineering, and professional work.
-          </p>
-          <ul className="legal-list">
-            <li>Responsible for content: Animesh Mishra</li>
-            <li>Location: Delhi, India</li>
-            <li>
-              Contact: <a className="inline-link" href="mailto:am847@snu.edu.in">am847@snu.edu.in</a>
-            </li>
-            <li>
-              Public profiles: <a className="inline-link" href="https://linkedin.com/in/animeshmishra0" target="_blank" rel="noopener noreferrer">linkedin.com/in/animeshmishra0</a>{' '}
-              and <a className="inline-link" href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer">github.com/amethystani</a>
-            </li>
-          </ul>
-        </section>
-
-        <section id="privacy" className="document-section legal-section">
-          <h2 className="section-heading">Privacy Policy</h2>
-          <p className="legal-copy">
-            This portfolio does not provide user accounts or public submission forms. If you email me directly, your message and contact details are used only to respond to your inquiry.
-          </p>
-          <ul className="legal-list">
-            <li>The site itself is informational and is not intended to collect profile data from visitors.</li>
-            <li>Like most websites, hosting and delivery providers may process standard technical request logs such as IP address, browser details, timestamps, and referrer information for security and delivery purposes.</li>
-            <li>External links open third-party services such as GitHub, LinkedIn, arXiv, and ClerkTree; those services apply their own privacy terms and data practices.</li>
-            <li>If you would like a correction or removal of personal information displayed here, contact me at <a className="inline-link" href="mailto:am847@snu.edu.in">am847@snu.edu.in</a>.</li>
-          </ul>
-        </section>
       </main>
 
       <footer className="footer">
         <div>&copy; {new Date().getFullYear()} Animesh Mishra</div>
         <div className="footer-links">
-          <button className="footer-link" onClick={() => scrollToLegal('imprint')}>Imprint</button>
-          <button className="footer-link" onClick={() => scrollToLegal('privacy')}>Privacy Policy</button>
+          <button className="footer-link" onClick={() => setExpandedLegalPage('imprint')}>Imprint</button>
+          <button className="footer-link" onClick={() => setExpandedLegalPage('privacy')}>Privacy Policy</button>
           <a className="footer-link" href="https://github.com/amethystani" target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
       </footer>
       {expandedResearchIdx !== null ? (
         <ResearchOverlay idx={expandedResearchIdx} onClose={() => setExpandedResearchIdx(null)} />
+      ) : null}
+      {expandedLegalPage !== null ? (
+        <LegalOverlay page={expandedLegalPage} onClose={() => setExpandedLegalPage(null)} onSwitch={setExpandedLegalPage} />
       ) : null}
     </div>
   )
