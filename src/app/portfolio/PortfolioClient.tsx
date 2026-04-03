@@ -523,7 +523,7 @@ function BracketLinks({ links }: { links?: LinkItem[] }) {
   )
 }
 
-function EntryRow({ entry, onExpand }: { entry: Entry; onExpand?: () => void }) {
+function EntryRow({ entry, onExpand, compact = false }: { entry: Entry; onExpand?: () => void; compact?: boolean }) {
   return (
     <li className="document-row">
       <div className="document-stamp">{entry.stamp}</div>
@@ -532,14 +532,14 @@ function EntryRow({ entry, onExpand }: { entry: Entry; onExpand?: () => void }) 
           <strong>{entry.title}</strong>
           {entry.meta ? `, ${entry.meta}` : ''}
         </p>
-        {entry.details?.length ? (
+        {!compact && entry.details?.length ? (
           <ul className="detail-list">
             {entry.details.map((detail) => (
               <li key={detail}>{detail}</li>
             ))}
           </ul>
         ) : null}
-        {entry.sections?.length ? (
+        {!compact && entry.sections?.length ? (
           <div className="entry-sections">
             {entry.sections.map((section) => (
               <div key={section.label} className="entry-section">
@@ -853,13 +853,13 @@ function PipelineDiagram() {
 }
 
 function BFLSystemDiagram() {
-  const W = 720
-  const H = 250
+  const W = 860
+  const H = 300
   const boxes = [
-    { x: 18, y: 92, w: 122, h: 74, title: 'Local Clients', lines: ['Train on private data', 'Honest + Byzantine mix'], fill: '#e0f2fe', stroke: '#38bdf8' },
-    { x: 174, y: 92, w: 132, h: 74, title: 'FD Sketch', lines: ['Compress G into k-dim', 'O(k²) memory'], fill: '#ede9fe', stroke: '#8b5cf6' },
-    { x: 340, y: 92, w: 146, h: 74, title: 'Spectral Sentinel', lines: ['MP upper edge λ+', 'KS + tail anomaly test'], fill: '#fef3c7', stroke: '#f59e0b' },
-    { x: 520, y: 92, w: 120, h: 74, title: 'Filter + Aggregate', lines: ['Drop suspicious updates', 'Mean over honest set'], fill: '#dcfce7', stroke: '#22c55e' },
+    { x: 20, y: 154, w: 142, h: 78, title: 'Local Clients', lines: ['Train on private data', 'Honest + Byzantine mix'], fill: '#e0f2fe', stroke: '#38bdf8' },
+    { x: 210, y: 154, w: 152, h: 78, title: 'FD Sketch', lines: ['Compress G into k-dim', 'O(k²) memory'], fill: '#ede9fe', stroke: '#8b5cf6' },
+    { x: 410, y: 154, w: 164, h: 78, title: 'Spectral Sentinel', lines: ['MP upper edge λ+', 'KS + tail anomaly test'], fill: '#fef3c7', stroke: '#f59e0b' },
+    { x: 622, y: 154, w: 152, h: 78, title: 'Filter + Aggregate', lines: ['Drop suspicious updates', 'Mean over honest set'], fill: '#dcfce7', stroke: '#22c55e' },
   ] as const
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -876,9 +876,9 @@ function BFLSystemDiagram() {
           Detect adversarial gradients before aggregation, then anchor round state on-chain.
         </text>
 
-        <rect x="486" y="32" width="186" height="52" rx="12" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" />
-        <text x="579" y="54" textAnchor="middle" fontSize="11" fill="#1d4ed8" fontWeight="700">Blockchain Consensus</text>
-        <text x="579" y="70" textAnchor="middle" fontSize="10" fill="#1e40af">Store round hash, honest set, shared state</text>
+        <rect x="604" y="60" width="210" height="58" rx="14" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" />
+        <text x="709" y="84" textAnchor="middle" fontSize="11" fill="#1d4ed8" fontWeight="700">Blockchain Consensus</text>
+        <text x="709" y="102" textAnchor="middle" fontSize="10" fill="#1e40af">Store round hash, honest set, shared state</text>
 
         {boxes.map((box) => (
           <g key={box.title}>
@@ -901,31 +901,32 @@ function BFLSystemDiagram() {
           </g>
         ))}
 
-        <line x1="140" y1="129" x2="172" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
-        <line x1="306" y1="129" x2="338" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
-        <line x1="486" y1="129" x2="518" y2="129" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <line x1="162" y1="193" x2="208" y2="193" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <line x1="362" y1="193" x2="408" y2="193" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <line x1="574" y1="193" x2="620" y2="193" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
 
-        <path d="M580 84 L580 90" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
-        <path d="M640 128 C675 128 688 128 700 128" stroke="#ec4899" strokeWidth="2" fill="none" markerEnd="url(#bfl-arrow)" />
-        <rect x="604" y="100" width="96" height="58" rx="14" fill="#fce7f3" stroke="#ec4899" strokeWidth="2" />
-        <text x="652" y="122" textAnchor="middle" fontSize="12" fill="#9d174d" fontWeight="700">Global Model</text>
-        <text x="652" y="140" textAnchor="middle" fontSize="10" fill="#9d174d">wₜ → wₜ₊₁</text>
+        <path d="M709 118 L709 150" stroke="#3b82f6" strokeWidth="2" markerEnd="url(#bfl-arrow)" />
+        <path d="M774 193 C790 193 800 193 812 193" stroke="#ec4899" strokeWidth="2" fill="none" markerEnd="url(#bfl-arrow)" />
+        <rect x="784" y="150" width="66" height="86" rx="14" fill="#fce7f3" stroke="#ec4899" strokeWidth="2" />
+        <text x="817" y="176" textAnchor="middle" fontSize="11.5" fill="#9d174d" fontWeight="700">Global</text>
+        <text x="817" y="192" textAnchor="middle" fontSize="11.5" fill="#9d174d" fontWeight="700">Model</text>
+        <text x="817" y="214" textAnchor="middle" fontSize="10" fill="#9d174d">wₜ → wₜ₊₁</text>
 
-        <text x="258" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Sketch once per round</text>
-        <text x="414" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Reject if eigenspectrum leaves honest bulk</text>
-        <text x="579" y="192" textAnchor="middle" fontSize="10" fill="#64748b">Polygon / BFT-style write-once audit trail</text>
+        <text x="286" y="262" textAnchor="middle" fontSize="10" fill="#64748b">Sketch once per round</text>
+        <text x="492" y="262" textAnchor="middle" fontSize="10" fill="#64748b">Reject if eigenspectrum leaves honest bulk</text>
+        <text x="708" y="262" textAnchor="middle" fontSize="10" fill="#64748b">Polygon / BFT-style write-once audit trail</text>
       </svg>
     </div>
   )
 }
 
 function SpectralSentinelDiagram() {
-  const W = 700
-  const H = 272
+  const W = 780
+  const H = 300
   const chartX = 54
-  const chartY = 52
-  const chartW = 430
-  const chartH = 170
+  const chartY = 60
+  const chartW = 460
+  const chartH = 182
   const lambdaPlusX = chartX + chartW * 0.68
   const honestBulk = [
     [chartX + 4, chartY + chartH - 10],
@@ -977,7 +978,7 @@ function SpectralSentinelDiagram() {
 
         <line x1={lambdaPlusX} y1={chartY + 8} x2={lambdaPlusX} y2={chartY + chartH} stroke="#0f172a" strokeWidth="2" strokeDasharray="7 6" />
         <text x={lambdaPlusX + 6} y={chartY + 18} fontSize="10" fill="#0f172a" fontWeight="700">λ+</text>
-        <text x={lambdaPlusX - 2} y={chartY + chartH + 16} textAnchor="end" fontSize="9.5" fill="#64748b">MP upper edge</text>
+        <text x={lambdaPlusX - 2} y={chartY + chartH + 14} textAnchor="end" fontSize="9.5" fill="#64748b">MP upper edge</text>
 
         {spikes.map((spike, index) => (
           <g key={spike.x}>
@@ -988,29 +989,31 @@ function SpectralSentinelDiagram() {
           </g>
         ))}
 
-        <rect x="518" y="60" width="154" height="58" rx="12" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
-        <text x="595" y="82" textAnchor="middle" fontSize="11" fill="#c2410c" fontWeight="700">KS goodness-of-fit</text>
-        <text x="595" y="99" textAnchor="middle" fontSize="10" fill="#7c2d12">Compare empirical spectrum to MP law</text>
+        <rect x="550" y="70" width="198" height="64" rx="12" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
+        <text x="649" y="95" textAnchor="middle" fontSize="11" fill="#c2410c" fontWeight="700">KS goodness-of-fit</text>
+        <text x="649" y="114" textAnchor="middle" fontSize="9.5" fill="#7c2d12">Compare empirical spectrum</text>
+        <text x="649" y="128" textAnchor="middle" fontSize="9.5" fill="#7c2d12">to the MP law</text>
 
-        <rect x="518" y="130" width="154" height="58" rx="12" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.8" />
-        <text x="595" y="152" textAnchor="middle" fontSize="11" fill="#b91c1c" fontWeight="700">Tail anomaly test</text>
-        <text x="595" y="169" textAnchor="middle" fontSize="10" fill="#7f1d1d">Flag eigenvalues that escape the honest bulk</text>
+        <rect x="550" y="148" width="198" height="72" rx="12" fill="#fef2f2" stroke="#ef4444" strokeWidth="1.8" />
+        <text x="649" y="173" textAnchor="middle" fontSize="11" fill="#b91c1c" fontWeight="700">Tail anomaly test</text>
+        <text x="649" y="192" textAnchor="middle" fontSize="9.5" fill="#7f1d1d">Flag eigenvalues that escape</text>
+        <text x="649" y="206" textAnchor="middle" fontSize="9.5" fill="#7f1d1d">the honest bulk</text>
 
-        <rect x="518" y="200" width="154" height="42" rx="12" fill="#ecfccb" stroke="#84cc16" strokeWidth="1.8" />
-        <text x="595" y="219" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Phase transition</text>
-        <text x="595" y="234" textAnchor="middle" fontSize="10" fill="#4d7c0f">Detectable when σ²f² &lt; 0.25</text>
+        <rect x="550" y="234" width="198" height="48" rx="12" fill="#ecfccb" stroke="#84cc16" strokeWidth="1.8" />
+        <text x="649" y="254" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Phase transition</text>
+        <text x="649" y="270" textAnchor="middle" fontSize="9.5" fill="#4d7c0f">Detectable when σ²f² &lt; 0.25</text>
       </svg>
     </div>
   )
 }
 
 function BFLResultsDiagram() {
-  const W = 720
-  const H = 286
+  const W = 780
+  const H = 312
   const cards = [
-    { x: 18, y: 42, w: 212, h: 206, title: 'Robust accuracy', subtitle: 'Mean over 144 attack-aggregator settings' },
-    { x: 254, y: 42, w: 212, h: 206, title: 'Certified tolerance', subtitle: 'Byzantine fraction before breakdown' },
-    { x: 490, y: 42, w: 212, h: 206, title: 'Memory at 1.5B params', subtitle: 'Full covariance vs FD sketch' },
+    { x: 18, y: 42, w: 236, h: 228, title: 'Robust accuracy', subtitle: 'Mean over 144 attack-aggregator settings' },
+    { x: 272, y: 42, w: 236, h: 228, title: 'Certified tolerance', subtitle: 'Byzantine fraction before breakdown' },
+    { x: 526, y: 42, w: 236, h: 228, title: 'Memory at 1.5B params', subtitle: 'Full covariance vs FD sketch' },
   ] as const
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -1030,28 +1033,28 @@ function BFLResultsDiagram() {
           </g>
         ))}
 
-        <rect x="42" y="132" width="150" height="16" rx="8" fill="#e2e8f0" />
-        <rect x="42" y="132" width="98" height="16" rx="8" fill="#cbd5e1" />
-        <rect x="42" y="132" width="128" height="16" rx="8" fill="#94a3b8" opacity="0.65" />
-        <rect x="42" y="168" width="160" height="20" rx="10" fill="#2563eb" />
-        <text x="42" y="124" fontSize="10" fill="#475569">Prior defenses: 48% to 63%</text>
-        <text x="42" y="162" fontSize="10" fill="#1d4ed8">Spectral Sentinel: 78.4%</text>
-        <text x="182" y="183" textAnchor="end" fontSize="10" fill="#eff6ff" fontWeight="700">78.4</text>
+        <rect x="44" y="146" width="170" height="16" rx="8" fill="#e2e8f0" />
+        <rect x="44" y="146" width="110" height="16" rx="8" fill="#cbd5e1" />
+        <rect x="44" y="146" width="144" height="16" rx="8" fill="#94a3b8" opacity="0.65" />
+        <rect x="44" y="188" width="186" height="22" rx="11" fill="#2563eb" />
+        <text x="44" y="136" fontSize="10" fill="#475569">Prior defenses: 48% to 63%</text>
+        <text x="44" y="180" fontSize="10" fill="#1d4ed8">Spectral Sentinel: 78.4%</text>
+        <text x="212" y="204" textAnchor="end" fontSize="11" fill="#eff6ff" fontWeight="700">78.4</text>
 
-        <rect x="278" y="176" width="58" height="34" rx="10" fill="#cbd5e1" />
-        <rect x="352" y="122" width="58" height="88" rx="10" fill="#16a34a" />
-        <text x="307" y="168" textAnchor="middle" fontSize="10" fill="#475569">Baseline</text>
-        <text x="381" y="114" textAnchor="middle" fontSize="10" fill="#166534">Spectral Sentinel</text>
-        <text x="307" y="197" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">15%</text>
-        <text x="381" y="174" textAnchor="middle" fontSize="12" fill="#f0fdf4" fontWeight="700">38%</text>
+        <rect x="306" y="190" width="70" height="38" rx="12" fill="#cbd5e1" />
+        <rect x="400" y="128" width="78" height="100" rx="12" fill="#16a34a" />
+        <text x="341" y="176" textAnchor="middle" fontSize="10" fill="#475569">Baseline</text>
+        <text x="439" y="116" textAnchor="middle" fontSize="10" fill="#166534">Spectral Sentinel</text>
+        <text x="341" y="214" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">15%</text>
+        <text x="439" y="186" textAnchor="middle" fontSize="12" fill="#f0fdf4" fontWeight="700">38%</text>
 
-        <rect x="522" y="92" width="54" height="110" rx="10" fill="#e5e7eb" />
-        <rect x="612" y="186" width="54" height="16" rx="10" fill="#7c3aed" />
-        <text x="549" y="84" textAnchor="middle" fontSize="10" fill="#475569">Full covariance</text>
-        <text x="639" y="178" textAnchor="middle" fontSize="10" fill="#6d28d9">FD sketch</text>
-        <text x="549" y="218" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">9 TB</text>
-        <text x="639" y="218" textAnchor="middle" fontSize="12" fill="#6d28d9" fontWeight="700">8.7 GB</text>
-        <text x="594" y="238" textAnchor="middle" fontSize="11" fill="#6d28d9" fontWeight="700">1034× smaller</text>
+        <rect x="560" y="116" width="64" height="118" rx="12" fill="#e5e7eb" />
+        <rect x="656" y="210" width="64" height="22" rx="11" fill="#7c3aed" />
+        <text x="592" y="104" textAnchor="middle" fontSize="10" fill="#475569">Full covariance</text>
+        <text x="688" y="198" textAnchor="middle" fontSize="10" fill="#6d28d9">FD sketch</text>
+        <text x="592" y="256" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">9 TB</text>
+        <text x="688" y="256" textAnchor="middle" fontSize="12" fill="#6d28d9" fontWeight="700">8.7 GB</text>
+        <text x="640" y="280" textAnchor="middle" fontSize="11" fill="#6d28d9" fontWeight="700">1034× smaller</text>
       </svg>
     </div>
   )
@@ -1906,7 +1909,7 @@ export default function PortfolioClient() {
             <h2 className="section-heading">Research Projects</h2>
             <ul className="document-list">
               {researchEntries.map((entry, idx) => (
-                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} onExpand={() => setExpandedResearchIdx(idx)} />
+                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} compact onExpand={() => setExpandedResearchIdx(idx)} />
               ))}
             </ul>
           </section>
