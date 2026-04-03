@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 
 type SectionId = 'home' | 'about' | 'experience' | 'research' | 'projects' | 'skills'
@@ -18,9 +19,12 @@ type Entry = {
   stamp: string
   title: string
   meta?: string
+  summary?: string
   details?: string[]
   sections?: EntrySection[]
   image?: string
+  logo?: string
+  logoScale?: number
   links?: LinkItem[]
 }
 
@@ -41,12 +45,12 @@ const navLinks: Array<{ id: SectionId; name: string }> = [
 ]
 
 const heroCopy: Record<SectionId, string> = {
-  home: 'ML engineer focused on training corpora, data pipelines, empirical evaluation, and open model development workflows.',
-  about: 'Summary and education, based directly on the CV content you provided.',
+  home: 'ML engineer working across AI systems, software, and research-oriented products.',
+  about: 'Background, education, and the kind of engineering and research work I like doing.',
   experience: 'Professional experience across research engineering, large-scale data pipelines, synthetic data generation, and applied ML systems.',
-  research: 'Selected research work and publication links in a cleaner document-style format.',
-  projects: 'Applied systems and independent ML projects, with simple inline links instead of showcase blocks.',
-  skills: 'Technical skills, coursework, and scholastic achievements in a compact reference format.',
+  research: 'Research across LLM evaluation, statistical modeling, legal reasoning, edge inference, and distributed learning.',
+  projects: 'Selected applied systems spanning forecasting, legal AI, enterprise automation, and social-data tooling.',
+  skills: 'Technical stack across machine learning, data infrastructure, evaluation, and distributed systems.',
 }
 
 const homeLinks: LinkItem[] = [
@@ -57,7 +61,7 @@ const homeLinks: LinkItem[] = [
 ]
 
 const summaryText =
-  'ML engineer with hands-on experience constructing large-scale training corpora, running multi-model dataset ablations, and building end-to-end data pipelines over diverse web and academic sources. Worked directly with FineWeb, FineWebEDU, Datatrove, NeMo DataDesigner, and open model training initiatives including SmolLM and Nemotron.'
+  'ML engineer with experience across software systems, applied machine learning, and research-driven development. Interested in building reliable tools, scalable workflows, and practical AI products.'
 
 const educationEntries: Entry[] = [
   {
@@ -79,9 +83,11 @@ const educationEntries: Entry[] = [
 
 const experienceEntries: Entry[] = [
   {
-    stamp: '2025-05 to 2025-09',
-    title: 'Student Researcher (Part-time)',
-    meta: 'Complexity Science Hub, Vienna, Austria (Remote)',
+    stamp: 'May 2025 - Sep 2025',
+    title: 'Student Researcher',
+    meta: 'Complexity Science Hub',
+    summary: 'Built the data and evaluation stack for multi-model scholarly-bias research.',
+    logo: '/complexity_science_hub_logo.jpeg',
     details: [
       'Engineered a reproducible Python ETL pipeline to ingest and enrich physics-literature corpora from OpenAlex and APS APIs; built joined research-graph tables across authors, institutions, fields, and time.',
       'Built a batched LLM evaluation harness running parallel factuality and validity audits across Gemma 2 9B, LLaMA 3, and Mixtral 8x7B; standardized prompts and output schemas for apples-to-apples comparisons.',
@@ -89,9 +95,11 @@ const experienceEntries: Entry[] = [
     ],
   },
   {
-    stamp: '2025-06 to 2025-08',
+    stamp: 'Jun 2025 - Aug 2025',
     title: 'Quant Research Analyst Intern',
-    meta: 'ConsultAdd Services Pvt. Ltd., Pune, Maharashtra',
+    meta: 'ConsultAdd Services',
+    summary: 'Worked on large-scale data extraction, filtering, and forecasting pipelines.',
+    logo: '/consultadd_inc_logo.jpeg',
     details: [
       'Designed and deployed high-volume data scraping and filtering pipelines extracting over 500K records from unstructured web sources with deduplication, normalization, and schema enforcement stages.',
       'Used Datatrove for large-scale document deduplication and quality filtering, adapting n-gram and perplexity-based filters to the staffing-intelligence domain and benchmarking filter configurations via controlled ablations.',
@@ -99,9 +107,12 @@ const experienceEntries: Entry[] = [
     ],
   },
   {
-    stamp: '2024-09 to 2024-12',
+    stamp: 'Sep 2024 - Dec 2024',
     title: 'Intern',
-    meta: 'Exicom Group, DCT-R&D Department',
+    meta: 'Exicom Group',
+    summary: 'Built synthetic-data and geospatial workflows for EV demand forecasting.',
+    logo: '/exicom.jpg',
+    logoScale: 2.6,
     details: [
       'Leveraged NeMo DataDesigner to orchestrate synthetic data generation pipelines for EV demand forecasting, including task schemas, generation workflows, quality filtering, and deduplication passes.',
       'Engineered a geospatial feature pipeline using OpenStreetMap, Folium, and GeoPandas across 10+ feature dimensions to join and filter structured datasets under geospatial constraints.',
@@ -109,9 +120,11 @@ const experienceEntries: Entry[] = [
     ],
   },
   {
-    stamp: '2024-05 to 2024-07',
+    stamp: 'May 2024 - Jul 2024',
     title: 'Research Intern',
-    meta: 'Defence Research & Development Organisation (DRDO-ISSA)',
+    meta: 'DRDO-ISSA',
+    summary: 'Worked on routing optimization and mobility clustering for defense logistics analysis.',
+    logo: '/DRDO-logo.png',
     details: [
       'Designed a custom Genetic Algorithm with specialized fitness functions and mutation operators for a high-dimensional Vehicle Routing Problem, achieving a 15% cost reduction over heuristic baselines.',
       'Applied DBSCAN and K-Means clustering to segment complex mobility patterns and produce geospatial heatmaps and statistical plots for resource-allocation insights.',
@@ -120,6 +133,43 @@ const experienceEntries: Entry[] = [
 ]
 
 const researchEntries: Entry[] = [
+  {
+    stamp: '2026',
+    title: 'Comprehensive Measurement System Analysis for Statistical Repeatability',
+    meta: 'Elsevier publication · Statistical modeling for engineering measurements',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'This work studies a harder measurement question than standard repeatability reporting usually does: when a measurement system operates in noisy, small-magnitude engineering settings, how do you tell whether it is truly distinguishing specimens or only reproducing instrument noise? That matters in applications such as vibration analysis, material testing, and precision engineering, where classical Gage R&R summaries can miss the structure of modern datasets.',
+        ],
+      },
+      {
+        label: 'Modeling Setup',
+        items: [
+          'The repository implements a full Measurement System Analysis framework rather than one headline metric. The pipeline combines discriminability (D_hat), fingerprint index, I2C2, rank-sum statistics, ICC, CCDM, ANOVA-based variance decomposition, and X-bar control charts so repeatability is evaluated from multiple statistical angles instead of being reduced to a single correlation value.',
+          'The codebase is built around repeated-measurement tables where specimen-level variation and repetition-level noise are separated explicitly. It supports datasets with very small variation, high-dimensional measurement structure, and non-Gaussian behavior, which is exactly the regime where naive reliability summaries tend to become unstable or misleading.',
+        ],
+      },
+      {
+        label: 'Statistical Analysis',
+        items: [
+          'The strongest part of the project is the variance-centric modeling. The implementation uses one-way ANOVA and Expected Mean Squares to decompose total variation into between-part and within-part components, then converts those into interpretable Gage R&R quantities such as EV, AV, GRR, PV percentages, and number of distinct categories. That makes the analysis useful for deciding whether a system can reliably separate real part differences from measurement error.',
+          'It also goes beyond classical ICC reporting. The discriminability and fingerprinting routines compare within-subject and between-subject distances directly, rank-sum methods handle non-normal settings more robustly, and the power-analysis simulation module tests how sensitive each metric is under changing sample sizes and variance conditions. In the repo, that statistical layer is supported with control charts, variance-component plots, cross-metric relationship plots, and power curves, so the paper reads like a serious measurement-modeling study rather than a one-off script collection.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'The repository positions the outcome as a comprehensive repeatability evaluation framework: multiple reliability metrics, variance-component summaries, control-chart diagnostics, and simulation-based power analysis under one analysis stack. That makes it useful for engineering datasets where measurement credibility itself is the central research question.',
+        ],
+      },
+    ],
+    links: [
+      { label: 'elsevier', href: 'https://www.sciencedirect.com/science/article/abs/pii/S026322412600730X' },
+      { label: 'github', href: 'https://github.com/amethystani/Statistical-Repeatability' },
+    ],
+  },
   {
     stamp: '2025',
     title: 'Scholarly Bias in LLMs: Multi-Model Evaluation Platform',
@@ -241,6 +291,58 @@ const researchEntries: Entry[] = [
 
 const projectEntries: Entry[] = [
   {
+    stamp: '2026',
+    title: 'NeMoSynthRust',
+    meta: 'Synthetic Rust dataset generation with NeMo, Bonsai judging, and cargo-grounded evaluation',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'Synthetic code data is easy to generate but hard to trust. High style quality does not necessarily mean a snippet compiles, passes tests, or teaches correct dependency semantics.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Built a four-stage pipeline: NeMo Data Designer generation, Bonsai-8B scoring and refinement, Tokio-based Rust evaluation with cargo, and HuggingFace-ready parquet export.',
+          'Tracked domain/complexity mixtures, weighted judge scores across safety, performance, and idiomatic style, and preserved compile/test outcomes as first-class dataset fields.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Generated and evaluated 30 structured Rust samples; average Bonsai score 8.33/10, compile rate 16.7%, test pass rate 6.7%, exposing the real gap between LLM code quality judgments and cargo reality.',
+        ],
+      },
+    ],
+  },
+  {
+    stamp: '2026',
+    title: 'PocketHarvey: Offline Indian Legal Corpus Pipeline',
+    meta: 'Indian legal corpus preprocessing, curriculum tiering, and synthetic instruction data',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'PocketHarvey needed a domain-specialized legal corpus that could support both continued pretraining and supervised fine-tuning without relying on paid APIs or opaque proprietary data sources.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Built a notebook-driven pipeline over Indian judgments, legal educational web text, and manually authored statute summaries; applied normalization, multilingual filtering, FineWeb-style heuristics, exact SHA-256 deduplication, and MinHash-LSH near-deduplication.',
+          'Added composite educational scoring, three-tier curriculum assignment, synthetic Q&A generation with grounded answer spans and NALSA disclaimers, and final Parquet export for Bonsai-8B adaptation.',
+        ],
+      },
+      {
+        label: 'Outputs',
+        items: [
+          'Produced pretraining and SFT-ready datasets with reproducible metadata, staged mixing ratios, and a documented legal-domain preprocessing recipe designed for offline model adaptation.',
+        ],
+      },
+    ],
+  },
+  {
     stamp: '2025',
     title: 'Tiny Recursive Models (TRM) + Open Model Training',
     meta: 'Independent ML research based on arXiv:2510.04871',
@@ -297,26 +399,25 @@ const projectEntries: Entry[] = [
   {
     stamp: '2024',
     title: 'EVPredAI',
-    meta: 'EV charging demand forecasting and optimal placement',
+    meta: 'Geospatial EV charging siting and operator-assistance system',
     sections: [
       {
         label: 'Problem',
         items: [
-          'EV charging infrastructure is undersupplied in high-demand zones. Operators need data-driven tools to select optimal station locations from heterogeneous geospatial, temporal, and behavioral signals.',
+          'Charging-network expansion is expensive and location mistakes are hard to unwind. Operators need a way to compare candidate sites, nearby amenities, and user-facing charging queries in one decision loop.',
         ],
       },
       {
         label: 'Approach',
         items: [
-          'Ensemble combining Bayesian-tuned XGBoost (20+ geospatial and temporal features), SARIMA for seasonal demand cycles, and Moran\'s I / LISA statistics for spatial autocorrelation clustering.',
-          'Geospatial feature pipeline via OpenStreetMap, GeoPandas, and Folium; BERT/RoBERTa-based chatbot fine-tuned on 15K+ EV-specific conversations for operator recommendations.',
-          'NeMo DataDesigner for synthetic data augmentation; MLOps workflow with LangChain and Ollama for batched inference.',
+          'Repo-grounded prototype combines OpenStreetMap amenity-distance extraction, OpenCage geocoding, GeoPandas land checks, Folium maps, weighted proximity scoring, and RandomForest-based suitability estimation.',
+          'An Ollama-backed EV assistant layers on top for query answering, while the project README outlines a broader Exicom-facing forecasting stack with richer spatial and temporal demand modeling.',
         ],
       },
       {
         label: 'Results',
         items: [
-          'Interactive demand heatmap and placement recommendation system deployed at Exicom Group; 85% user satisfaction; 5-fold cross-validated location model supporting real-world operator placement decisions.',
+          'Interactive map, dashboard, amenity analysis, and assistant surfaces packaged into a decision-support workflow for EV charging-site review.',
         ],
       },
     ],
@@ -354,28 +455,29 @@ const projectEntries: Entry[] = [
   {
     stamp: '2024',
     title: 'NewSky',
-    meta: 'Topic clustering and digest generation over Bluesky social data',
+    meta: 'Conversational trend and digest product for social and news streams',
     sections: [
       {
         label: 'Problem',
         items: [
-          "Bluesky's decentralized social graph lacks topic discovery tools, making it hard to surface coherent conversation clusters across the firehose of AT Protocol posts.",
+          'High-volume trend streams are fragmented, noisy, and hard to read on mobile. The product aims to turn that firehose into something that feels conversational, browsable, and category-aware.',
         ],
       },
       {
         label: 'Approach',
         items: [
-          'Real-time ingestion from the Bluesky AT Protocol API; unsupervised topic clustering grouping posts by semantic similarity; LLM-powered summarization into short conversational digests.',
-          'Full-stack deployment: Flutter mobile app, PostgreSQL for persistence, Docker + Kubernetes for orchestration.',
+          'Repo materials combine a mobile-first conversational reader concept with a real ingestion pipeline that scrapes and categorizes multi-source feeds, stores structured outputs, and generates daily summaries with Pegasus-based seq2seq tooling.',
+          'Architecture notes include content services, AI transformation, analytics, notifications, and offline-oriented mobile surfaces.',
         ],
       },
       {
         label: 'Results',
         items: [
-          'End-to-end topic clustering and digest delivery system surfacing structured topic feeds from unstructured social data.',
+          'Working repo assets include multi-screen mobile mockups, analytics dashboards, and digest-generation scripts that turn categorized content into publishable summaries.',
         ],
       },
     ],
+    links: [{ label: 'github', href: 'https://github.com/amethystani/NewSky' }],
   },
 ]
 
@@ -450,10 +552,10 @@ const achievementEntries: Entry[] = [
 ]
 
 const sectionSearchText: Record<SectionId, string> = {
-  home: `${summaryText} Delhi India am847@snu.edu.in linkedin github resume`,
+  home: `${summaryText} India am847@snu.edu.in linkedin github resume`,
   about: `${summaryText} ${educationEntries.map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''}`).join(' ')}`,
   experience: experienceEntries
-    .map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${(entry.details ?? []).join(' ')}`)
+    .map((entry) => `${entry.stamp} ${entry.title} ${entry.meta ?? ''} ${entry.summary ?? ''} ${(entry.details ?? []).join(' ')}`)
     .join(' '),
   research: researchEntries
     .map(
@@ -500,13 +602,21 @@ function buildLocationUrl(tab: SectionId, search: string): string {
   return `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ''}#${tab}`
 }
 
+function shouldOpenInNewTab(href: string) {
+  return href.startsWith('http') || href.startsWith('/resume')
+}
+
+function getDisplayLabel(label: string) {
+  return label === 'linkedin' ? 'LinkedIn' : label === 'github' ? 'GitHub' : label.charAt(0).toUpperCase() + label.slice(1)
+}
+
 function BracketLinks({ links }: { links?: LinkItem[] }) {
   if (!links?.length) return null
 
   return (
     <span className="inline-links">
       {links.map((link, index) => {
-        const openInNewTab = link.href.startsWith('http') || link.href.startsWith('/resume')
+        const openInNewTab = shouldOpenInNewTab(link.href)
         return (
           <React.Fragment key={`${link.label}-${link.href}`}>
             <a
@@ -525,14 +635,51 @@ function BracketLinks({ links }: { links?: LinkItem[] }) {
   )
 }
 
-function EntryRow({ entry, onExpand, compact = false }: { entry: Entry; onExpand?: () => void; compact?: boolean }) {
+function HeroActionLinks({ links }: { links?: LinkItem[] }) {
+  if (!links?.length) return null
+
+  return (
+    <div className="hero-links">
+      {links.map((link, index) => {
+        const openInNewTab = shouldOpenInNewTab(link.href)
+        return (
+          <React.Fragment key={`${link.label}-${link.href}`}>
+            <a
+              href={link.href}
+              target={openInNewTab ? '_blank' : undefined}
+              rel={openInNewTab ? 'noopener noreferrer' : undefined}
+              className="hero-link-item"
+            >
+              {getDisplayLabel(link.label)}
+            </a>
+            {index < links.length - 1 ? <span className="hero-link-separator">·</span> : null}
+          </React.Fragment>
+        )
+      })}
+    </div>
+  )
+}
+
+function EntryRow({
+  entry,
+  onExpand,
+  compact = false,
+  titleOnly = false,
+  expandLabel = 'View full paper →',
+}: {
+  entry: Entry
+  onExpand?: () => void
+  compact?: boolean
+  titleOnly?: boolean
+  expandLabel?: string
+}) {
   return (
     <li className="document-row">
       <div className="document-stamp">{entry.stamp}</div>
       <div className="document-body">
         <p className="document-title">
           <strong>{entry.title}</strong>
-          {entry.meta ? `, ${entry.meta}` : ''}
+          {!titleOnly && entry.meta ? `, ${entry.meta}` : ''}
         </p>
         {!compact && entry.details?.length ? (
           <ul className="detail-list">
@@ -556,19 +703,46 @@ function EntryRow({ entry, onExpand, compact = false }: { entry: Entry; onExpand
           </div>
         ) : null}
         <div className="entry-row-footer">
-          {entry.links?.length ? (
+          {!titleOnly && entry.links?.length ? (
             <p className="document-links" style={{ margin: 0 }}>
               <BracketLinks links={entry.links} />
             </p>
           ) : null}
           {onExpand ? (
             <button className="expand-paper-btn" onClick={onExpand}>
-              View full paper →
+              {expandLabel}
             </button>
           ) : null}
         </div>
       </div>
     </li>
+  )
+}
+
+function ExperienceCard({ entry }: { entry: Entry }) {
+  return (
+    <article className="experience-card">
+      <div className="experience-card-top">
+        <div className="experience-logo-wrap">
+          {entry.logo ? (
+            <Image
+              src={entry.logo}
+              alt={`${entry.meta ?? entry.title} logo`}
+              width={96}
+              height={96}
+              className="experience-logo"
+              style={{ transform: `scale(${entry.logoScale ?? 1})` }}
+            />
+          ) : null}
+        </div>
+        <div className="experience-card-heading">
+          {entry.meta ? <p className="experience-company">{entry.meta}</p> : null}
+          <h3 className="experience-role">{entry.title}</h3>
+        </div>
+        <div className="experience-timeline">{entry.stamp}</div>
+      </div>
+      {entry.summary ? <p className="experience-summary-copy">{entry.summary}</p> : null}
+    </article>
   )
 }
 
@@ -620,6 +794,330 @@ const paperListStyle: React.CSSProperties = {
   fontSize: '15px',
   lineHeight: 1.85,
   color: '#374151',
+}
+
+const paperFigureStyle: React.CSSProperties = {
+  background: '#fafafa',
+  border: '1px solid #e5e7eb',
+  borderRadius: '8px',
+  padding: '16px 20px',
+  margin: '24px 0',
+}
+
+const paperFigureLabelStyle: React.CSSProperties = {
+  fontSize: '11.5px',
+  color: '#6b7280',
+  margin: '0 0 10px',
+  fontFamily: 'sans-serif',
+  fontWeight: 600,
+}
+
+type ProjectScreenshot = {
+  src: string
+  alt: string
+  label: string
+  width: number
+  height: number
+}
+
+function ProjectScreenshotGrid({ items }: { items: ProjectScreenshot[] }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
+        gap: '16px',
+        alignItems: 'start',
+      }}
+    >
+      {items.map((item) => (
+        <figure
+          key={item.src}
+          style={{
+            margin: 0,
+            background: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '14px',
+            padding: '14px',
+            boxShadow: '0 10px 28px rgba(15, 23, 42, 0.06)',
+          }}
+        >
+          <Image
+            src={item.src}
+            alt={item.alt}
+            width={item.width}
+            height={item.height}
+            style={{
+              width: '100%',
+              height: 'auto',
+              display: 'block',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              background: '#f8fafc',
+            }}
+          />
+          <figcaption
+            style={{
+              marginTop: '10px',
+              fontSize: '12px',
+              color: '#64748b',
+              textAlign: 'center',
+              fontFamily: 'sans-serif',
+              fontWeight: 600,
+            }}
+          >
+            {item.label}
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+function EVPredAIFlowDiagram() {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox="0 0 820 240" style={{ width: '100%', minWidth: 760, display: 'block', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        <text x="410" y="22" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0f172a">
+          EVPredAI geospatial siting workflow
+        </text>
+        <text x="410" y="42" textAnchor="middle" fontSize="11.5" fill="#64748b">
+          Candidate coordinates are geocoded, enriched with amenity distances, ranked into a suitability score, and surfaced through operator tools.
+        </text>
+
+        <rect x="26" y="74" width="164" height="112" rx="22" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <text x="108" y="103" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">Candidate site</text>
+        <text x="108" y="125" textAnchor="middle" fontSize="11.5" fill="#475569">lat / lon lookup</text>
+        <text x="108" y="144" textAnchor="middle" fontSize="11.5" fill="#475569">OpenCage geocoding</text>
+        <text x="108" y="163" textAnchor="middle" fontSize="11.5" fill="#475569">GeoPandas land check</text>
+
+        <rect x="222" y="62" width="190" height="136" rx="22" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        <text x="317" y="92" textAnchor="middle" fontSize="13" fontWeight="700" fill="#0f172a">Feature enrichment</text>
+        <rect x="246" y="108" width="142" height="24" rx="12" fill="#dbeafe" stroke="#60a5fa" />
+        <text x="317" y="124" textAnchor="middle" fontSize="11.5" fill="#1d4ed8">OSMnx amenity distances</text>
+        <rect x="246" y="140" width="142" height="24" rx="12" fill="#dcfce7" stroke="#4ade80" />
+        <text x="317" y="156" textAnchor="middle" fontSize="11.5" fill="#166534">parking, mall, hotel, station</text>
+        <rect x="246" y="172" width="142" height="24" rx="12" fill="#fef3c7" stroke="#f59e0b" />
+        <text x="317" y="188" textAnchor="middle" fontSize="11.5" fill="#92400e">distance → proximity transform</text>
+
+        <rect x="444" y="62" width="176" height="136" rx="22" fill="#fff7ed" stroke="#fb923c" strokeWidth="2" />
+        <text x="532" y="92" textAnchor="middle" fontSize="13" fontWeight="700" fill="#9a3412">Suitability model</text>
+        <text x="532" y="118" textAnchor="middle" fontSize="11.5" fill="#7c2d12">weighted amenity priors</text>
+        <text x="532" y="137" textAnchor="middle" fontSize="11.5" fill="#7c2d12">StandardScaler + RandomForest</text>
+        <text x="532" y="156" textAnchor="middle" fontSize="11.5" fill="#7c2d12">feature importance output</text>
+        <rect x="483" y="170" width="98" height="24" rx="12" fill="#ffedd5" stroke="#fb923c" />
+        <text x="532" y="186" textAnchor="middle" fontSize="11.5" fill="#9a3412">score 0–100</text>
+
+        <rect x="652" y="74" width="142" height="112" rx="22" fill="#f0fdf4" stroke="#4ade80" strokeWidth="2" />
+        <text x="723" y="103" textAnchor="middle" fontSize="13" fontWeight="700" fill="#166534">Operator surface</text>
+        <text x="723" y="125" textAnchor="middle" fontSize="11.5" fill="#166534">Folium map output</text>
+        <text x="723" y="144" textAnchor="middle" fontSize="11.5" fill="#166534">dashboard comparison</text>
+        <text x="723" y="163" textAnchor="middle" fontSize="11.5" fill="#166534">EVAI query assistant</text>
+
+        <path d="M190 130 L222 130" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="222,130 210,122 210,138" fill="#94a3b8" />
+        <path d="M412 130 L444 130" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="444,130 432,122 432,138" fill="#94a3b8" />
+        <path d="M620 130 L652 130" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="652,130 640,122 640,138" fill="#94a3b8" />
+      </svg>
+    </div>
+  )
+}
+
+function NewSkyFlowDiagram() {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox="0 0 820 250" style={{ width: '100%', minWidth: 760, display: 'block', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        <text x="410" y="22" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0f172a">
+          NewSky content and digest pipeline
+        </text>
+        <text x="410" y="42" textAnchor="middle" fontSize="11.5" fill="#64748b">
+          The repo combines broad feed ingestion, structured metadata export, Pegasus summarization, and a mobile-first conversational reading surface.
+        </text>
+
+        <rect x="24" y="78" width="158" height="118" rx="22" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <text x="103" y="108" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">Source intake</text>
+        <text x="103" y="130" textAnchor="middle" fontSize="11.5" fill="#475569">RSS feeds</text>
+        <text x="103" y="149" textAnchor="middle" fontSize="11.5" fill="#475569">news pages + scraping</text>
+        <text x="103" y="168" textAnchor="middle" fontSize="11.5" fill="#475569">politics, tech, science, world</text>
+
+        <rect x="214" y="64" width="188" height="146" rx="22" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        <text x="308" y="94" textAnchor="middle" fontSize="13" fontWeight="700" fill="#0f172a">Normalization and export</text>
+        <rect x="238" y="109" width="140" height="24" rx="12" fill="#dbeafe" stroke="#60a5fa" />
+        <text x="308" y="125" textAnchor="middle" fontSize="11.5" fill="#1d4ed8">title / summary cleanup</text>
+        <rect x="238" y="141" width="140" height="24" rx="12" fill="#dcfce7" stroke="#4ade80" />
+        <text x="308" y="157" textAnchor="middle" fontSize="11.5" fill="#166534">category CSV + JSON outputs</text>
+        <rect x="238" y="173" width="140" height="24" rx="12" fill="#fef3c7" stroke="#f59e0b" />
+        <text x="308" y="189" textAnchor="middle" fontSize="11.5" fill="#92400e">sentiment / reading metrics</text>
+
+        <rect x="434" y="64" width="176" height="146" rx="22" fill="#fff7ed" stroke="#fb923c" strokeWidth="2" />
+        <text x="522" y="94" textAnchor="middle" fontSize="13" fontWeight="700" fill="#9a3412">Summarization layer</text>
+        <text x="522" y="119" textAnchor="middle" fontSize="11.5" fill="#7c2d12">google/pegasus-cnn_dailymail</text>
+        <text x="522" y="138" textAnchor="middle" fontSize="11.5" fill="#7c2d12">daily digest generation</text>
+        <text x="522" y="157" textAnchor="middle" fontSize="11.5" fill="#7c2d12">conversational rewrite target</text>
+        <rect x="475" y="172" width="94" height="24" rx="12" fill="#ffedd5" stroke="#fb923c" />
+        <text x="522" y="188" textAnchor="middle" fontSize="11.5" fill="#9a3412">digest-only run</text>
+
+        <rect x="642" y="78" width="154" height="118" rx="22" fill="#f0fdf4" stroke="#4ade80" strokeWidth="2" />
+        <text x="719" y="108" textAnchor="middle" fontSize="13" fontWeight="700" fill="#166534">Mobile surface</text>
+        <text x="719" y="130" textAnchor="middle" fontSize="11.5" fill="#166534">home / topics / top news</text>
+        <text x="719" y="149" textAnchor="middle" fontSize="11.5" fill="#166534">analytics and personalization</text>
+        <text x="719" y="168" textAnchor="middle" fontSize="11.5" fill="#166534">offline-friendly reading flow</text>
+
+        <path d="M182 136 L214 136" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="214,136 202,128 202,144" fill="#94a3b8" />
+        <path d="M402 136 L434 136" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="434,136 422,128 422,144" fill="#94a3b8" />
+        <path d="M610 136 L642 136" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="642,136 630,128 630,144" fill="#94a3b8" />
+      </svg>
+    </div>
+  )
+}
+
+function NeMoSynthRustPipelineDiagram() {
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox="0 0 840 260" style={{ width: '100%', minWidth: 780, display: 'block', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        <text x="420" y="22" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0f172a">
+          NeMoSynthRust dataset pipeline
+        </text>
+        <text x="420" y="42" textAnchor="middle" fontSize="11.5" fill="#64748b">
+          Synthetic Rust code moves through generation, judging, cargo validation, and parquet export instead of stopping at raw model output.
+        </text>
+
+        <rect x="18" y="82" width="176" height="126" rx="22" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <text x="106" y="112" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">NeMo generation</text>
+        <text x="106" y="134" textAnchor="middle" fontSize="11.5" fill="#475569">DataDesigner samplers</text>
+        <text x="106" y="153" textAnchor="middle" fontSize="11.5" fill="#475569">domain + complexity mix</text>
+        <text x="106" y="172" textAnchor="middle" fontSize="11.5" fill="#475569">Rust prompt + code column</text>
+        <text x="106" y="191" textAnchor="middle" fontSize="11.5" fill="#475569">JSONL raw samples</text>
+
+        <rect x="222" y="68" width="182" height="154" rx="22" fill="#fff7ed" stroke="#fb923c" strokeWidth="2" />
+        <text x="313" y="98" textAnchor="middle" fontSize="13" fontWeight="700" fill="#9a3412">Bonsai judge / refiner</text>
+        <rect x="246" y="113" width="134" height="24" rx="12" fill="#ffedd5" stroke="#fb923c" />
+        <text x="313" y="129" textAnchor="middle" fontSize="11.5" fill="#9a3412">safety × 0.4</text>
+        <rect x="246" y="145" width="134" height="24" rx="12" fill="#ffedd5" stroke="#fb923c" />
+        <text x="313" y="161" textAnchor="middle" fontSize="11.5" fill="#9a3412">performance × 0.3</text>
+        <rect x="246" y="177" width="134" height="24" rx="12" fill="#ffedd5" stroke="#fb923c" />
+        <text x="313" y="193" textAnchor="middle" fontSize="11.5" fill="#9a3412">idiomatic × 0.3</text>
+        <text x="313" y="212" textAnchor="middle" fontSize="11.5" fill="#7c2d12">refine below 6.0, drop below 4.0</text>
+
+        <rect x="432" y="68" width="188" height="154" rx="22" fill="#f0fdf4" stroke="#4ade80" strokeWidth="2" />
+        <text x="526" y="98" textAnchor="middle" fontSize="13" fontWeight="700" fill="#166534">Rust harness</text>
+        <text x="526" y="122" textAnchor="middle" fontSize="11.5" fill="#166534">Tokio parallel workers</text>
+        <text x="526" y="141" textAnchor="middle" fontSize="11.5" fill="#166534">cargo check / test / clippy</text>
+        <text x="526" y="160" textAnchor="middle" fontSize="11.5" fill="#166534">optional miri / bench / fuzz</text>
+        <text x="526" y="179" textAnchor="middle" fontSize="11.5" fill="#166534">isolated temp Cargo projects</text>
+        <text x="526" y="198" textAnchor="middle" fontSize="11.5" fill="#166534">evaluation JSONL</text>
+
+        <rect x="648" y="82" width="174" height="126" rx="22" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        <text x="735" y="112" textAnchor="middle" fontSize="13" fontWeight="700" fill="#0f172a">Dataset export</text>
+        <text x="735" y="134" textAnchor="middle" fontSize="11.5" fill="#475569">train.parquet</text>
+        <text x="735" y="153" textAnchor="middle" fontSize="11.5" fill="#475569">HF-ready schema</text>
+        <text x="735" y="172" textAnchor="middle" fontSize="11.5" fill="#475569">quality + compile labels</text>
+        <text x="735" y="191" textAnchor="middle" fontSize="11.5" fill="#475569">gold-data filtering</text>
+
+        <path d="M194 145 L222 145" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="222,145 210,137 210,153" fill="#94a3b8" />
+        <path d="M404 145 L432 145" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="432,145 420,137 420,153" fill="#94a3b8" />
+        <path d="M620 145 L648 145" stroke="#94a3b8" strokeWidth="3" fill="none" />
+        <polygon points="648,145 636,137 636,153" fill="#94a3b8" />
+      </svg>
+    </div>
+  )
+}
+
+function NeMoJudgeRealityChart() {
+  const bars = [
+    { label: 'Bonsai avg score', value: 83.3, color: '#3b82f6', display: '8.33 / 10' },
+    { label: 'Compile rate', value: 16.7, color: '#f97316', display: '16.7%' },
+    { label: 'Test pass rate', value: 6.7, color: '#22c55e', display: '6.7%' },
+  ]
+  const W = 680, H = 250, ml = 144, mr = 52, mt = 48, rowH = 52, barH = 24
+  const chartW = W - ml - mr
+  const sx = (v: number) => (v / 100) * chartW
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+          Judge score versus cargo reality
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="11.5" fill="#64748b">
+          The main finding is the gap: judged code looks strong, but compilation and tests remain much harder.
+        </text>
+        {[0, 25, 50, 75, 100].map((v) => (
+          <g key={v}>
+            <line x1={ml + sx(v)} y1={mt} x2={ml + sx(v)} y2={H - 20} stroke="#f1f5f9" strokeWidth="1" />
+            <text x={ml + sx(v)} y={H - 6} textAnchor="middle" fontSize="9.5" fill="#94a3b8">{v}</text>
+          </g>
+        ))}
+        {bars.map((bar, i) => {
+          const y = mt + i * rowH
+          return (
+            <g key={bar.label}>
+              <text x={ml - 10} y={y + 16} textAnchor="end" fontSize="11.5" fill="#334155" fontWeight="600">{bar.label}</text>
+              <rect x={ml} y={y} width={sx(bar.value)} height={barH} fill={bar.color} rx="8" />
+              <text x={ml + sx(bar.value) + 8} y={y + 16} fontSize="11.5" fill={bar.color} fontWeight="700">{bar.display}</text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
+function NeMoDomainOutcomeChart() {
+  const rows = [
+    { domain: 'error-handling', samples: 7, compile: 28.6, test: 14.3 },
+    { domain: 'algorithms', samples: 5, compile: 40.0, test: 20.0 },
+    { domain: 'async', samples: 7, compile: 0.0, test: 0.0 },
+    { domain: 'crates', samples: 6, compile: 0.0, test: 0.0 },
+    { domain: 'concurrency', samples: 3, compile: 0.0, test: 0.0 },
+    { domain: 'wasm', samples: 1, compile: 0.0, test: 0.0 },
+    { domain: 'systems', samples: 1, compile: 100.0, test: 0.0 },
+  ]
+  const W = 760, H = 360, ml = 170, mr = 54, mt = 54, rowH = 38, barH = 10
+  const chartW = W - ml - mr
+  const sx = (v: number) => (v / 100) * chartW
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="14" fontWeight="700" fill="#0f172a">
+          Domain-level compile and test outcomes
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="11.5" fill="#64748b">
+          Simpler domains survive better; dependency-heavy async, crates, and wasm cases are where synthetic code falls apart.
+        </text>
+        <rect x={ml} y={44} width={10} height={8} fill="#f97316" rx="2" />
+        <text x={ml + 14} y={51} fontSize="10" fill="#64748b">Compile rate</text>
+        <rect x={ml + 112} y={44} width={10} height={8} fill="#22c55e" rx="2" />
+        <text x={ml + 126} y={51} fontSize="10" fill="#64748b">Test rate</text>
+        {[0, 25, 50, 75, 100].map((v) => (
+          <g key={v}>
+            <line x1={ml + sx(v)} y1={mt} x2={ml + sx(v)} y2={H - 18} stroke="#f1f5f9" strokeWidth="1" />
+            <text x={ml + sx(v)} y={H - 4} textAnchor="middle" fontSize="9.5" fill="#94a3b8">{v}%</text>
+          </g>
+        ))}
+        {rows.map((row, i) => {
+          const y = mt + i * rowH
+          return (
+            <g key={row.domain}>
+              <text x={ml - 10} y={y + 13} textAnchor="end" fontSize="11" fill="#334155" fontWeight="600">
+                {row.domain} ({row.samples})
+              </text>
+              <rect x={ml} y={y} width={sx(row.compile)} height={barH} fill="#f97316" rx="5" />
+              <text x={ml + sx(row.compile) + 6} y={y + 9} fontSize="9.5" fill="#f97316">{row.compile.toFixed(1)}%</text>
+              <rect x={ml} y={y + 15} width={sx(row.test)} height={barH} fill="#22c55e" rx="5" />
+              <text x={ml + sx(row.test) + 6} y={y + 24} fontSize="9.5" fill="#22c55e">{row.test.toFixed(1)}%</text>
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
 }
 
 // ===== CHART COMPONENTS =====
@@ -1063,16 +1561,15 @@ function BFLResultsDiagram() {
 }
 
 function LegalHyperbolicDiagram() {
-  const W = 840
-  const H = 300
-  const cx = 620
-  const cy = 165
-  const r = 92
+  const W = 920
+  const H = 340
+  const cx = 585
+  const cy = 202
+  const r = 84
   const courtPoints = [
-    { x: cx - 10, y: cy - 8, label: 'Supreme', color: '#2563eb' },
-    { x: cx + 18, y: cy - 38, label: 'High', color: '#7c3aed' },
-    { x: cx - 58, y: cy + 22, label: 'District', color: '#ec4899' },
-    { x: cx + 52, y: cy + 34, label: 'District', color: '#ec4899' },
+    { x: cx - 14, y: cy - 10, label: 'Supreme', color: '#2563eb', tx: cx + 18, ty: cy - 2 },
+    { x: cx + 26, y: cy - 40, label: 'High', color: '#7c3aed', tx: cx + 46, ty: cy - 34 },
+    { x: cx - 80, y: cy + 24, label: 'District', color: '#ec4899', tx: cx - 62, ty: cy + 30 },
   ] as const
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -1084,7 +1581,7 @@ function LegalHyperbolicDiagram() {
           LegalNexus maps authority to radius and semantic similarity to angle, instead of flattening everything into one Euclidean neighborhood.
         </text>
 
-        <rect x="34" y="66" width="284" height="192" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <rect x="34" y="74" width="296" height="214" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
         <text x="176" y="92" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Flat Euclidean space</text>
         <text x="176" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">Authority and semantic context mix together</text>
         <circle cx="110" cy="170" r="13" fill="#2563eb" opacity="0.9" />
@@ -1094,38 +1591,48 @@ function LegalHyperbolicDiagram() {
         <circle cx="138" cy="210" r="13" fill="#2563eb" opacity="0.5" />
         <path d="M110 170 C142 160 168 154 198 188" stroke="#94a3b8" strokeWidth="1.8" fill="none" strokeDasharray="5 6" />
         <path d="M162 148 C190 130 216 132 236 156" stroke="#94a3b8" strokeWidth="1.8" fill="none" strokeDasharray="5 6" />
-        <text x="176" y="236" textAnchor="middle" fontSize="10" fill="#64748b">Hierarchy becomes noisy and hard to preserve</text>
+        <text x="182" y="252" textAnchor="middle" fontSize="10" fill="#64748b">Hierarchy becomes noisy and hard to preserve</text>
 
-        <rect x="358" y="66" width="448" height="192" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
-        <text x="582" y="92" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Poincaré ball representation</text>
-        <text x="582" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">Small radius = higher authority, angle = semantic neighborhood</text>
+        <rect x="360" y="74" width="526" height="214" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <text x="623" y="92" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Poincaré ball representation</text>
+        <text x="623" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">Small radius = higher authority, angle = semantic neighborhood</text>
         <circle cx={cx} cy={cy} r={r} fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
         <circle cx={cx} cy={cy} r="62" fill="none" stroke="#93c5fd" strokeWidth="1.5" strokeDasharray="4 5" />
         <circle cx={cx} cy={cy} r="32" fill="none" stroke="#bfdbfe" strokeWidth="1.5" strokeDasharray="4 5" />
-        <line x1={cx} y1={cy} x2={cx + 70} y2={cy - 48} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
-        <text x={cx + 80} y={cy - 54} fontSize="9.5" fill="#64748b">angle = legal topic / semantics</text>
-        <line x1={cx} y1={cy} x2={cx} y2={cy - 90} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
-        <text x={cx + 10} y={cy - 96} fontSize="9.5" fill="#64748b">radius = court authority</text>
+        <line x1={cx} y1={cy} x2={cx + 60} y2={cy - 42} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
+        <line x1={cx} y1={cy} x2={cx} y2={cy - 84} stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4 4" />
+
+        <rect x="390" y="132" width="118" height="36" rx="12" fill="#ffffff" stroke="#dbeafe" strokeWidth="1.4" />
+        <text x="449" y="147" textAnchor="middle" fontSize="9.5" fill="#475569">radius</text>
+        <text x="449" y="160" textAnchor="middle" fontSize="9.5" fill="#475569">encodes authority</text>
+
+        <rect x="692" y="118" width="150" height="36" rx="12" fill="#ffffff" stroke="#e9d5ff" strokeWidth="1.4" />
+        <text x="767" y="133" textAnchor="middle" fontSize="9.5" fill="#475569">angle preserves</text>
+        <text x="767" y="146" textAnchor="middle" fontSize="9.5" fill="#475569">semantic neighborhoods</text>
 
         {courtPoints.map((point) => (
-          <g key={`${point.label}-${point.x}`}>
+          <g key={`${point.label}-${point.x}-${point.y}`}>
             <circle cx={point.x} cy={point.y} r="10" fill={point.color} />
-            <text x={point.x + 14} y={point.y + 4} fontSize="9.5" fill="#334155">{point.label}</text>
+            <text x={point.tx} y={point.ty} fontSize="9.5" fill="#334155">{point.label}</text>
           </g>
         ))}
 
-        <text x="735" y="188" textAnchor="middle" fontSize="10" fill="#64748b">validation radii</text>
-        <text x="735" y="206" textAnchor="middle" fontSize="9.5" fill="#2563eb">Supreme 0.540</text>
-        <text x="735" y="222" textAnchor="middle" fontSize="9.5" fill="#7c3aed">High 0.575</text>
-        <text x="735" y="238" textAnchor="middle" fontSize="9.5" fill="#ec4899">District 0.619</text>
+        <circle cx={cx + 70} cy={cy + 38} r="8" fill="#ec4899" opacity="0.8" />
+        <circle cx={cx + 16} cy={cy + 72} r="8" fill="#ec4899" opacity="0.55" />
+
+        <rect x="708" y="174" width="146" height="74" rx="14" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.5" />
+        <text x="781" y="194" textAnchor="middle" fontSize="10" fill="#64748b">validation radii</text>
+        <text x="781" y="212" textAnchor="middle" fontSize="9.5" fill="#2563eb">Supreme 0.540</text>
+        <text x="781" y="228" textAnchor="middle" fontSize="9.5" fill="#7c3aed">High 0.575</text>
+        <text x="781" y="244" textAnchor="middle" fontSize="9.5" fill="#ec4899">District 0.619</text>
       </svg>
     </div>
   )
 }
 
 function LegalAgentDebateDiagram() {
-  const W = 860
-  const H = 320
+  const W = 900
+  const H = 360
   return (
     <div style={{ overflowX: 'auto' }}>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
@@ -1141,41 +1648,41 @@ function LegalAgentDebateDiagram() {
           Linker proposes edges, Interpreter labels them, Conflict removes cycles and contradictions until the graph stabilizes.
         </text>
 
-        <rect x="52" y="86" width="176" height="90" rx="18" fill="#dbeafe" stroke="#3b82f6" strokeWidth="2" />
-        <text x="140" y="112" textAnchor="middle" fontSize="12" fill="#1e3a8a" fontWeight="700">Linker Agent</text>
-        <text x="140" y="132" textAnchor="middle" fontSize="10" fill="#1e40af">7 regex patterns + LLM reasoning</text>
-        <text x="140" y="148" textAnchor="middle" fontSize="10" fill="#1e40af">proposes citation candidates</text>
+        <rect x="58" y="92" width="190" height="96" rx="18" fill="#dbeafe" stroke="#3b82f6" strokeWidth="2" />
+        <text x="153" y="119" textAnchor="middle" fontSize="12" fill="#1e3a8a" fontWeight="700">Linker Agent</text>
+        <text x="153" y="140" textAnchor="middle" fontSize="9.5" fill="#1e40af">7 regex patterns + LLM reasoning</text>
+        <text x="153" y="157" textAnchor="middle" fontSize="9.5" fill="#1e40af">proposes citation candidates</text>
 
-        <rect x="342" y="70" width="176" height="106" rx="18" fill="#ede9fe" stroke="#8b5cf6" strokeWidth="2" />
-        <text x="430" y="96" textAnchor="middle" fontSize="12" fill="#5b21b6" fontWeight="700">Interpreter Agent</text>
-        <text x="430" y="116" textAnchor="middle" fontSize="10" fill="#6d28d9">classifies edge semantics</text>
-        <text x="430" y="132" textAnchor="middle" fontSize="10" fill="#6d28d9">FOLLOW · DISTINGUISH</text>
-        <text x="430" y="148" textAnchor="middle" fontSize="10" fill="#6d28d9">OVERRULE</text>
+        <rect x="355" y="74" width="190" height="112" rx="18" fill="#ede9fe" stroke="#8b5cf6" strokeWidth="2" />
+        <text x="450" y="101" textAnchor="middle" fontSize="12" fill="#5b21b6" fontWeight="700">Interpreter Agent</text>
+        <text x="450" y="122" textAnchor="middle" fontSize="9.5" fill="#6d28d9">classifies edge semantics</text>
+        <text x="450" y="139" textAnchor="middle" fontSize="9.5" fill="#6d28d9">FOLLOW · DISTINGUISH</text>
+        <text x="450" y="156" textAnchor="middle" fontSize="9.5" fill="#6d28d9">OVERRULE</text>
 
-        <rect x="632" y="86" width="176" height="90" rx="18" fill="#fee2e2" stroke="#ef4444" strokeWidth="2" />
-        <text x="720" y="112" textAnchor="middle" fontSize="12" fill="#991b1b" fontWeight="700">Conflict Agent</text>
-        <text x="720" y="132" textAnchor="middle" fontSize="10" fill="#b91c1c">detects cycles, contradictions,</text>
-        <text x="720" y="148" textAnchor="middle" fontSize="10" fill="#b91c1c">authority inversions</text>
+        <rect x="652" y="92" width="190" height="96" rx="18" fill="#fee2e2" stroke="#ef4444" strokeWidth="2" />
+        <text x="747" y="119" textAnchor="middle" fontSize="12" fill="#991b1b" fontWeight="700">Conflict Agent</text>
+        <text x="747" y="140" textAnchor="middle" fontSize="9.5" fill="#b91c1c">detects cycles, contradictions,</text>
+        <text x="747" y="157" textAnchor="middle" fontSize="9.5" fill="#b91c1c">authority inversions</text>
 
-        <rect x="296" y="214" width="268" height="60" rx="16" fill="#dcfce7" stroke="#22c55e" strokeWidth="2" />
-        <text x="430" y="238" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Stable precedent graph</text>
-        <text x="430" y="256" textAnchor="middle" fontSize="10" fill="#15803d">Conflict-resolved knowledge graph used for retrieval</text>
+        <circle cx="450" cy="224" r="38" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
+        <text x="450" y="217" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Shared</text>
+        <text x="450" y="233" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Graph State</text>
 
-        <circle cx="430" cy="190" r="36" fill="#f8fafc" stroke="#94a3b8" strokeWidth="2" />
-        <text x="430" y="184" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Shared</text>
-        <text x="430" y="199" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Graph State</text>
+        <rect x="280" y="286" width="340" height="56" rx="16" fill="#dcfce7" stroke="#22c55e" strokeWidth="2" />
+        <text x="450" y="308" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Stable precedent graph</text>
+        <text x="450" y="326" textAnchor="middle" fontSize="10" fill="#15803d">Conflict-resolved knowledge graph used for retrieval</text>
 
-        <line x1="228" y1="131" x2="392" y2="178" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
-        <line x1="430" y1="176" x2="430" y2="154" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
-        <line x1="632" y1="131" x2="468" y2="178" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
-        <line x1="430" y1="226" x2="430" y2="214" stroke="#22c55e" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="248" y1="144" x2="410" y2="213" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="450" y1="186" x2="450" y2="175" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="652" y1="144" x2="490" y2="213" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#legal-arrow)" />
+        <line x1="450" y1="262" x2="450" y2="285" stroke="#22c55e" strokeWidth="2" markerEnd="url(#legal-arrow)" />
 
-        <path d="M394 200 C340 214 286 216 206 184" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
-        <path d="M466 200 C520 214 574 216 654 184" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
-        <text x="190" y="212" fontSize="9.5" fill="#64748b">payoff feedback</text>
-        <text x="636" y="212" fontSize="9.5" fill="#64748b">best-response update</text>
+        <path d="M410 250 C348 266 272 266 205 197" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
+        <path d="M490 250 C552 266 628 266 695 197" stroke="#cbd5e1" strokeWidth="1.8" fill="none" strokeDasharray="5 5" markerEnd="url(#legal-arrow)" />
+        <text x="228" y="266" fontSize="9.5" fill="#64748b">payoff feedback</text>
+        <text x="640" y="266" fontSize="9.5" fill="#64748b">best-response update</text>
 
-        <text x="430" y="298" textAnchor="middle" fontSize="10" fill="#64748b">
+        <text x="450" y="356" textAnchor="middle" fontSize="10" fill="#64748b">
           Repo docs describe the loop as a Nash-style equilibrium process over graph quality, precision, and conflict penalties.
         </text>
       </svg>
@@ -1184,14 +1691,14 @@ function LegalAgentDebateDiagram() {
 }
 
 function LegalRetrievalDiagram() {
-  const W = 880
-  const H = 320
+  const W = 980
+  const H = 360
   const signalCards = [
-    { x: 230, y: 80, w: 130, h: 40, label: 'Semantic', sub: 'embedding similarity', fill: '#dbeafe', stroke: '#3b82f6' },
-    { x: 230, y: 132, w: 130, h: 40, label: 'Structural', sub: 'graph traversal', fill: '#ede9fe', stroke: '#8b5cf6' },
-    { x: 230, y: 184, w: 130, h: 40, label: 'Citation', sub: 'authority weighting', fill: '#fee2e2', stroke: '#ef4444' },
-    { x: 376, y: 80, w: 130, h: 40, label: 'Hyperbolic', sub: 'Poincaré distance', fill: '#fef3c7', stroke: '#f59e0b' },
-    { x: 376, y: 132, w: 130, h: 40, label: 'GNN', sub: 'message-passing refinement', fill: '#dcfce7', stroke: '#22c55e' },
+    { x: 250, y: 88, w: 154, h: 44, label: 'Semantic', sub: 'embedding similarity', fill: '#dbeafe', stroke: '#3b82f6' },
+    { x: 250, y: 150, w: 154, h: 44, label: 'Structural', sub: 'graph traversal', fill: '#ede9fe', stroke: '#8b5cf6' },
+    { x: 335, y: 212, w: 154, h: 44, label: 'Citation', sub: 'authority weighting', fill: '#fee2e2', stroke: '#ef4444' },
+    { x: 430, y: 88, w: 154, h: 44, label: 'Hyperbolic', sub: 'Poincaré distance', fill: '#fef3c7', stroke: '#f59e0b' },
+    { x: 430, y: 150, w: 154, h: 44, label: 'GNN', sub: 'message-passing refinement', fill: '#dcfce7', stroke: '#22c55e' },
   ] as const
   return (
     <div style={{ overflowX: 'auto' }}>
@@ -1208,47 +1715,592 @@ function LegalRetrievalDiagram() {
           LegalNexus combines multiple search signals, then layers temporal scoring and Toulmin extraction on top of the ranked cases.
         </text>
 
-        <rect x="36" y="118" width="138" height="72" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
-        <text x="105" y="144" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Legal query</text>
-        <text x="105" y="163" textAnchor="middle" fontSize="10" fill="#64748b">facts, issue, precedent need</text>
+        <rect x="42" y="138" width="160" height="84" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="122" y="168" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Legal query</text>
+        <text x="122" y="188" textAnchor="middle" fontSize="10" fill="#64748b">facts, issue,</text>
+        <text x="122" y="204" textAnchor="middle" fontSize="10" fill="#64748b">precedent need</text>
 
         {signalCards.map((card) => (
           <g key={card.label}>
             <rect x={card.x} y={card.y} width={card.w} height={card.h} rx="14" fill={card.fill} stroke={card.stroke} strokeWidth="1.8" />
-            <text x={card.x + card.w / 2} y={card.y + 16} textAnchor="middle" fontSize="10.5" fill="#0f172a" fontWeight="700">{card.label}</text>
-            <text x={card.x + card.w / 2} y={card.y + 30} textAnchor="middle" fontSize="9" fill="#475569">{card.sub}</text>
+            <text x={card.x + card.w / 2} y={card.y + 18} textAnchor="middle" fontSize="10.5" fill="#0f172a" fontWeight="700">{card.label}</text>
+            <text x={card.x + card.w / 2} y={card.y + 33} textAnchor="middle" fontSize="9" fill="#475569">{card.sub}</text>
           </g>
         ))}
 
-        <rect x="546" y="110" width="138" height="88" rx="18" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
-        <text x="615" y="136" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Hybrid ranker</text>
-        <text x="615" y="154" textAnchor="middle" fontSize="10" fill="#2563eb">fuses 5 signals into</text>
-        <text x="615" y="170" textAnchor="middle" fontSize="10" fill="#2563eb">top-k candidate precedents</text>
+        <rect x="642" y="126" width="176" height="108" rx="20" fill="#eff6ff" stroke="#60a5fa" strokeWidth="2" />
+        <text x="730" y="156" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Hybrid ranker</text>
+        <text x="730" y="176" textAnchor="middle" fontSize="10" fill="#2563eb">fuses 5 signals into</text>
+        <text x="730" y="192" textAnchor="middle" fontSize="10" fill="#2563eb">top-k candidate precedents</text>
 
-        <rect x="716" y="82" width="132" height="62" rx="16" fill="#f3e8ff" stroke="#a855f7" strokeWidth="2" />
-        <text x="782" y="107" textAnchor="middle" fontSize="11" fill="#7e22ce" fontWeight="700">Toulmin layer</text>
-        <text x="782" y="124" textAnchor="middle" fontSize="9.5" fill="#7e22ce">claim · ground · warrant</text>
+        <rect x="846" y="92" width="110" height="70" rx="16" fill="#f3e8ff" stroke="#a855f7" strokeWidth="2" />
+        <text x="901" y="119" textAnchor="middle" fontSize="11" fill="#7e22ce" fontWeight="700">Toulmin layer</text>
+        <text x="901" y="138" textAnchor="middle" fontSize="9.2" fill="#7e22ce">claim · ground · warrant</text>
 
-        <rect x="716" y="156" width="132" height="62" rx="16" fill="#ecfccb" stroke="#84cc16" strokeWidth="2" />
-        <text x="782" y="181" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Temporal scorer</text>
-        <text x="782" y="198" textAnchor="middle" fontSize="9.5" fill="#4d7c0f">decay + resurrection boost</text>
+        <rect x="846" y="176" width="110" height="70" rx="16" fill="#ecfccb" stroke="#84cc16" strokeWidth="2" />
+        <text x="901" y="203" textAnchor="middle" fontSize="11" fill="#3f6212" fontWeight="700">Temporal scorer</text>
+        <text x="901" y="222" textAnchor="middle" fontSize="9.2" fill="#4d7c0f">decay + resurrection boost</text>
 
-        <rect x="716" y="232" width="132" height="52" rx="16" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
-        <text x="782" y="252" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Validated output</text>
-        <text x="782" y="269" textAnchor="middle" fontSize="9.5" fill="#64748b">ranked, interpretable precedents</text>
+        <rect x="846" y="260" width="110" height="56" rx="16" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="2" />
+        <text x="901" y="282" textAnchor="middle" fontSize="11" fill="#334155" fontWeight="700">Validated output</text>
+        <text x="901" y="300" textAnchor="middle" fontSize="9.2" fill="#64748b">interpretable precedents</text>
 
-        <line x1="174" y1="154" x2="228" y2="154" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#retr-arrow)" />
-        <line x1="360" y1="100" x2="546" y2="136" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="360" y1="152" x2="546" y2="154" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="360" y1="204" x2="546" y2="172" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="506" y1="100" x2="546" y2="126" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="506" y1="152" x2="546" y2="162" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="684" y1="136" x2="716" y2="113" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="684" y1="154" x2="716" y2="187" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
-        <line x1="782" y1="218" x2="782" y2="232" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="202" y1="180" x2="248" y2="180" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#retr-arrow)" />
+        <line x1="404" y1="110" x2="642" y2="158" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="404" y1="172" x2="642" y2="180" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="489" y1="234" x2="642" y2="202" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="584" y1="110" x2="642" y2="170" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="584" y1="172" x2="642" y2="188" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="818" y1="160" x2="846" y2="127" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="818" y1="188" x2="846" y2="211" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
+        <line x1="901" y1="246" x2="901" y2="260" stroke="#94a3b8" strokeWidth="1.8" markerEnd="url(#retr-arrow)" />
 
-        <text x="110" y="296" fontSize="10" fill="#64748b">49,634 cases · 768-dim embeddings · 3 court levels · 4 legal topics</text>
-        <text x="500" y="296" fontSize="10" fill="#64748b">Validation: P@5 0.896 · NDCG@10 0.893 · conflict resolution 98.3% · Gromov δ 0.029</text>
+        <text x="296" y="330" textAnchor="middle" fontSize="10" fill="#64748b">49,634 cases · 768-dim embeddings · 3 court levels · 4 legal topics</text>
+        <text x="738" y="330" textAnchor="middle" fontSize="10" fill="#64748b">P@5 0.896 · NDCG@10 0.893 · conflict resolution 98.3% · Gromov δ 0.029</text>
+      </svg>
+    </div>
+  )
+}
+
+function BipsSplitDiagram() {
+  const W = 920
+  const H = 372
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="bips-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Backbone-integrated partial split
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          Keep the shared early backbone, split at a learned layer, distill the heavy teacher tail into a compact student head, then deploy only the cheap branch.
+        </text>
+
+        <rect x="24" y="70" width="872" height="126" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        <rect x="24" y="214" width="872" height="126" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.5" />
+        <text x="48" y="95" fontSize="11" fill="#475569" fontWeight="700">Training</text>
+        <text x="48" y="239" fontSize="11" fill="#475569" fontWeight="700">Inference</text>
+
+        <rect x="72" y="106" width="92" height="56" rx="14" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1.8" />
+        <text x="118" y="129" textAnchor="middle" fontSize="11" fill="#0f172a" fontWeight="700">Input image</text>
+        <text x="118" y="146" textAnchor="middle" fontSize="9.5" fill="#475569">any segmentation task</text>
+
+        <rect x="204" y="96" width="186" height="76" rx="16" fill="#ede9fe" stroke="#8b5cf6" strokeWidth="1.8" />
+        <text x="297" y="123" textAnchor="middle" fontSize="12" fill="#312e81" fontWeight="700">Shared backbone stem</text>
+        <text x="297" y="142" textAnchor="middle" fontSize="9.5" fill="#5b21b6">early + mid blocks kept intact</text>
+        <text x="297" y="157" textAnchor="middle" fontSize="9.5" fill="#5b21b6">works across model families</text>
+
+        <rect x="430" y="106" width="86" height="56" rx="14" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1.8" />
+        <text x="473" y="129" textAnchor="middle" fontSize="11" fill="#7c2d12" fontWeight="700">Learned split</text>
+        <text x="473" y="146" textAnchor="middle" fontSize="9.5" fill="#92400e">choose the cut layer</text>
+
+        <rect x="564" y="84" width="148" height="56" rx="14" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.8" />
+        <text x="638" y="107" textAnchor="middle" fontSize="11.5" fill="#1d4ed8" fontWeight="700">Teacher tail</text>
+        <text x="638" y="124" textAnchor="middle" fontSize="9.5" fill="#1e40af">full-capacity late backbone</text>
+
+        <rect x="564" y="146" width="148" height="56" rx="14" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.8" />
+        <text x="638" y="169" textAnchor="middle" fontSize="11.5" fill="#166534" fontWeight="700">Student head</text>
+        <text x="638" y="186" textAnchor="middle" fontSize="9.5" fill="#15803d">compact distilled replacement</text>
+
+        <rect x="756" y="106" width="110" height="56" rx="14" fill="#fce7f3" stroke="#ec4899" strokeWidth="1.8" />
+        <text x="811" y="129" textAnchor="middle" fontSize="11.5" fill="#9d174d" fontWeight="700">PKD objective</text>
+        <text x="811" y="146" textAnchor="middle" fontSize="9.5" fill="#9d174d">tighten mimicry in stages</text>
+
+        <line x1="164" y1="134" x2="202" y2="134" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="390" y1="134" x2="428" y2="134" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="516" y1="134" x2="562" y2="112" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="516" y1="134" x2="562" y2="174" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="712" y1="112" x2="756" y2="128" stroke="#3b82f6" strokeWidth="1.8" strokeDasharray="5 5" markerEnd="url(#bips-arrow)" />
+        <line x1="712" y1="174" x2="756" y2="140" stroke="#22c55e" strokeWidth="1.8" markerEnd="url(#bips-arrow)" />
+        <path d="M638 140 L638 146" stroke="#0f766e" strokeWidth="1.6" strokeDasharray="4 4" markerEnd="url(#bips-arrow)" />
+        <text x="728" y="92" fontSize="9.5" fill="#475569">teacher features supervise student</text>
+
+        <rect x="72" y="250" width="92" height="56" rx="14" fill="#e0f2fe" stroke="#38bdf8" strokeWidth="1.8" />
+        <text x="118" y="273" textAnchor="middle" fontSize="11" fill="#0f172a" fontWeight="700">Input image</text>
+        <text x="118" y="290" textAnchor="middle" fontSize="9.5" fill="#475569">same front-end path</text>
+
+        <rect x="204" y="240" width="186" height="76" rx="16" fill="#ede9fe" stroke="#8b5cf6" strokeWidth="1.8" />
+        <text x="297" y="267" textAnchor="middle" fontSize="12" fill="#312e81" fontWeight="700">Shared backbone stem</text>
+        <text x="297" y="286" textAnchor="middle" fontSize="9.5" fill="#5b21b6">reuse early representation</text>
+        <text x="297" y="301" textAnchor="middle" fontSize="9.5" fill="#5b21b6">no backbone surgery required</text>
+
+        <rect x="430" y="250" width="86" height="56" rx="14" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1.8" />
+        <text x="473" y="273" textAnchor="middle" fontSize="11" fill="#7c2d12" fontWeight="700">Same split</text>
+        <text x="473" y="290" textAnchor="middle" fontSize="9.5" fill="#92400e">cached cut point</text>
+
+        <rect x="564" y="250" width="148" height="56" rx="14" fill="#dcfce7" stroke="#22c55e" strokeWidth="1.8" />
+        <text x="638" y="273" textAnchor="middle" fontSize="11.5" fill="#166534" fontWeight="700">Student head only</text>
+        <text x="638" y="290" textAnchor="middle" fontSize="9.5" fill="#15803d">teacher tail removed at runtime</text>
+
+        <rect x="756" y="250" width="110" height="56" rx="14" fill="#f8fafc" stroke="#94a3b8" strokeWidth="1.8" />
+        <text x="811" y="273" textAnchor="middle" fontSize="11.5" fill="#334155" fontWeight="700">Segmentation</text>
+        <text x="811" y="290" textAnchor="middle" fontSize="9.5" fill="#64748b">fast edge output</text>
+
+        <line x1="164" y1="278" x2="202" y2="278" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="390" y1="278" x2="428" y2="278" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="516" y1="278" x2="562" y2="278" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+        <line x1="712" y1="278" x2="754" y2="278" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#bips-arrow)" />
+
+        <text x="460" y="354" textAnchor="middle" fontSize="10" fill="#64748b">
+          Conceptually: keep the universal early representation, replace the expensive late computation, and preserve accuracy through progressive distillation before deployment.
+        </text>
+      </svg>
+    </div>
+  )
+}
+
+function NSGSRuntimeDiagram() {
+  const W = 1120
+  const H = 374
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="nsgs-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          NSGS event-driven runtime
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          Patches fire only when activations exceed adaptive thresholds, then a lock-free SpikeQueue dispatches work across CPU threads with thermal-aware pacing.
+        </text>
+
+        <rect x="28" y="78" width="188" height="196" rx="18" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.6" />
+        <text x="122" y="102" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Patch field</text>
+        <text x="122" y="119" textAnchor="middle" fontSize="9.5" fill="#64748b">dense image becomes local work units</text>
+        {[
+          [44, 138, '#f8fafc'], [88, 138, '#dbeafe'], [132, 138, '#f8fafc'],
+          [44, 182, '#fde68a'], [88, 182, '#f8fafc'], [132, 182, '#dbeafe'],
+          [44, 226, '#f8fafc'], [88, 226, '#dcfce7'], [132, 226, '#f8fafc'],
+        ].map(([x, y, fill], idx) => (
+          <rect key={idx} x={x as number} y={y as number} width="34" height="34" rx="6" fill={fill as string} stroke="#94a3b8" strokeWidth="1" />
+        ))}
+        <text x="122" y="294" textAnchor="middle" fontSize="9.5" fill="#475569">Only high-change patches wake up</text>
+
+        <rect x="260" y="112" width="190" height="136" rx="18" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
+        <text x="355" y="137" textAnchor="middle" fontSize="12" fill="#9a3412" fontWeight="700">Adaptive threshold gate</text>
+        <text x="355" y="157" textAnchor="middle" fontSize="9.5" fill="#7c2d12">activation &gt; local threshold</text>
+        <rect x="299" y="180" width="112" height="26" rx="13" fill="#fb923c" opacity="0.15" stroke="#fb923c" strokeWidth="1.4" />
+        <text x="355" y="197" textAnchor="middle" fontSize="10" fill="#9a3412">emit spike event</text>
+        <text x="355" y="228" textAnchor="middle" fontSize="9.5" fill="#7c2d12">skip quiet regions entirely</text>
+
+        <rect x="500" y="78" width="320" height="196" rx="18" fill="#eff6ff" stroke="#60a5fa" strokeWidth="1.8" />
+        <text x="660" y="102" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Lock-free SpikeQueue runtime</text>
+        <text x="660" y="119" textAnchor="middle" fontSize="9.5" fill="#2563eb">asynchronous dispatch with minimal synchronization</text>
+        {['spike 1', 'spike 2', 'spike 3', 'spike 4'].map((label, idx) => (
+          <rect key={label} x={548 + idx * 54} y="146" width="42" height="18" rx="6" fill="#bfdbfe" stroke="#3b82f6" strokeWidth="1.2" />
+        ))}
+        {['Core 0', 'Core 1', 'Core 2', 'Core 3'].map((label, idx) => (
+          <g key={label}>
+            <rect x={538 + (idx % 2) * 92} y={188 + Math.floor(idx / 2) * 42} width="76" height="28" rx="10" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.2" />
+            <text x={576 + (idx % 2) * 92} y={206 + Math.floor(idx / 2) * 42} textAnchor="middle" fontSize="9.5" fill="#1e40af">{label}</text>
+          </g>
+        ))}
+        <rect x="714" y="184" width="84" height="88" rx="14" fill="#dbeafe" stroke="#3b82f6" strokeWidth="1.2" />
+        <text x="756" y="208" textAnchor="middle" fontSize="9.5" fill="#1d4ed8" fontWeight="700">Queue</text>
+        <text x="756" y="223" textAnchor="middle" fontSize="9.5" fill="#1d4ed8" fontWeight="700">depth</text>
+        <text x="756" y="244" textAnchor="middle" fontSize="8.5" fill="#475569">bursty work</text>
+        <text x="756" y="257" textAnchor="middle" fontSize="8.5" fill="#475569">backlog monitor</text>
+
+        <rect x="860" y="88" width="232" height="176" rx="18" fill="#f0fdf4" stroke="#22c55e" strokeWidth="1.8" />
+        <text x="976" y="112" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Edge device execution</text>
+        <text x="976" y="129" textAnchor="middle" fontSize="9.5" fill="#15803d">4-thread CPU, offline Android deployment</text>
+        <rect x="890" y="154" width="106" height="84" rx="14" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="943" y="178" textAnchor="middle" fontSize="9.6" fill="#166534" fontWeight="700">
+          <tspan x="943" dy="0">Thermal</tspan>
+          <tspan x="943" dy="13">scheduler</tspan>
+        </text>
+        <text x="943" y="205" textAnchor="middle" fontSize="8.8" fill="#15803d">
+          <tspan x="943" dy="0">backs off when hot</tspan>
+          <tspan x="943" dy="12">keeps throughput stable</tspan>
+        </text>
+        <rect x="1012" y="154" width="62" height="84" rx="14" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="1043" y="178" textAnchor="middle" fontSize="9.6" fill="#166534" fontWeight="700">
+          <tspan x="1043" dy="0">Output</tspan>
+          <tspan x="1043" dy="13">mask</tspan>
+        </text>
+        <path d="M1026 205 L1040 191 L1050 199 L1061 184" stroke="#7c3aed" strokeWidth="2" fill="none" />
+        <path d="M1025 220 L1038 230 L1052 218 L1064 224" stroke="#22c55e" strokeWidth="2" fill="none" />
+        <text x="1043" y="254" textAnchor="middle" fontSize="9" fill="#475569">result</text>
+
+        <line x1="216" y1="176" x2="258" y2="176" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#nsgs-arrow)" />
+        <line x1="450" y1="176" x2="498" y2="176" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#nsgs-arrow)" />
+        <line x1="820" y1="176" x2="858" y2="176" stroke="#94a3b8" strokeWidth="2" markerEnd="url(#nsgs-arrow)" />
+
+        <text x={W / 2} y="324" textAnchor="middle" fontSize="9.5" fill="#64748b">
+          <tspan x={W / 2} dy="0">Reported effect: 38-62% fewer redundant operations than dense frame-by-frame execution.</tspan>
+          <tspan x={W / 2} dy="14">NSGS pairs deployable ONNX inference with a C++ lock-free queue and thermal-aware pacing.</tspan>
+        </text>
+      </svg>
+    </div>
+  )
+}
+
+function BipsResultsDiagram() {
+  const W = 920
+  const H = 336
+  const bars = [
+    { label: 'EfficientSAM-S', value: 60.8, color: '#2563eb' },
+    { label: 'EfficientSAM-T', value: 50.3, color: '#3b82f6' },
+    { label: 'SegFormer-B5', value: 15.3, color: '#60a5fa' },
+  ] as const
+  const maxValue = 65
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y={18} textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Benchmark summary
+        </text>
+        <text x={W / 2} y={36} textAnchor="middle" fontSize="10" fill="#64748b">
+          The project positions BIPS-PKD as a systems result: large latency cuts, broad backbone coverage, and edge deployment constraints handled together.
+        </text>
+
+        <rect x="18" y="56" width="286" height="236" rx="18" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="38" y="82" fontSize="12" fill="#0f172a" fontWeight="700">Speedup over baseline CPU inference</text>
+        <text x="38" y="99" fontSize="9.5" fill="#64748b">Reported headline wins on representative backbones</text>
+        {bars.map((bar, idx) => {
+          const y = 130 + idx * 54
+          const width = (bar.value / maxValue) * 198
+          return (
+            <g key={bar.label}>
+              <text x="38" y={y - 8} fontSize="10" fill="#475569">{bar.label}</text>
+              <rect x="38" y={y} width="210" height="20" rx="10" fill="#eff6ff" />
+              <rect x="38" y={y} width={width} height="20" rx="10" fill={bar.color} />
+              <text x={38 + width + 8} y={y + 14} fontSize="11" fill={bar.color} fontWeight="700">{bar.value}x</text>
+            </g>
+          )
+        })}
+        <text x="38" y="276" fontSize="10" fill="#64748b">EfficientSAM-S: 3612 ms to 59 ms on 4-thread CPU</text>
+
+        <rect x="320" y="56" width="286" height="236" rx="18" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="340" y="82" fontSize="12" fill="#0f172a" fontWeight="700">Coverage across 9 model families</text>
+        <text x="340" y="99" fontSize="9.5" fill="#64748b">Model-family-agnostic split instead of one-off surgery</text>
+        {[
+          ['EfficientSAM', 0, 0], ['SegFormer', 1, 0], ['Mask2Former', 2, 0],
+          ['SAM2', 0, 1], ['PIDNet', 1, 1], ['YOLOv8', 2, 1],
+          ['YOLOv12', 0, 2], ['DINOv3', 1, 2], ['MobileSAM', 2, 2],
+        ].map(([label, col, row]) => (
+          <g key={label}>
+            <rect x={342 + Number(col) * 82} y={122 + Number(row) * 44} width="70" height="28" rx="12" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.2" />
+            <text x={377 + Number(col) * 82} y={140 + Number(row) * 44} textAnchor="middle" fontSize="9.5" fill="#334155">{label}</text>
+          </g>
+        ))}
+        <rect x="342" y="256" width="242" height="20" rx="10" fill="#ede9fe" />
+        <text x="463" y="270" textAnchor="middle" fontSize="10" fill="#5b21b6" fontWeight="700">single split-and-distill recipe, many backbones</text>
+
+        <rect x="622" y="56" width="280" height="236" rx="18" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="642" y="82" fontSize="12" fill="#0f172a" fontWeight="700">Edge deployment headline metrics</text>
+        <text x="642" y="99" fontSize="9.5" fill="#64748b">Quality, energy, and packaging all matter on-device</text>
+
+        <rect x="642" y="122" width="110" height="64" rx="14" fill="#eff6ff" stroke="#60a5fa" strokeWidth="1.6" />
+        <text x="697" y="145" textAnchor="middle" fontSize="11" fill="#1d4ed8" fontWeight="700">65.8%</text>
+        <text x="697" y="163" textAnchor="middle" fontSize="9.5" fill="#2563eb">average mIoU</text>
+
+        <rect x="770" y="122" width="110" height="64" rx="14" fill="#f0fdf4" stroke="#22c55e" strokeWidth="1.6" />
+        <text x="825" y="145" textAnchor="middle" fontSize="11" fill="#166534" fontWeight="700">4.4x</text>
+        <text x="825" y="163" textAnchor="middle" fontSize="9.5" fill="#15803d">less energy</text>
+
+        <rect x="642" y="202" width="110" height="64" rx="14" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.6" />
+        <text x="697" y="225" textAnchor="middle" fontSize="11" fill="#9a3412" fontWeight="700">~16 FPS</text>
+        <text x="697" y="243" textAnchor="middle" fontSize="9.5" fill="#c2410c">EfficientSAM-S</text>
+
+        <rect x="770" y="202" width="110" height="64" rx="14" fill="#fdf2f8" stroke="#ec4899" strokeWidth="1.6" />
+        <text x="825" y="225" textAnchor="middle" fontSize="11" fill="#9d174d" fontWeight="700">~500 MB</text>
+        <text x="825" y="243" textAnchor="middle" fontSize="9.5" fill="#be185d">offline Android app</text>
+      </svg>
+    </div>
+  )
+}
+
+function RepeatabilityPipelineDiagram() {
+  const W = 980
+  const H = 326
+  const metricCards = [
+    { label: 'Discriminability', x: 484, y: 136, fill: '#dbeafe', stroke: '#1d4ed8' },
+    { label: 'Fingerprint index', x: 618, y: 136, fill: '#dbeafe', stroke: '#1d4ed8' },
+    { label: 'ICC / I2C2', x: 484, y: 178, fill: '#eef2ff', stroke: '#4338ca' },
+    { label: 'Rank sum / CCDM', x: 618, y: 178, fill: '#eef2ff', stroke: '#4338ca' },
+    { label: 'Variance components', x: 484, y: 220, fill: '#dcfce7', stroke: '#166534' },
+    { label: 'X-bar + power', x: 618, y: 220, fill: '#dcfce7', stroke: '#166534' },
+  ]
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="repeatability-pipeline-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y="18" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Repeatability analysis workflow
+        </text>
+        <text x={W / 2} y="36" textAnchor="middle" fontSize="10" fill="#64748b">
+          Engineering measurements move from repeated observations to metric families, variance decomposition, and decision-ready diagnostics.
+        </text>
+
+        <rect x="28" y="82" width="176" height="178" rx="20" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <text x="116" y="108" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Repeated measurements</text>
+        <text x="116" y="126" textAnchor="middle" fontSize="9.5" fill="#64748b">frequency / specimen rows</text>
+        {[0, 1, 2, 3].map((row) => (
+          <g key={row}>
+            <rect x="56" y={146 + row * 32} width="122" height="16" rx="7" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1" />
+            <rect x="56" y={146 + row * 32} width={48 + row * 18} height="16" rx="7" fill={row % 2 === 0 ? '#bfdbfe' : '#c7f9cc'} />
+          </g>
+        ))}
+        <text x="116" y="242" textAnchor="middle" fontSize="9.5" fill="#475569">small-magnitude, noisy repetitions</text>
+
+        <rect x="246" y="96" width="168" height="150" rx="20" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
+        <text x="330" y="124" textAnchor="middle" fontSize="12" fill="#9a3412" fontWeight="700">Preprocessing</text>
+        <text x="330" y="146" textAnchor="middle" fontSize="9.5" fill="#7c2d12">organize parts and repetitions</text>
+        <text x="330" y="166" textAnchor="middle" fontSize="9.5" fill="#7c2d12">stabilize tiny variance regimes</text>
+        <rect x="284" y="182" width="92" height="26" rx="13" fill="#fed7aa" stroke="#fb923c" strokeWidth="1.2" />
+        <text x="330" y="199" textAnchor="middle" fontSize="9.4" fill="#9a3412">EMS / ANOVA-ready</text>
+        <text x="330" y="224" textAnchor="middle" fontSize="9.5" fill="#7c2d12">supports non-Gaussian cases</text>
+
+        <rect x="456" y="60" width="300" height="222" rx="22" fill="#eff6ff" stroke="#60a5fa" strokeWidth="1.8" />
+        <text x="606" y="88" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Metric engine</text>
+        <text x="606" y="106" textAnchor="middle" fontSize="9.5" fill="#2563eb">multiple statistical lenses instead of one score</text>
+        {metricCards.map((card) => (
+          <g key={card.label}>
+            <rect x={card.x} y={card.y} width="110" height="30" rx="13" fill={card.fill} stroke={card.stroke} strokeWidth="1.2" />
+            <text x={card.x + 55} y={card.y + 19} textAnchor="middle" fontSize="9.1" fill={card.stroke}>
+              {card.label}
+            </text>
+          </g>
+        ))}
+        <text x="606" y="262" textAnchor="middle" fontSize="9.4" fill="#475569">cross-check metrics before trusting repeatability</text>
+
+        <rect x="798" y="88" width="154" height="166" rx="20" fill="#f0fdf4" stroke="#22c55e" strokeWidth="1.8" />
+        <text x="875" y="116" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Decision layer</text>
+        <text x="875" y="136" textAnchor="middle" fontSize="9.5" fill="#15803d">is the system trustworthy?</text>
+        <rect x="822" y="150" width="106" height="38" rx="14" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.2" />
+        <text x="875" y="167" textAnchor="middle" fontSize="9.7" fill="#1d4ed8" fontWeight="700">ICC &gt; 0.75</text>
+        <text x="875" y="181" textAnchor="middle" fontSize="8.5" fill="#475569">good repeatability</text>
+        <rect x="822" y="196" width="106" height="38" rx="14" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="875" y="213" textAnchor="middle" fontSize="9.7" fill="#166534" fontWeight="700">GRR &lt; 30%</text>
+        <text x="875" y="227" textAnchor="middle" fontSize="8.5" fill="#475569">usable measurement</text>
+        <text x="875" y="244" textAnchor="middle" fontSize="9" fill="#475569">ndc + variance share</text>
+
+        <line x1="204" y1="171" x2="244" y2="171" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#repeatability-pipeline-arrow)" />
+        <line x1="414" y1="171" x2="454" y2="171" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#repeatability-pipeline-arrow)" />
+        <line x1="756" y1="171" x2="796" y2="171" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#repeatability-pipeline-arrow)" />
+      </svg>
+    </div>
+  )
+}
+
+function RepeatabilityVarianceDiagram() {
+  const W = 980
+  const H = 338
+  const metricFamilies = [
+    { title: 'Reliability', subtitle: 'ICC · I2C2', x: 372, y: 132, fill: '#ede9fe', stroke: '#5b21b6' },
+    { title: 'Separation', subtitle: 'D_hat · fingerprinting', x: 506, y: 132, fill: '#dbeafe', stroke: '#1d4ed8' },
+    { title: 'Robustness', subtitle: 'rank sum · CCDM', x: 372, y: 204, fill: '#fff7ed', stroke: '#c2410c' },
+    { title: 'Diagnostics', subtitle: 'X-bar · power curves', x: 506, y: 204, fill: '#dcfce7', stroke: '#166534' },
+  ]
+
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="repeatability-variance-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y="18" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Variance decomposition and metric interpretation
+        </text>
+        <text x={W / 2} y="36" textAnchor="middle" fontSize="10" fill="#64748b">
+          The analysis separates real part-to-part variation from measurement error, then cross-checks that separation with reliability and power metrics.
+        </text>
+
+        <rect x="28" y="64" width="272" height="228" rx="20" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="164" y="92" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Variance breakdown</text>
+        <text x="164" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">ANOVA / EMS view of repeatability</text>
+        <rect x="76" y="136" width="46" height="118" rx="16" fill="#e2e8f0" />
+        <rect x="76" y="174" width="46" height="80" rx="16" fill="#93c5fd" />
+        <rect x="76" y="220" width="46" height="34" rx="16" fill="#fca5a5" />
+        <text x="148" y="174" fontSize="9.5" fill="#2563eb">part-to-part variance</text>
+        <text x="148" y="192" fontSize="9" fill="#64748b">signal you want to preserve</text>
+        <text x="148" y="232" fontSize="9.5" fill="#dc2626">within-part error</text>
+        <text x="148" y="250" fontSize="9" fill="#64748b">repeatability burden</text>
+        <text x="164" y="270" textAnchor="middle" fontSize="9.5" fill="#475569">TV = PV + GRR view</text>
+
+        <rect x="354" y="64" width="272" height="228" rx="20" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="490" y="92" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Complementary metric families</text>
+        <text x="490" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">each family checks a different failure mode</text>
+        {metricFamilies.map((family) => (
+          <g key={family.title}>
+            <rect x={family.x} y={family.y} width="102" height="50" rx="15" fill={family.fill} stroke={family.stroke} strokeWidth="1.4" />
+            <text x={family.x + 51} y={family.y + 21} textAnchor="middle" fontSize="10" fill={family.stroke} fontWeight="700">
+              {family.title}
+            </text>
+            <text x={family.x + 51} y={family.y + 37} textAnchor="middle" fontSize="8.4" fill="#475569">
+              {family.subtitle}
+            </text>
+          </g>
+        ))}
+        <circle cx="490" cy="194" r="16" fill="#ffffff" stroke="#cbd5e1" strokeWidth="1.3" />
+        <text x="490" y="198" textAnchor="middle" fontSize="9" fill="#475569">MSA</text>
+
+        <rect x="680" y="64" width="272" height="228" rx="20" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.8" />
+        <text x="816" y="92" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Interpretation panel</text>
+        <text x="816" y="110" textAnchor="middle" fontSize="9.5" fill="#15803d">what the analyst can conclude</text>
+        <path d="M712 226 C738 172 766 144 796 150 C822 156 848 188 884 172 C904 164 920 146 934 124" stroke="#2563eb" strokeWidth="3" fill="none" />
+        <text x="814" y="138" textAnchor="middle" fontSize="9" fill="#64748b">power rises with sample size</text>
+        <rect x="714" y="176" width="110" height="44" rx="15" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.2" />
+        <text x="769" y="195" textAnchor="middle" fontSize="9.8" fill="#1d4ed8" fontWeight="700">ICC &gt; 0.75</text>
+        <text x="769" y="210" textAnchor="middle" fontSize="8.7" fill="#475569">good repeatability</text>
+        <rect x="838" y="176" width="92" height="44" rx="15" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="884" y="195" textAnchor="middle" fontSize="9.8" fill="#166534" fontWeight="700">GRR &lt; 30%</text>
+        <text x="884" y="210" textAnchor="middle" fontSize="8.7" fill="#475569">usable system</text>
+        <text x="816" y="252" textAnchor="middle" fontSize="9.2" fill="#475569">cross-metric agreement</text>
+        <text x="816" y="267" textAnchor="middle" fontSize="9.2" fill="#475569">is the real validation signal</text>
+
+        <line x1="302" y1="178" x2="350" y2="178" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#repeatability-variance-arrow)" />
+        <line x1="628" y1="178" x2="676" y2="178" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#repeatability-variance-arrow)" />
+      </svg>
+    </div>
+  )
+}
+
+function PocketHarveyPipelineDiagram() {
+  const W = 980
+  const H = 360
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <defs>
+          <marker id="pocketharvey-pipeline-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L0,7 L7,3.5 z" fill="#94a3b8" />
+          </marker>
+        </defs>
+        <text x={W / 2} y="18" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          PocketHarvey corpus construction pipeline
+        </text>
+        <text x={W / 2} y="36" textAnchor="middle" fontSize="10" fill="#64748b">
+          The notebook moves from licensed Indian legal sources to a deduplicated curriculum-ready corpus and grounded SFT pairs.
+        </text>
+
+        <rect x="28" y="72" width="214" height="226" rx="20" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="1.8" />
+        <text x="135" y="98" textAnchor="middle" fontSize="12" fill="#334155" fontWeight="700">Source acquisition</text>
+        <text x="135" y="116" textAnchor="middle" fontSize="9.5" fill="#64748b">public, licensed, and manually curated</text>
+        {[
+          ['Indian judgments', 'joelniklaus / ILDC', 96, '#dbeafe', '#1d4ed8'],
+          ['FineWebEdu slice', 'keyword-filtered legal text', 146, '#eef2ff', '#4338ca'],
+          ['Seed statute notes', 'RTI / labour / tenancy / DV', 196, '#dcfce7', '#166534'],
+          ['Offline constraint', 'no paid APIs in the loop', 246, '#fff7ed', '#c2410c'],
+        ].map(([title, subtitle, y, fill, stroke]) => (
+          <g key={String(title)}>
+            <rect x="52" y={Number(y)} width="166" height="36" rx="12" fill={String(fill)} stroke={String(stroke)} strokeWidth="1.2" />
+            <text x="135" y={Number(y) + 15} textAnchor="middle" fontSize="9.6" fill={String(stroke)} fontWeight="700">{title}</text>
+            <text x="135" y={Number(y) + 27} textAnchor="middle" fontSize="8.4" fill="#475569">{subtitle}</text>
+          </g>
+        ))}
+
+        <rect x="286" y="92" width="176" height="186" rx="20" fill="#fff7ed" stroke="#fb923c" strokeWidth="1.8" />
+        <text x="374" y="118" textAnchor="middle" fontSize="12" fill="#9a3412" fontWeight="700">Preprocessing</text>
+        <text x="374" y="140" textAnchor="middle" fontSize="9.4" fill="#7c2d12">ftfy cleanup · whitespace normalization</text>
+        <text x="374" y="160" textAnchor="middle" fontSize="9.4" fill="#7c2d12">language filter: English / Hindi / Marathi</text>
+        <text x="374" y="180" textAnchor="middle" fontSize="9.4" fill="#7c2d12">minimum-length and alpha-ratio gates</text>
+        <rect x="322" y="198" width="104" height="28" rx="14" fill="#fed7aa" stroke="#fb923c" strokeWidth="1.1" />
+        <text x="374" y="216" textAnchor="middle" fontSize="9.2" fill="#9a3412">FineWeb-style heuristics</text>
+        <text x="374" y="246" textAnchor="middle" fontSize="9.2" fill="#7c2d12">anchor terms · TTR · digit / bullet / symbol checks</text>
+
+        <rect x="506" y="74" width="198" height="222" rx="20" fill="#eff6ff" stroke="#60a5fa" strokeWidth="1.8" />
+        <text x="605" y="100" textAnchor="middle" fontSize="12" fill="#1d4ed8" fontWeight="700">Dedup and scoring</text>
+        <text x="605" y="122" textAnchor="middle" fontSize="9.4" fill="#2563eb">remove repetition before training</text>
+        <rect x="536" y="142" width="138" height="34" rx="13" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.2" />
+        <text x="605" y="157" textAnchor="middle" fontSize="9.5" fill="#1d4ed8" fontWeight="700">SHA-256 exact dedup</text>
+        <text x="605" y="169" textAnchor="middle" fontSize="8.4" fill="#475569">cheap first-pass duplicate removal</text>
+        <rect x="536" y="188" width="138" height="34" rx="13" fill="#ffffff" stroke="#93c5fd" strokeWidth="1.2" />
+        <text x="605" y="203" textAnchor="middle" fontSize="9.5" fill="#1d4ed8" fontWeight="700">MinHash LSH</text>
+        <text x="605" y="215" textAnchor="middle" fontSize="8.4" fill="#475569">128 perms · Jaccard 0.7</text>
+        <rect x="536" y="234" width="138" height="34" rx="13" fill="#dbeafe" stroke="#2563eb" strokeWidth="1.2" />
+        <text x="605" y="249" textAnchor="middle" fontSize="9.5" fill="#1d4ed8" fontWeight="700">Educational score</text>
+        <text x="605" y="261" textAnchor="middle" fontSize="8.4" fill="#475569">plain-language proxy + readability</text>
+
+        <rect x="748" y="92" width="204" height="188" rx="20" fill="#f0fdf4" stroke="#22c55e" strokeWidth="1.8" />
+        <text x="850" y="118" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Training outputs</text>
+        <text x="850" y="140" textAnchor="middle" fontSize="9.4" fill="#15803d">curriculum tiers plus synthetic SFT data</text>
+        {[
+          ['Tier 1', 'high-quality legal explanations', 170, '#dcfce7', '#166534'],
+          ['Tier 2', 'moderately readable judgments', 212, '#ecfccb', '#3f6212'],
+          ['Tier 3', 'dense procedural legal text', 254, '#fef3c7', '#92400e'],
+        ].map(([title, subtitle, y, fill, stroke]) => (
+          <g key={String(title)}>
+            <rect x="774" y={Number(y)} width="152" height="28" rx="12" fill={String(fill)} stroke={String(stroke)} strokeWidth="1.1" />
+            <text x="850" y={Number(y) + 13} textAnchor="middle" fontSize="9.3" fill={String(stroke)} fontWeight="700">{title}</text>
+            <text x="850" y={Number(y) + 23} textAnchor="middle" fontSize="8.1" fill="#475569">{subtitle}</text>
+          </g>
+        ))}
+        <text x="850" y="308" textAnchor="middle" fontSize="9.1" fill="#475569">pretrain_corpus.parquet · sft_corpus.parquet · dataset_card.json</text>
+
+        <line x1="244" y1="185" x2="284" y2="185" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#pocketharvey-pipeline-arrow)" />
+        <line x1="464" y1="185" x2="504" y2="185" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#pocketharvey-pipeline-arrow)" />
+        <line x1="706" y1="185" x2="746" y2="185" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#pocketharvey-pipeline-arrow)" />
+      </svg>
+    </div>
+  )
+}
+
+function PocketHarveyCurriculumDiagram() {
+  const W = 980
+  const H = 350
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', maxWidth: W, display: 'block', fontFamily: '-apple-system, sans-serif' }}>
+        <text x={W / 2} y="18" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">
+          Curriculum tiers and downstream export strategy
+        </text>
+        <text x={W / 2} y="36" textAnchor="middle" fontSize="10" fill="#64748b">
+          PocketHarvey separates continued pretraining data from synthetic SFT data and mixes quality tiers deliberately instead of flattening them.
+        </text>
+
+        <rect x="32" y="64" width="274" height="236" rx="20" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="169" y="92" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Tier assignment</text>
+        <text x="169" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">composite educational score drives the split</text>
+        <rect x="74" y="138" width="44" height="108" rx="16" fill="#e5e7eb" />
+        <rect x="74" y="138" width="44" height="54" rx="16" fill="#86efac" />
+        <rect x="74" y="192" width="44" height="38" rx="0" fill="#bfdbfe" />
+        <rect x="74" y="230" width="44" height="16" rx="0" fill="#fde68a" />
+        <text x="140" y="154" fontSize="9.5" fill="#166534">Tier 1: score ≥ 0.65</text>
+        <text x="140" y="172" fontSize="8.7" fill="#475569">plain-language legal explanations</text>
+        <text x="140" y="206" fontSize="9.5" fill="#1d4ed8">Tier 2: 0.40 to 0.65</text>
+        <text x="140" y="224" fontSize="8.7" fill="#475569">moderate readability judgments</text>
+        <text x="140" y="252" fontSize="9.5" fill="#92400e">Tier 3: score &lt; 0.40</text>
+        <text x="140" y="270" fontSize="8.7" fill="#475569">dense procedural text kept in smaller share</text>
+
+        <rect x="352" y="64" width="274" height="236" rx="20" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1.8" />
+        <text x="489" y="92" textAnchor="middle" fontSize="12" fill="#0f172a" fontWeight="700">Pretraining mix</text>
+        <text x="489" y="110" textAnchor="middle" fontSize="9.5" fill="#64748b">SmolLM / Nemotron-style staged curriculum</text>
+        <rect x="402" y="144" width="174" height="26" rx="12" fill="#dcfce7" />
+        <rect x="402" y="178" width="122" height="26" rx="12" fill="#dbeafe" />
+        <rect x="402" y="212" width="52" height="26" rx="12" fill="#fef3c7" />
+        <text x="586" y="161" fontSize="9.5" fill="#166534" fontWeight="700">Tier 1 · 50%</text>
+        <text x="534" y="195" fontSize="9.5" fill="#1d4ed8" fontWeight="700">Tier 2 · 35%</text>
+        <text x="464" y="229" fontSize="9.5" fill="#92400e" fontWeight="700">Tier 3 · 15%</text>
+        <text x="489" y="262" textAnchor="middle" fontSize="8.9" fill="#475569">interleaved shuffle avoids</text>
+        <text x="489" y="276" textAnchor="middle" fontSize="8.9" fill="#475569">sharp tier transitions in training</text>
+
+        <rect x="672" y="64" width="276" height="236" rx="20" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="1.8" />
+        <text x="810" y="92" textAnchor="middle" fontSize="12" fill="#166534" fontWeight="700">Synthetic SFT branch</text>
+        <text x="810" y="110" textAnchor="middle" fontSize="9.5" fill="#15803d">grounded question-answer generation</text>
+        <rect x="706" y="136" width="208" height="42" rx="14" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="810" y="154" textAnchor="middle" fontSize="9.4" fill="#166534" fontWeight="700">Tier 1 docs → 2 Q&A pairs each</text>
+        <text x="810" y="168" textAnchor="middle" fontSize="8.5" fill="#475569">rights, procedure, definition, penalty templates</text>
+        <rect x="706" y="188" width="208" height="42" rx="14" fill="#ffffff" stroke="#86efac" strokeWidth="1.2" />
+        <text x="810" y="206" textAnchor="middle" fontSize="9.4" fill="#166534" fontWeight="700">Tier 2 sample → 1 pair each</text>
+        <text x="810" y="220" textAnchor="middle" fontSize="8.5" fill="#475569">up to 500 sampled docs with NALSA disclaimer</text>
+        <text x="810" y="258" textAnchor="middle" fontSize="8.8" fill="#475569">final export: Alpaca-style SFT Parquet</text>
+        <text x="810" y="272" textAnchor="middle" fontSize="8.8" fill="#475569">with source and domain metadata</text>
       </svg>
     </div>
   )
@@ -1665,6 +2717,702 @@ function LegalNexusPaper() {
   )
 }
 
+function BipsPkdPaper() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        BIPS-PKD: Backbone-Integrated Partial Split with Progressive Knowledge Distillation
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Edge Inference Acceleration, NSGS Runtime · 2025
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        CVPR &apos;26 submission context ·{' '}
+        <a href="https://github.com/amethystani/NSGSAlgorithm" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/NSGSAlgorithm
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          BIPS-PKD targets a practical but stubborn problem in vision systems: <strong>modern segmentation backbones are accurate, but too slow and too wasteful for real edge deployment</strong>. The project combines two ideas. First, <strong>BIPS</strong> splits a backbone at a learned intermediate layer so the expensive late-stage teacher tail is replaced by a compact student head at inference time. Second, <strong>PKD</strong> progressively distills the student so the cheap branch stays close to the teacher without paying the teacher&apos;s runtime cost after training. Around that model-side idea, the work builds <strong>NSGS</strong>, an event-driven runtime where image patches fire asynchronously when local activations exceed adaptive thresholds, dispatching work through a <strong>lock-free SpikeQueue</strong> with <strong>thermal-aware scheduling</strong> on CPU. Across nine model families, the reported headline result is <strong>60.8x speedup</strong> on EfficientSAM small (<strong>3612 ms to 59 ms</strong>, about <strong>16 FPS</strong> on a 4-thread CPU), while retaining <strong>65.8% average mIoU</strong> and using <strong>4.4x less energy</strong> than the cited YOLOv8m-seg baseline.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Research Question</h2>
+      <p style={paperParaStyle}>
+        The page is built around one clear systems question: <strong>can segmentation backbones that are normally too heavy for mobile or CPU-only execution be restructured so they remain accurate enough while becoming genuinely deployable on-device?</strong> That is harder than simply pruning parameters. Segmentation models carry expensive late-stage computation, dense frame-by-frame execution wastes cycles on inactive regions, and mobile deployment imposes strict limits on latency, thermal stability, model size, and synchronization overhead.
+      </p>
+      <p style={paperParaStyle}>
+        BIPS-PKD answers that question by treating the problem as both a <strong>model architecture</strong> issue and a <strong>runtime scheduling</strong> issue. The work does not rely on a single handcrafted backbone rewrite. Instead, it tries to define a reusable recipe that can travel across multiple model families.
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Problem Setting</h2>
+      <p style={paperParaStyle}>
+        The motivating baseline is blunt: edge segmentation is slow enough to break the product experience. The project notes that <strong>EfficientSAM takes 3.6 seconds per image on a 4-thread CPU</strong>, which immediately rules out interactive use on commodity devices. The same bottleneck appears across other families such as <strong>SegFormer</strong>, <strong>Mask2Former</strong>, <strong>SAM2</strong>, <strong>PIDNet</strong>, <strong>YOLOv8 / YOLOv12</strong>, <strong>DINOv3</strong>, and <strong>MobileSAM</strong>.
+      </p>
+      <p style={paperParaStyle}>
+        The important framing is that this is not only a raw FLOPs problem. Dense segmentation inference repeatedly computes over quiet image regions and pushes all patches through the same late backbone path even when only a small subset of the scene actually changes. That is why the project couples a cheaper head with an event-driven runtime rather than betting on only one optimization.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. Backbone-integrated partial split</p>
+        <BipsSplitDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>3. BIPS-PKD Method</h2>
+      <p style={paperParaStyle}>
+        The architectural move is straightforward but strong. <strong>BIPS</strong> keeps the early and middle portion of the original backbone, then inserts a <strong>learned split point</strong> before the expensive late computation. During training, the original teacher tail is still available, but the student head learns to reproduce enough of the teacher&apos;s behavior that the teacher branch can be discarded at deployment time.
+      </p>
+      <p style={paperParaStyle}>
+        <strong>PKD</strong>, the distillation half of the method, is described as a <strong>progressive</strong> process rather than a single-shot mimicry loss. The point of that schedule is not just to compress features, but to make the cheap head close the quality gap gradually so that the final inference graph consists only of the shared stem plus the student head. The page emphasizes this because it is the core reason the method is <strong>model-family agnostic</strong>: the recipe operates on the cut between backbone stages instead of requiring architecture-specific surgery for every model.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Backbone reuse:</strong> preserve the strongest early representation rather than redesigning the whole network.</li>
+        <li><strong>Learned split:</strong> move the cut to an intermediate layer instead of hardcoding one global breakpoint.</li>
+        <li><strong>Student replacement:</strong> late expensive computation is distilled into a compact inference head.</li>
+        <li><strong>Deployment path:</strong> only the shared stem and student branch survive at runtime.</li>
+      </ul>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '16px 0 24px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Why This Structure Matters</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.85, color: '#1e3a5f' }}>
+          Many edge-vision optimizations win only on one architecture. BIPS-PKD is interesting because the split-and-distill logic is presented as a <strong>portable recipe</strong>: keep the universal front half of the backbone, compress the costly tail, and let the runtime exploit sparsity so the deployment graph is both smaller and cheaper to schedule.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>4. NSGS Runtime</h2>
+      <p style={paperParaStyle}>
+        The model change alone is not the full story. The project also builds <strong>NSGS</strong>, an event-driven execution layer where <strong>image patches become computational units</strong>. Instead of scanning every patch with the same dense schedule, local regions <strong>fire asynchronously</strong> only when activations exceed adaptive thresholds. In the project notes, this cuts redundant computation by <strong>38-62%</strong> relative to frame-by-frame execution.
+      </p>
+      <p style={paperParaStyle}>
+        The systems engineering around that idea matters. The runtime is described as a <strong>C++ lock-free SpikeQueue</strong> that dispatches these patch events across CPU threads with <strong>minimal synchronization</strong>. A separate <strong>thermal-aware scheduler</strong> keeps the pipeline usable under sustained mobile constraints instead of chasing a single short-burst benchmark number that collapses once the device heats up.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. Event-driven NSGS runtime</p>
+        <NSGSRuntimeDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>5. Experimental Scope</h2>
+      <p style={paperParaStyle}>
+        The benchmark framing is broader than a single-model acceleration demo. The project reports evaluation across <strong>nine model families</strong>: EfficientSAM, SegFormer, Mask2Former, SAM2, PIDNet, YOLOv8, YOLOv12, DINOv3, and MobileSAM. That matters because it tests whether the split-and-distill recipe generalizes beyond the one backbone it was designed around.
+      </p>
+      <p style={paperParaStyle}>
+        The result spread in the current portfolio notes highlights three representative wins: <strong>60.8x</strong> on EfficientSAM small, <strong>50.3x</strong> on EfficientSAM tiny, and <strong>15.3x</strong> on SegFormer-B5. These are paired with <strong>65.8% average mIoU</strong> and a <strong>4.4x energy reduction</strong> against the YOLOv8m-seg comparison. The page reads those numbers as a systems tradeoff, not just a single latency boast.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 3. Cross-family benchmark summary</p>
+        <BipsResultsDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>6. Qualitative Model Comparison</h2>
+      <p style={paperParaStyle}>
+        The qualitative comparison artifact is worth showing directly because it makes the project&apos;s argument visual: NSGS-augmented variants can stay competitive or improve on mask quality while reducing latency materially on the same sample. The figure below compares standard baselines against NSGS-enhanced versions using the reported <strong>mIoU</strong> and per-image <strong>time</strong> annotations rendered in the project asset.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 4. Public qualitative comparison artifact</p>
+        <img
+          src="/modelcomparison_qualitative.png"
+          alt="Qualitative comparison between baseline segmentation models and NSGS-enhanced variants"
+          style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #e5e7eb', background: '#ffffff' }}
+        />
+        <p style={{ ...paperParaStyle, margin: '14px 0 0', fontSize: '14px' }}>
+          On this example, the displayed overlays show <strong>YOLOv8m-seg</strong> at <strong>mIoU 0.912 / 124.5 ms</strong>, <strong>YOLOv12n-seg</strong> at <strong>0.895 / 45.2 ms</strong>, and <strong>DINOv3-Best</strong> at <strong>0.842 / 612.0 ms</strong>, while the NSGS variants shown in the same artifact reach <strong>NSGS+YOLOv8m: 0.958 / 88.4 ms</strong>, <strong>NSGS+YOLOv12n: 0.932 / 32.1 ms</strong>, <strong>NSGS+DINOv3-Best: 0.974 / 645.0 ms</strong>, <strong>NSGS+MobileSAM: 0.982 / 2180.0 ms</strong>, and <strong>NSGS+YOLOv12x: 0.965 / 112.5 ms</strong>. The point is not that every model wins on every dimension equally, but that the framework is trying to move the <strong>quality-latency frontier</strong> rather than optimizing only one axis.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>7. Systems Interpretation</h2>
+      <p style={paperParaStyle}>
+        The strongest part of the project is that the three layers line up. <strong>BIPS</strong> removes expensive late computation. <strong>PKD</strong> tries to preserve quality after that removal. <strong>NSGS</strong> then makes the surviving graph cheaper to execute by treating the input as sparse event traffic rather than a uniformly active frame. None of those pieces is sufficient alone; together they make the deployment claim believable.
+      </p>
+      <p style={paperParaStyle}>
+        That is also why the page emphasizes the deployment note that the system ships as a <strong>fully offline Android app</strong> with roughly <strong>500 MB of bundled ONNX models</strong>. This forces the research to answer a product question, not just a benchmark question. A method that looks good in a notebook but cannot run offline, cannot survive thermal throttling, or requires GPU-only execution would not satisfy the goal this project sets for itself.
+      </p>
+
+      <h2 style={paperSectionStyle}>8. Why This Matters</h2>
+      <p style={paperParaStyle}>
+        There are two reasons this work stands out. First, it treats <strong>edge vision as a full-stack problem</strong>. Many papers optimize the network and ignore the scheduler, or optimize the runtime and ignore the representation. Here the architecture and runtime are designed to reinforce each other. Second, it avoids the common trap of making an acceleration claim on one model only. The broad model-family coverage is what makes the method interesting as a reusable research contribution rather than a one-off engineering trick.
+      </p>
+      <p style={paperParaStyle}>
+        From a portfolio perspective, this is a strong example of systems-minded ML research: neuromorphic-style event scheduling, backbone-aware compression, knowledge distillation, CPU inference optimization, and mobile deployment all pushed into the same project. That synthesis is the real story behind the headline speedups.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>NSGS / BIPS-PKD project notes and portfolio spec materials in this repository.</li>
+        <li>Public project artifact: <code>public/modelcomparison_qualitative.png</code>.</li>
+        <li>EfficientSAM, SegFormer, Mask2Former, SAM2, PIDNet, MobileSAM, DINOv3, and YOLO segmentation model families as referenced by the project benchmarks.</li>
+      </ul>
+    </div>
+  )
+}
+
+function StatisticalRepeatabilityPaper() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        Comprehensive Measurement System Analysis for Statistical Repeatability
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Statistical modeling for engineering measurements · 2026
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Published link ·{' '}
+        <a href="https://www.sciencedirect.com/science/article/abs/pii/S026322412600730X" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          sciencedirect.com/science/article/abs/pii/S026322412600730X
+        </a>{' '}
+        ·{' '}
+        <a href="https://github.com/amethystani/Statistical-Repeatability" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/Statistical-Repeatability
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          This work builds a comprehensive <strong>Measurement System Analysis (MSA)</strong> framework for engineering datasets where repeatability is not obvious from a single reliability coefficient. The implementation combines <strong>discriminability</strong>, <strong>fingerprint index</strong>, <strong>I2C2</strong>, <strong>rank-sum statistics</strong>, <strong>ICC</strong>, <strong>CCDM</strong>, <strong>ANOVA-based variance decomposition</strong>, and <strong>X-bar control charts</strong>, then layers on simulation-based power analysis to test how those measures behave under changing sample sizes and variance conditions. The result is a more inspectable repeatability study for noisy, small-magnitude measurements in settings such as vibration analysis, material testing, and precision engineering.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Research Question</h2>
+      <p style={paperParaStyle}>
+        The central question is simple but important: <strong>when repeated engineering measurements look stable, are they reflecting true specimen differences or only a measurement process that repeats its own noise consistently?</strong> In many practical settings, the measurement values are small, the noise floor is nontrivial, and a single repeatability score can hide whether the system is genuinely useful for discrimination.
+      </p>
+      <p style={paperParaStyle}>
+        That is why this project does not stop at conventional Gage R&amp;R language. It treats repeatability as a statistical-modeling problem where variance structure, distance structure, identification power, and stability diagnostics all need to line up before the measurement system can be trusted.
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Analysis Workflow</h2>
+      <p style={paperParaStyle}>
+        The repository is organized like a full analysis stack rather than a single notebook. Repeated-measurement tables are ingested specimen by specimen, transformed into a part-versus-repetition representation, then pushed through multiple metric families. The point is to examine the same dataset from several statistical directions so weak assumptions in one method do not dominate the whole conclusion.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. Measurement repeatability workflow</p>
+        <RepeatabilityPipelineDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>3. Statistical Modeling Core</h2>
+      <p style={paperParaStyle}>
+        The strongest part of the work is the <strong>variance-centric backbone</strong>. The implementation uses one-way <strong>ANOVA</strong> and <strong>Expected Mean Squares</strong> to break total variation into between-part and within-part components, then derives interpretable quantities such as <strong>EV</strong>, <strong>AV</strong>, <strong>GRR</strong>, <strong>PV</strong>, and the <strong>number of distinct categories</strong>. That lets the analysis answer a practical question: is the observed spread coming from the parts themselves, or from the measurement process?
+      </p>
+      <p style={paperParaStyle}>
+        But the project does not rely only on ANOVA-era summaries. The code also implements <strong>discriminability</strong> through within-part versus between-part distance comparisons, <strong>fingerprinting</strong> as an identification-style uniqueness check, <strong>I2C2</strong> for structured measurement data, <strong>rank-sum</strong> methods for more robust non-parametric comparison, and <strong>CCDM</strong> to test consistency of correlation structure across repetitions. Together, those methods make the system much less brittle than a pipeline that reports ICC and stops there.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. Variance decomposition and metric families</p>
+        <RepeatabilityVarianceDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>4. Diagnostics And Interpretation</h2>
+      <p style={paperParaStyle}>
+        The visual diagnostics in the repository matter as much as the metrics themselves. <strong>X-bar control charts</strong> check whether repeated measurements remain stable, cross-metric relationship plots show how discriminability and ICC move together, and <strong>power-analysis simulations</strong> test how sensitive each measure is as sample size and variance assumptions change. That makes the framework useful for planning studies, not only auditing them after the fact.
+      </p>
+      <p style={paperParaStyle}>
+        This is particularly valuable when the data live in the awkward middle ground where the signal is real but small. In that regime, floating-point sensitivity, non-Gaussian behavior, or weak part-to-part spread can distort naive conclusions. The repository explicitly addresses those cases with high-precision handling, variance guards, and simulation-based checks.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Why This Paper Matters</h2>
+      <p style={paperParaStyle}>
+        A lot of engineering analyses treat the measurement system as a background assumption. This work treats it as the primary object of study. That is the right framing whenever downstream conclusions depend on whether repeated observations are truly repeatable, distinguishable, and statistically interpretable.
+      </p>
+      <p style={paperParaStyle}>
+        From a research perspective, the contribution is not just another metric implementation. It is the <strong>combination</strong> of metric families, variance decomposition, process-control style visualization, and power analysis into one coherent repeatability framework. That makes it much more representable as a research system and much closer to the style of the other in-depth sections on the site.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>Statistical-Repeatability repository README and implementation materials.</li>
+        <li>Koo, T. K., and Li, M. Y. (2016). A Guideline of Selecting and Reporting Intraclass Correlation Coefficients for Reliability Research.</li>
+        <li>AIAG (2010). Measurement Systems Analysis Reference Manual, 4th edition.</li>
+        <li>Wheeler, D. J., and Lyday, R. W. (1989). Evaluating the Measurement Process.</li>
+      </ul>
+    </div>
+  )
+}
+
+function NeMoSynthRustProject() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        NeMoSynthRust
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · synthetic Rust data generation, LLM judging, and cargo-grounded evaluation · 2026
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Built from the local NeMo pipeline repo and exported as a HuggingFace-ready parquet dataset.
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          NeMoSynthRust is an end-to-end <strong>synthetic Rust dataset generation and evaluation system</strong> built around a simple but important idea: <strong>generated code should not be trusted until it survives real toolchain checks</strong>. The pipeline uses <strong>NVIDIA NeMo Data Designer</strong> to generate structured Rust tasks and code, runs a <strong>Bonsai-8B-based LLM judge</strong> to score safety, performance, and idiomatic quality, then pushes every sample through a <strong>Tokio-powered Rust harness</strong> that runs <strong>cargo check</strong>, <strong>cargo test</strong>, <strong>clippy</strong>, and optional <strong>miri / fuzz / benchmark</strong> stages before exporting a final <strong>train.parquet</strong> dataset. On the current 30-sample run, the pipeline reports an average <strong>Bonsai score of 8.33 / 10</strong> but only a <strong>16.7% compile rate</strong> and <strong>6.7% test pass rate</strong>, which is exactly the result that makes the project valuable: it exposes the gap between LLM-perceived quality and actual compiler reality.
+        </p>
+      </div>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '0 0 28px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Key Metrics</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.95, color: '#1e3a5f' }}>
+          <strong>Samples:</strong> 30 · <strong>Domains:</strong> 7 observed in export · <strong>Avg Bonsai score:</strong> 8.33 / 10 · <strong>Compile rate:</strong> 16.7% · <strong>Test pass rate:</strong> 6.7% · <strong>Score range:</strong> 7.1 to 8.9
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Project Goal</h2>
+      <p style={paperParaStyle}>
+        Most synthetic-code pipelines stop too early. They generate code, maybe rank it with another model, and then call the dataset “high quality.” That is not enough for a language like Rust, where correctness depends on the borrow checker, crate feature flags, dependency setup, target architecture, and the actual behavior of <code>cargo</code>. NeMoSynthRust was built to turn that weakness into the central design principle.
+      </p>
+      <p style={paperParaStyle}>
+        The goal is therefore not just to produce Rust snippets. It is to produce a dataset where every record carries <strong>generation metadata</strong>, <strong>judge scores</strong>, and <strong>real toolchain outcomes</strong>. That makes the export useful for multiple training regimes: you can train on style-rich data, filter down to “gold” compiling examples, or explicitly study the failure modes of synthetic code models.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. NeMoSynthRust dataset pipeline</p>
+        <NeMoSynthRustPipelineDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>2. Generation with NeMo Data Designer</h2>
+      <p style={paperParaStyle}>
+        The generation stage lives in <code>nemo-gen/generate.py</code> and is more structured than a loose prompt loop. It uses <strong>nemo_curator.synthetic.DataDesigner</strong> with <strong>categorical samplers</strong> for both <strong>domain</strong> and <strong>complexity</strong>, then builds a dedicated code-generation column configured for Rust. Domains are sampled across areas like <strong>algorithms</strong>, <strong>systems</strong>, <strong>wasm</strong>, <strong>async</strong>, <strong>error-handling</strong>, <strong>crates</strong>, <strong>concurrency</strong>, and <strong>unsafe</strong>, while complexity is distributed across beginner, intermediate, and advanced tasks.
+      </p>
+      <p style={paperParaStyle}>
+        That matters because the project is deliberately targeting <strong>coverage</strong>, not just volume. The generator does not only say “write some Rust.” It creates a structured sample with a task prompt, code, domain label, complexity label, and dependency list. If NeMo Curator is unavailable, the pipeline falls back to an <strong>OpenAI-compatible backend</strong>, which makes the system usable with NVIDIA NIM or other drop-in inference endpoints.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Structured schema:</strong> every sample is validated against a typed record model before it lands in JSONL.</li>
+        <li><strong>Prompt discipline:</strong> the system prompt requires idiomatic Rust, doc comments, and at least one unit test.</li>
+        <li><strong>Dependency awareness:</strong> sampled tasks carry crate requirements so the downstream evaluator can expose Cargo-level issues.</li>
+      </ul>
+
+      <h2 style={paperSectionStyle}>3. Bonsai-8B as Judge and Refiner</h2>
+      <p style={paperParaStyle}>
+        The second stage is what makes the pipeline more than raw NeMo generation. In <code>bonsai-judge</code>, each sample is scored by an LLM judge along three axes: <strong>safety</strong>, <strong>performance</strong>, and <strong>idiomatic style</strong>. The judge combines those with a weighted overall formula of <strong>0.4 / 0.3 / 0.3</strong>. If a sample falls below the configured threshold, the refiner can iterate on it up to <strong>three times</strong>. Records below the minimum keep threshold are dropped entirely.
+      </p>
+      <p style={paperParaStyle}>
+        This stage is useful for two reasons. First, it turns free-form synthetic generation into a <strong>curated dataset construction process</strong>. Second, it gives the final export a soft notion of quality that can later be compared against hard compiler outcomes. In the current run, the judge is fairly generous: the average score is <strong>8.33</strong>, with values between <strong>7.1</strong> and <strong>8.9</strong>. That looks good on paper, and that is exactly why the later cargo results are so revealing.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. Judge score versus cargo reality</p>
+        <NeMoJudgeRealityChart />
+      </div>
+
+      <h2 style={paperSectionStyle}>4. Cargo-Grounded Evaluation Harness</h2>
+      <p style={paperParaStyle}>
+        The strongest engineering move is the Rust harness. The <code>nemo-eval</code> CLI in <code>rust-harness</code> is not a wrapper around one shell command; it is a proper tool with subcommands for <strong>eval</strong>, <strong>bench</strong>, <strong>fuzz</strong>, <strong>export</strong>, and <strong>stats</strong>. The evaluation stage uses <strong>Tokio concurrency</strong> plus a semaphore to run multiple snippet checks in parallel, writes isolated temporary Cargo projects for each sample, and then applies the results back onto the record fields.
+      </p>
+      <p style={paperParaStyle}>
+        That means every exported record can carry not only a prompt and code body, but also whether it <strong>compiles</strong>, whether tests <strong>pass</strong>, whether <strong>miri</strong> detects undefined behavior, what the <strong>cargo errors</strong> were, and how many <strong>clippy warnings</strong> appeared. That is the piece that makes the dataset genuinely interesting for model training and evaluation. It changes the project from “synthetic Rust generation” into <strong>compiler-supervised dataset curation</strong>.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Empirical Findings</h2>
+      <p style={paperParaStyle}>
+        The current export contains <strong>30 samples</strong>. The domain mix is led by <strong>async</strong> and <strong>error-handling</strong> with <strong>7 samples each</strong>, followed by <strong>crates</strong> with <strong>6</strong>, <strong>algorithms</strong> with <strong>5</strong>, <strong>concurrency</strong> with <strong>3</strong>, and single examples in <strong>systems</strong> and <strong>wasm</strong>. Complexity is distributed across <strong>13 intermediate</strong>, <strong>9 beginner</strong>, and <strong>8 advanced</strong> tasks.
+      </p>
+      <p style={paperParaStyle}>
+        The most important result is the mismatch between judged quality and compiler success. Although the judge assigns a strong average score, only <strong>5 of 30</strong> samples compile and only <strong>2 of 30</strong> pass tests. At the domain level, <strong>algorithms</strong> reach a <strong>40%</strong> compile rate and <strong>20%</strong> test rate, while <strong>error-handling</strong> reaches <strong>28.6%</strong> compile and <strong>14.3%</strong> test. By contrast, <strong>async</strong>, <strong>crates</strong>, <strong>concurrency</strong>, and <strong>wasm</strong> all collapse to <strong>0%</strong> compile success in this run. The one <strong>systems</strong> sample compiles but still fails tests.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 3. Domain-level compile and test outcomes</p>
+        <NeMoDomainOutcomeChart />
+      </div>
+
+      <h2 style={paperSectionStyle}>6. Failure Analysis</h2>
+      <p style={paperParaStyle}>
+        The report and pipeline notes make the failure modes concrete. The model often produces code that looks polished but relies on <strong>outdated crate APIs</strong>, omits required <strong>Cargo feature flags</strong>, assumes the wrong <strong>architecture</strong>, or breaks under classic Rust pain points like <strong>trait bounds</strong> and the <strong>borrow checker</strong>. Heavy dependency stacks also create timeout and cold-build problems for domains like wasm. This is precisely the kind of insight that vanishes if you only keep a judge score.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Outdated APIs:</strong> legacy imports and old crate interfaces still look “good” to the judge but fail immediately under cargo.</li>
+        <li><strong>Dependency semantics:</strong> missing Cargo feature flags are a major failure mode in async and crates-heavy tasks.</li>
+        <li><strong>Toolchain mismatch:</strong> some snippets assume x86-specific capabilities or platform-specific behavior.</li>
+        <li><strong>Rust semantics:</strong> ownership, lifetimes, and trait constraints remain much harder than stylistic fluency.</li>
+      </ul>
+
+      <h2 style={paperSectionStyle}>7. Why This Project Matters</h2>
+      <p style={paperParaStyle}>
+        NeMoSynthRust matters because it captures something a lot of synthetic-data projects miss: <strong>evaluation should sit inside the data pipeline, not after it</strong>. If you are training a code model, raw generations and soft judge scores are not enough. You need a way to distinguish style-only samples from semantically trustworthy ones. This pipeline gives you exactly that separation.
+      </p>
+      <p style={paperParaStyle}>
+        From a portfolio standpoint, this is a flagship project because it shows three different strengths at once. It demonstrates <strong>data generation system design</strong>, <strong>LLM-based automated curation</strong>, and <strong>compiler-anchored evaluation infrastructure</strong>. It also produces a final asset that is actually usable: a HuggingFace-ready parquet dataset where training can be filtered by real quality signals instead of hand-wavy confidence scores.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>Local NeMoSynthRust experiment report, Makefile, Docker Compose pipeline, and design spec in <code>/Users/animesh/nemo</code>.</li>
+        <li><code>nemo-gen/generate.py</code> for NeMo Data Designer generation and fallback OpenAI-compatible inference.</li>
+        <li><code>bonsai-judge/pipeline.py</code> and <code>judge.py</code> for weighted scoring, refinement thresholds, and sample filtering.</li>
+        <li><code>rust-harness/src/main.rs</code> and the exported parquet dataset for compiler-grounded evaluation results.</li>
+      </ul>
+    </div>
+  )
+}
+
+function PocketHarveyProject() {
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        PocketHarvey: Offline Indian Legal Corpus Pipeline
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · Legal-domain data preprocessing and curriculum design · 2026
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Built from a local Colab notebook preprocessing pipeline for Bonsai-8B legal adaptation.
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          PocketHarvey is a full preprocessing and dataset-construction pipeline for an <strong>offline Indian legal corpus</strong> intended to specialize <strong>Bonsai-8B-mlx-1bit</strong>. The notebook does more than collect documents: it selects licensed sources, normalizes multilingual text, applies <strong>FineWeb-style quality heuristics</strong>, removes duplicates with <strong>SHA-256</strong> and <strong>MinHash LSH</strong>, assigns documents to a staged curriculum, generates grounded synthetic instruction pairs, and exports both pretraining and SFT-ready <strong>Parquet</strong> artifacts.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Project Goal</h2>
+      <p style={paperParaStyle}>
+        The project targets a specific bottleneck in legal-domain model building: finding a path from messy public legal text to a <strong>usable, auditable, training-ready corpus</strong> without depending on commercial APIs or hidden internal datasets. The intended downstream use is not just retrieval, but actual <strong>continued pretraining and instruction tuning</strong> for an offline legal assistant.
+      </p>
+      <p style={paperParaStyle}>
+        That makes the data pipeline itself the core contribution. Instead of treating preprocessing as a short cleanup step before modeling, the notebook treats it as a systems problem involving source quality, domain fit, deduplication, curriculum design, and export format discipline.
+      </p>
+
+      <h2 style={paperSectionStyle}>2. Source Strategy</h2>
+      <p style={paperParaStyle}>
+        The corpus is assembled from four source types. First, Indian judgments are pulled from <strong>joelniklaus/indian_legal_dataset</strong> and <strong>law-ai/ildc_multi</strong> to provide factual legal grounding from Supreme Court and High Court material. Second, a streamed sample from <strong>FineWebEdu</strong> is keyword-filtered for Indian legal topics so the corpus includes educational web explanations rather than only dense judgments. Third, manually authored seed texts are added for topics like <strong>RTI, tenancy, labour law, domestic violence, and police procedure</strong>, where plain-language public guidance matters. The notebook explicitly avoids data sources that are hard to reproduce or questionable to scrape.
+      </p>
+      <p style={paperParaStyle}>
+        I like this source strategy because it balances legal authority with usability. Court text alone gives domain specificity but can be too dense for public-facing answers; educational text alone is easier to read but often less grounded. PocketHarvey tries to keep both.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. PocketHarvey preprocessing pipeline</p>
+        <PocketHarveyPipelineDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>3. Cleaning, Filtering, and Deduplication</h2>
+      <p style={paperParaStyle}>
+        The lower half of the notebook is built like a serious corpus recipe. It begins with <strong>ftfy-based unicode repair</strong>, whitespace normalization, minimum-length thresholds, and language filtering for <strong>English, Hindi, and Marathi</strong>. It then applies rule-based <strong>FineWeb-style quality heuristics</strong> such as symbol ratio, bullet ratio, short-line ratio, digit ratio, type-token ratio, and the presence of legal anchor terms. Those checks are important because court PDFs and scraped legal pages contain a lot of OCR debris, repeated headers, and semi-structured junk that can quietly poison training data.
+      </p>
+      <p style={paperParaStyle}>
+        After quality filtering, the pipeline performs exact deduplication with <strong>SHA-256 hashes</strong> and then a second pass of near-deduplication using <strong>128-permutation MinHash</strong> with an <strong>LSH Jaccard threshold of 0.7</strong>. That is a practical adaptation of the same design philosophy behind Datatrove and FineWeb: first remove obvious copies cheaply, then remove fuzzy near-duplicates that would otherwise cause repeated judgments or mirrored statute pages to dominate the corpus.
+      </p>
+
+      <h2 style={paperSectionStyle}>4. Educational Scoring and Curriculum Design</h2>
+      <p style={paperParaStyle}>
+        A strong part of the notebook is the move from binary filtering to <strong>curriculum-aware scoring</strong>. Instead of only deciding whether a document survives, the pipeline computes a composite educational score from lexical diversity, explanatory vocabulary density, sentence-length behavior, common-word ratio, and document length. That score is then used to assign documents into three curriculum tiers.
+      </p>
+      <p style={paperParaStyle}>
+        The interpretation is clear: <strong>Tier 1</strong> captures the most directly useful explanatory legal text, <strong>Tier 2</strong> captures moderately readable judgments and supporting material, and <strong>Tier 3</strong> keeps denser legal text in smaller volume so the model still sees real legal language without being overwhelmed by it. The final mix is explicitly staged at <strong>50% / 35% / 15%</strong>, which mirrors the notebook&apos;s SmolLM / Nemotron-inspired curriculum logic rather than using a uniform sample.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. Curriculum tiering and export logic</p>
+        <PocketHarveyCurriculumDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>5. Synthetic Instruction Data</h2>
+      <p style={paperParaStyle}>
+        The notebook does not stop at pretraining text. It also generates <strong>grounded synthetic instruction-response pairs</strong> for supervised fine-tuning. The synthetic step is intentionally conservative: it uses question templates tied to domains like RTI, consumer rights, labour law, tenancy, and arrest procedure; extracts answer spans directly from source documents; and appends a consistent <strong>NALSA legal disclaimer</strong>. Tier 1 documents generate two pairs each, while a capped sample of Tier 2 documents generates one pair each.
+      </p>
+      <p style={paperParaStyle}>
+        That is a sensible compromise. It avoids hallucination-prone open-ended synthetic generation while still converting the corpus into a form usable for legal-help style SFT. In other words, the project understands that <strong>domain adaptation needs both a corpus and an interaction format</strong>.
+      </p>
+
+      <h2 style={paperSectionStyle}>6. Final Outputs</h2>
+      <p style={paperParaStyle}>
+        The notebook exports three final artifacts: <strong>pretrain_corpus.parquet</strong>, <strong>sft_corpus.parquet</strong>, and a <strong>dataset_card.json</strong> containing provenance, tier distribution, source distribution, and the mixing ratios used in the run. That matters because it turns the work into a reproducible pipeline rather than a notebook that only prints intermediate stats.
+      </p>
+      <p style={paperParaStyle}>
+        From a portfolio perspective, this project is valuable because it shows a broader systems skill than model training alone. It combines dataset sourcing, document processing, heuristic filtering, approximate deduplication, scoring, synthetic data generation, and final export design into one coherent training-data pipeline. That is exactly the kind of work that decides whether a domain model can actually be trained responsibly.
+      </p>
+
+      <h2 style={paperSectionStyle}>7. Notebook</h2>
+      <p style={paperParaStyle}>
+        The full preprocessing notebook is embedded below so the actual pipeline can be inspected end to end. That includes the source-loading cells, heuristic filters, MinHash-LSH deduplication, scoring logic, synthetic-pair generation, and final export steps.
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '18px', fontFamily: 'sans-serif' }}>
+        <a href="/pocketharvey-preprocessing-pipeline.html" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          Open rendered notebook
+        </a>{' '}
+        ·{' '}
+        <a href="/pocketharvey-preprocessing-pipeline.ipynb" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          Download raw .ipynb
+        </a>
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Embedded notebook</p>
+        <iframe
+          title="PocketHarvey preprocessing notebook"
+          src="/pocketharvey-preprocessing-pipeline.html"
+          loading="lazy"
+          style={{ width: '100%', height: '840px', border: '1px solid #e5e7eb', borderRadius: '10px', background: '#ffffff' }}
+        />
+      </div>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>PocketHarvey preprocessing notebook provided locally by the user.</li>
+        <li>FineWeb / FineWebEdu data-filtering design as adapted in the notebook.</li>
+        <li>Datatrove-style MinHash LSH deduplication and staged curriculum ideas from SmolLM / Nemotron-style recipes.</li>
+      </ul>
+    </div>
+  )
+}
+
+function EVPredAIProject() {
+  const screenshots: ProjectScreenshot[] = [
+    {
+      src: '/projects/evpredai-3.png',
+      alt: 'EVPredAI dashboard screenshot',
+      label: 'Dashboard',
+      width: 2940,
+      height: 1652,
+    },
+    {
+      src: '/projects/evpredai-1.png',
+      alt: 'EVPredAI proximity analysis screenshot',
+      label: 'Proximity analysis',
+      width: 2324,
+      height: 1400,
+    },
+    {
+      src: '/projects/evpredai-2.png',
+      alt: 'EVPredAI chatbot screenshot',
+      label: 'EVAI assistant',
+      width: 1306,
+      height: 1548,
+    },
+    {
+      src: '/projects/evpredai-4.png',
+      alt: 'EVPredAI amenities selection screenshot',
+      label: 'Amenity selection',
+      width: 770,
+      height: 640,
+    },
+  ]
+
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        EVPredAI
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · EV charging siting, geospatial scoring, and operator tooling · 2024
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Repo-grounded project page ·{' '}
+        <a href="https://github.com/amethystani/EVPredAI" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/EVPredAI
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          EVPredAI is an <strong>EV charging-site decision support system</strong> built around a practical question: how do you rank candidate charger locations in a way an operator can actually inspect? The public repository exposes a concrete geospatial prototype with <strong>OpenStreetMap amenity extraction</strong>, <strong>OpenCage geocoding</strong>, <strong>GeoPandas land filtering</strong>, <strong>weighted proximity scoring</strong>, <strong>RandomForest-based suitability estimation</strong>, <strong>Folium map generation</strong>, and an <strong>Ollama-backed EV assistant</strong>. The repository README also frames a broader Exicom-facing roadmap with richer forecasting, spatial-statistics analysis, and dashboard surfaces, which makes the project read as both a working siting engine and a larger product prototype.
+        </p>
+      </div>
+
+      <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderLeft: '4px solid #0284c7', borderRadius: '6px', padding: '18px 22px', margin: '0 0 28px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#0369a1', marginBottom: '12px', fontFamily: 'sans-serif' }}>Repository Reading</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.85, color: '#1e3a5f' }}>
+          The public code and the README sit at slightly different levels. The <strong>codebase</strong> implements the amenity-distance scoring prototype directly, while the <strong>README</strong> describes a broader Exicom product direction with forecasting, spatial clustering, and a fuller NLP stack. This page keeps that distinction explicit instead of flattening both into one generic claim.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. System Framing</h2>
+      <p style={paperParaStyle}>
+        EVPredAI is strongest when viewed as a <strong>site-review workflow</strong> rather than only a predictive model. The user does not just need one score; they need a chain of evidence. A charger operator wants to know whether a candidate location is on land, what amenities sit nearby, how strongly those amenities should matter, how the location compares against alternatives, and how that reasoning can be surfaced through a map or assistant interface.
+      </p>
+      <p style={paperParaStyle}>
+        That is why the repository mixes geospatial code, model training, interactive mapping, and a conversational assistant. It is trying to turn a siting judgment into something <strong>inspectable and explainable</strong> instead of a hidden spreadsheet formula.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. EVPredAI geospatial siting workflow</p>
+        <EVPredAIFlowDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>2. Geospatial Feature Stack</h2>
+      <p style={paperParaStyle}>
+        The clearest implementation details live in <code>predictor.py</code>. The scoring engine starts from a fixed amenity vocabulary: <strong>restaurant</strong>, <strong>cafe</strong>, <strong>fast food</strong>, <strong>parking</strong>, <strong>bicycle parking</strong>, <strong>mall</strong>, <strong>supermarket</strong>, <strong>hotel</strong>, <strong>station</strong>, and <strong>highway service</strong>. For a candidate point, the code geocodes the location, queries nearby OpenStreetMap features with <strong>OSMnx</strong>, computes nearest-distance values, and rejects invalid ocean points using a <strong>GeoPandas world-land mask</strong>.
+      </p>
+      <p style={paperParaStyle}>
+        Those raw distances are then converted into smoother proximity features with an <strong>exp(-distance / 1000)</strong> transform. That is a pragmatic design choice. It keeps very close amenities highly influential while avoiding a hard threshold that would make the score jump discontinuously. In practice, it turns “how far is the nearest parking or mall?” into a feature family the model can use much more gracefully.
+      </p>
+      <ul style={paperListStyle}>
+        <li><strong>Geocoding:</strong> OpenCage resolves named locations into coordinates.</li>
+        <li><strong>Spatial retrieval:</strong> OSMnx pulls amenity and shop features within a search radius.</li>
+        <li><strong>Geometric validation:</strong> GeoPandas checks whether a candidate lies on land.</li>
+        <li><strong>Map output:</strong> Folium renders the analyzed point, circles, and amenity proximity overlays for review.</li>
+      </ul>
+
+      <h2 style={paperSectionStyle}>3. Scoring and Training Logic</h2>
+      <p style={paperParaStyle}>
+        The public implementation uses a <strong>weighted amenity prior</strong> plus a <strong>RandomForestRegressor</strong>. Feature weights in the code bias the system toward things like <strong>parking</strong>, <strong>malls</strong>, and <strong>restaurants</strong>, then normalize those weights based on which features the operator chooses to include in a run. Training proceeds by building a suitability target from the weighted proximity representation, splitting the data into train and test sets, scaling inputs, fitting the forest, and returning <strong>feature importances</strong> along with train and test scores.
+      </p>
+      <p style={paperParaStyle}>
+        The README describes a more ambitious top layer around that core: <strong>Bayesian-tuned boosted models</strong>, <strong>SARIMA-style temporal forecasting</strong>, and <strong>Moran&apos;s I / LISA spatial statistics</strong> for demand structure. Even though those pieces are more visible in the repo narrative than in the public predictor code, they are still useful context because they show where the siting engine was intended to grow: from amenity-sensitive suitability ranking into a fuller demand-forecasting platform.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. EVPredAI repo screenshots</p>
+        <ProjectScreenshotGrid items={screenshots} />
+      </div>
+
+      <h2 style={paperSectionStyle}>4. Operator Assistant and Product Surface</h2>
+      <p style={paperParaStyle}>
+        The second half of the repo is the <strong>EVAI assistant</strong>. In <code>chat.py</code>, the system loads tabular EV data, batches it into context records, and sends user questions through a <strong>LangChain + Ollama</strong> wrapper with structured prompting. The prompt explicitly asks for markdown formatting, clear caveats, and region-level guidance when exact coordinates are missing. It also records helpfulness feedback into a CSV log, which turns the assistant into a lightweight human-in-the-loop interface rather than a one-shot demo.
+      </p>
+      <p style={paperParaStyle}>
+        The README rounds that out with a product stack spanning <strong>React 18</strong>, <strong>TailwindCSS</strong>, <strong>Shadcn UI</strong>, <strong>Python services</strong>, geospatial tooling, and visualization libraries. That combination matters because EVPredAI is not just a notebook model. It is shaped like a deployable internal tool where maps, filters, and natural-language explanation all sit next to the ranking engine.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Why This Project Works</h2>
+      <p style={paperParaStyle}>
+        What makes EVPredAI interesting is not that it uses one exotic model. It is that it treats infrastructure placement as a <strong>compound engineering problem</strong>: geospatial enrichment, ranking logic, explainability, and operator UX all have to align. Even the current public implementation shows that mindset. It uses a simple enough feature space to remain interpretable, but packages it in a way that can still support a real siting workflow.
+      </p>
+      <p style={paperParaStyle}>
+        That blend is valuable in practice. Site-placement tooling only becomes trusted when the output is easy to inspect and defend. EVPredAI moves in that direction by pairing score generation with map evidence and a conversational interface, which is exactly the kind of systems thinking that is more useful than a standalone benchmark number.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>EVPredAI README, <code>predictor.py</code>, and <code>chat.py</code> in the public repository.</li>
+        <li>Repo screenshots from <code>public/image.png</code>, <code>image2.png</code>, <code>image3.png</code>, and <code>image4.png</code>.</li>
+        <li>OpenStreetMap / OSMnx, GeoPandas, Folium, and LangChain/Ollama as implemented or documented in the repo materials.</li>
+      </ul>
+    </div>
+  )
+}
+
+function NewSkyProject() {
+  const screenshots: ProjectScreenshot[] = [
+    {
+      src: '/projects/newsky/home.png',
+      alt: 'NewSky home screen screenshot',
+      label: 'Home feed',
+      width: 598,
+      height: 1286,
+    },
+    {
+      src: '/projects/newsky/topics.png',
+      alt: 'NewSky topics screen screenshot',
+      label: 'Topics',
+      width: 596,
+      height: 1288,
+    },
+    {
+      src: '/projects/newsky/topnews.png',
+      alt: 'NewSky top news screenshot',
+      label: 'Top news',
+      width: 596,
+      height: 1290,
+    },
+    {
+      src: '/projects/newsky/analytics.png',
+      alt: 'NewSky analytics dashboard screenshot',
+      label: 'Analytics',
+      width: 600,
+      height: 1294,
+    },
+  ]
+
+  return (
+    <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
+      <h1 style={{ fontSize: '27px', fontWeight: '700', lineHeight: 1.28, marginBottom: '10px', color: '#0f172a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+        NewSky / ClearSky
+      </h1>
+      <p style={{ fontSize: '14.5px', color: '#6b7280', marginBottom: '4px', fontFamily: 'sans-serif' }}>
+        Animesh Mishra · conversational trend reader, digest generation, and mobile delivery · 2025
+      </p>
+      <p style={{ fontSize: '13.5px', color: '#9ca3af', marginBottom: '32px', fontFamily: 'sans-serif' }}>
+        Repo-grounded project page ·{' '}
+        <a href="https://github.com/amethystani/NewSky" target="_blank" rel="noopener noreferrer" style={{ color: '#3b6ea5', textDecoration: 'none' }}>
+          github.com/amethystani/NewSky
+        </a>
+      </p>
+
+      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '18px 22px', marginBottom: '38px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.1em', color: '#64748b', marginBottom: '10px', fontFamily: 'sans-serif' }}>Abstract</div>
+        <p style={{ margin: 0, fontSize: '15px', lineHeight: 1.85, color: '#374151' }}>
+          NewSky, branded as <strong>ClearSky</strong> in the repo materials, is a <strong>mobile-first conversational content product</strong> aimed at turning fast-moving trend streams into something readable. The interesting part is that the repository contains <strong>both</strong> a product narrative and a fairly substantial content pipeline: multi-category feed ingestion, metadata extraction, category-wise CSV and JSON export, <strong>Pegasus-based summarization</strong>, digest generation, and mobile UI / analytics mockups. That makes it more than a UI concept. It is part ingestion system, part summarization workflow, and part mobile reading experience.
+        </p>
+      </div>
+
+      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderLeft: '4px solid #22c55e', borderRadius: '6px', padding: '18px 22px', margin: '0 0 28px' }}>
+        <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.08em', color: '#15803d', marginBottom: '12px', fontFamily: 'sans-serif' }}>Repository Reading</div>
+        <p style={{ margin: 0, fontSize: '14.5px', lineHeight: 1.85, color: '#166534' }}>
+          The repo’s README talks in BlueSky and conversational-trend terms, while the actual scripts implement a broader <strong>news and feed ingestion stack</strong>. I kept that tension visible on purpose because it shows the real shape of the project: a mobile reading product built on top of a serious content-collection and digest pipeline.
+        </p>
+      </div>
+
+      <h2 style={paperSectionStyle}>1. Product Idea</h2>
+      <p style={paperParaStyle}>
+        The core idea is simple and good: people do not always want to read trends as formal articles. They want something closer to a friend catching them up. The repo README makes that positioning explicit by framing the product as a conversational interface over what is trending, with personalization, lightweight interaction, and a mobile-first reading flow.
+      </p>
+      <p style={paperParaStyle}>
+        That framing matters because it changes what the system has to optimize for. It is not enough to ingest content; the output has to feel compact, legible, and intentionally rewritten for mobile consumption. NewSky therefore sits at the intersection of <strong>content engineering</strong>, <strong>summarization</strong>, and <strong>consumer product design</strong>.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 1. NewSky content and digest pipeline</p>
+        <NewSkyFlowDiagram />
+      </div>
+
+      <h2 style={paperSectionStyle}>2. Ingestion and Structuring Layer</h2>
+      <p style={paperParaStyle}>
+        The most substantial implementation work appears in <code>webscraper.py</code>. That script is not a toy fetcher. It uses <strong>feedparser</strong> and <strong>cloudscraper</strong>, walks a large categorized source list, extracts article metadata and cleaned content, and saves multiple output forms per category. The source map spans politics, business, technology, science, health, entertainment, sports, world, environment, and education, with feeds from outlets such as <strong>Reuters</strong>, <strong>AP</strong>, <strong>BBC</strong>, <strong>TechCrunch</strong>, <strong>Nature</strong>, and <strong>The Guardian</strong>.
+      </p>
+      <p style={paperParaStyle}>
+        The script also does the unglamorous but important work that makes downstream summarization usable: publication-date recovery, summary cleanup, extraction-success tracking, reading-time estimates, word-count statistics, sentiment fields, and category-level reports. The result is not just one merged blob of text. It is a structured corpus written out as <strong>full CSVs</strong>, <strong>simplified CSVs</strong>, <strong>JSON content files</strong>, and a generated <strong>summary report</strong>.
+      </p>
+
+      <h2 style={paperSectionStyle}>3. Summarization and Daily Digest</h2>
+      <p style={paperParaStyle}>
+        The summarization stack is visible in <code>train_model.py</code> and <code>generate_digest.py</code>. The project uses <strong>google/pegasus-cnn_dailymail</strong> as its seq2seq base, loads all category JSON files recursively, and even includes repair logic for malformed JSON before assembling the training or digest dataset. That detail is useful because it shows the repo was built around messy scraped content rather than idealized benchmark inputs.
+      </p>
+      <p style={paperParaStyle}>
+        The digest launcher itself is simple but clear: it shells into a <strong>digest-only</strong> run that writes timestamped outputs into a target directory. The README then describes the intended user-facing layer on top of that infrastructure: categorized daily summaries with source attribution, publication timestamps, and a friendlier conversational tone than a traditional news app. In effect, the project is using a classic content-pipeline backbone to support a much softer consumer interface.
+      </p>
+
+      <div style={paperFigureStyle}>
+        <p style={paperFigureLabelStyle}>Figure 2. NewSky mobile and analytics screens from the repo</p>
+        <ProjectScreenshotGrid items={screenshots} />
+      </div>
+
+      <h2 style={paperSectionStyle}>4. Mobile Product Surface</h2>
+      <p style={paperParaStyle}>
+        The repo materials present a fairly complete app surface: home feed, topic browsing, top-news views, settings, analytics, notifications, offline state, and user personalization. The architecture notes describe services for <strong>authentication</strong>, <strong>content delivery</strong>, <strong>AI transformation</strong>, <strong>analytics</strong>, and <strong>push notifications</strong>, plus local storage and offline-friendly behavior on the client side. Even where the implementation notes mix Flutter-style and React-Native-style language, the high-level intent is consistent: this is designed as a mobile product, not just a script folder.
+      </p>
+      <p style={paperParaStyle}>
+        The screenshots strengthen that story. They show that the project was thinking beyond ingestion and summarization into how trends should actually be presented, navigated, and measured once they reach a user. That analytics layer is especially important because it turns content formatting into something that can be iterated on rather than guessed.
+      </p>
+
+      <h2 style={paperSectionStyle}>5. Why This Project Matters</h2>
+      <p style={paperParaStyle}>
+        A lot of “AI news” projects stop at the prompt. NewSky is more interesting because it handles the steps around the prompt: ingestion, category organization, content cleanup, summarization, digest formatting, and mobile presentation. That is what makes the idea legible as a product instead of only a demo.
+      </p>
+      <p style={paperParaStyle}>
+        From a portfolio standpoint, it is valuable because it shows systems breadth. The project spans data acquisition, content normalization, summarization-model tooling, reporting outputs, and user-facing mobile design. That is the kind of end-to-end build where the value comes from the pipeline as much as from the model.
+      </p>
+
+      <h2 style={paperSectionStyle}>References (Selected)</h2>
+      <ul style={{ ...paperListStyle, fontSize: '13.5px', color: '#6b7280', lineHeight: 1.75 }}>
+        <li>NewSky README, <code>project_structure.md</code>, <code>webscraper.py</code>, <code>train_model.py</code>, and <code>generate_digest.py</code> in the public repository.</li>
+        <li>Repo screenshots from <code>assets/screenshots/home.png</code>, <code>topics.png</code>, <code>topnews.png</code>, and <code>analytics.png</code>.</li>
+        <li>Pegasus summarization tooling and the categorized feed-ingestion/export pipeline documented in the repo.</li>
+      </ul>
+    </div>
+  )
+}
+
 function GenericResearchPaper({ entry }: { entry: Entry }) {
   return (
     <div style={{ fontFamily: 'Georgia, "Times New Roman", serif', color: '#1f2937' }}>
@@ -1719,12 +3467,55 @@ function ResearchOverlay({ idx, onClose }: { idx: number; onClose: () => void })
         </span>
       </div>
       <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 32px 96px' }}>
-        {entry.title === 'Scholarly Bias in LLMs: Multi-Model Evaluation Platform' ? (
+        {entry.title === 'Comprehensive Measurement System Analysis for Statistical Repeatability' ? (
+          <StatisticalRepeatabilityPaper />
+        ) : entry.title === 'Scholarly Bias in LLMs: Multi-Model Evaluation Platform' ? (
           <LLMBiasPaper />
         ) : entry.title === 'Byzantine-Robust Decentralized Federated Learning on Blockchain' ? (
           <BlockchainFLPaper />
         ) : entry.title === 'Multi-Agent Hyperbolic Framework for Legal Reasoning & Retrieval' ? (
           <LegalNexusPaper />
+        ) : entry.title === 'BIPS-PKD: Backbone-Integrated Partial Split with Progressive Knowledge Distillation' ? (
+          <BipsPkdPaper />
+        ) : (
+          <GenericResearchPaper entry={entry} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ProjectOverlay({ idx, onClose }: { idx: number; onClose: () => void }) {
+  const entry = projectEntries[idx]
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, background: '#ffffff', overflowY: 'auto', overflowX: 'hidden' }}>
+      <div style={{ position: 'sticky', top: 0, zIndex: 10, background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(10px)', borderBottom: '1px solid #e5e7eb', padding: '10px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <button
+          onClick={onClose}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: '1px solid #e5e7eb', borderRadius: '6px', cursor: 'pointer', color: '#374151', fontSize: '13px', padding: '6px 14px', fontFamily: 'sans-serif' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+        >
+          ← Projects
+        </button>
+        <span style={{ color: '#9ca3af', fontSize: '13px', fontFamily: 'sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {entry.title}
+        </span>
+      </div>
+      <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 32px 96px' }}>
+        {entry.title === 'NeMoSynthRust' ? (
+          <NeMoSynthRustProject />
+        ) : entry.title === 'PocketHarvey: Offline Indian Legal Corpus Pipeline' ? (
+          <PocketHarveyProject />
+        ) : entry.title === 'EVPredAI' ? (
+          <EVPredAIProject />
+        ) : entry.title === 'NewSky' ? (
+          <NewSkyProject />
         ) : (
           <GenericResearchPaper entry={entry} />
         )}
@@ -1970,6 +3761,7 @@ export default function PortfolioClient() {
   const [searchQuery, setSearchQuery] = useState('')
   const [hasSyncedLocation, setHasSyncedLocation] = useState(false)
   const [expandedResearchIdx, setExpandedResearchIdx] = useState<number | null>(null)
+  const [expandedProjectIdx, setExpandedProjectIdx] = useState<number | null>(null)
   const [expandedLegalPage, setExpandedLegalPage] = useState<LegalPage | null>(null)
 
   const scrollPortfolioToTop = (behavior: ScrollBehavior = 'auto') => {
@@ -2030,6 +3822,8 @@ export default function PortfolioClient() {
       ref={scrollContainerRef}
       className="portfolio-root"
       style={{
+        display: 'flex',
+        flexDirection: 'column',
         height: '100dvh',
         minHeight: '100dvh',
         overflowY: 'auto',
@@ -2050,60 +3844,82 @@ export default function PortfolioClient() {
           top: 0;
           z-index: 50;
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 20px;
-          padding: 14px 28px;
+          justify-content: center;
           background: rgba(12, 16, 20, 0.92);
           backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
           border-bottom: 1px solid rgba(255,255,255,0.08);
+          width: 100%;
+        }
+        .nav-inner {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+          align-items: center;
+          width: min(1040px, calc(100% - 24px));
+          gap: 20px;
+          padding: 14px 0;
         }
         .nav-brand {
-          color: #f3f5f7;
+          justify-self: start;
+          color: #ffffff;
           font-size: 18px;
-          font-weight: 300;
-          letter-spacing: 0.04em;
+          font-weight: 500;
+          letter-spacing: -0.01em;
           white-space: nowrap;
         }
         .nav-links {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 22px;
+          justify-content: center;
+          gap: 24px;
         }
         .nav-link {
           border: none;
           background: none;
           padding: 0;
           margin: 0;
-          color: #bdc5cc;
+          color: #97a3ad;
           font-size: 13px;
+          font-weight: 500;
           cursor: pointer;
-          transition: color 0.2s ease;
+          transition: color 0.2s ease, transform 0.2s ease;
         }
-        .nav-link:hover,
+        .nav-link:hover {
+          color: #ffffff;
+          transform: translateY(-1px);
+        }
         .nav-link.active {
           color: #ffffff;
+          font-weight: 600;
         }
         .nav-search {
           position: relative;
+          justify-self: end;
           width: min(220px, 100%);
         }
         .nav-search-input {
           width: 100%;
-          border: 1px solid #2f3942;
-          border-radius: 999px;
-          background: #12181d;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.06);
           color: #ffffff;
           padding: 8px 12px 8px 32px;
           font-size: 13px;
           outline: none;
+          transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .nav-search-input:focus {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
         .page-hero {
-          background: #4a7b9f;
+          background: #567c9a;
           color: #ffffff;
-          padding: 48px 20px 52px;
+          padding: 52px 20px 56px;
           text-align: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .page-hero-inner {
           width: min(1040px, calc(100% - 24px));
@@ -2113,19 +3929,41 @@ export default function PortfolioClient() {
           margin: 0;
           font-size: clamp(42px, 7vw, 60px);
           font-weight: 300;
-          letter-spacing: 0.01em;
+          letter-spacing: -0.01em;
         }
         .page-hero p {
-          max-width: 840px;
+          max-width: 740px;
           margin: 16px auto 0;
           font-size: 16px;
           line-height: 1.75;
-          color: rgba(255,255,255,0.92);
+          color: rgba(255, 255, 255, 0.92);
+          font-weight: 400;
         }
         .hero-links {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 10px;
           margin-top: 18px;
         }
+        .hero-link-item {
+          color: rgba(255, 255, 255, 0.96);
+          font-size: 13px;
+          font-weight: 600;
+          text-decoration: none;
+          transition: opacity 0.18s ease;
+        }
+        .hero-link-item:hover {
+          opacity: 0.8;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
+        .hero-link-separator {
+          color: rgba(255, 255, 255, 0.55);
+          font-size: 13px;
+        }
         .page-content {
+          flex: 1 0 auto;
           width: min(1040px, calc(100% - 24px));
           margin: 0 auto;
           padding: 34px 0 56px;
@@ -2200,6 +4038,84 @@ export default function PortfolioClient() {
         .document-links {
           margin: 10px 0 0;
         }
+        .experience-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 22px;
+        }
+        .experience-card {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          min-height: 214px;
+          padding: 22px;
+          border: 1px solid #e5ebf0;
+          border-radius: 20px;
+          background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+          box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+        }
+        .experience-card-top {
+          display: grid;
+          grid-template-columns: 78px minmax(0, 1fr) auto;
+          align-items: center;
+          gap: 16px;
+        }
+        .experience-logo-wrap {
+          width: 78px;
+          height: 78px;
+          padding: 12px;
+          border-radius: 18px;
+          border: 1px solid #e2e8f0;
+          background: #ffffff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .experience-logo {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .experience-card-heading {
+          min-width: 0;
+        }
+        .experience-company {
+          margin: 0 0 6px;
+          color: #4a7b9f;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+        }
+        .experience-role {
+          margin: 0;
+          color: #1f2a33;
+          font-size: 18px;
+          line-height: 1.4;
+          font-weight: 600;
+        }
+        .experience-timeline {
+          align-self: start;
+          justify-self: end;
+          padding: 8px 12px;
+          border-radius: 999px;
+          border: 1px solid #d8e3ec;
+          background: #eef4f8;
+          color: #48657a;
+          font-size: 11.5px;
+          font-weight: 600;
+          white-space: nowrap;
+          font-family: "SF Mono", "Fira Mono", Menlo, monospace;
+        }
+        .experience-summary-copy {
+          margin: auto 0 0;
+          padding-top: 16px;
+          border-top: 1px solid #e8eef3;
+          color: #52616d;
+          font-size: 14px;
+          line-height: 1.7;
+        }
         .entry-sections {
           margin-top: 12px;
         }
@@ -2236,14 +4152,18 @@ export default function PortfolioClient() {
         }
         .inline-links,
         .inline-link {
-          color: #2f6f95;
+          color: #2563eb;
           font-size: 15px;
           text-decoration: none;
+          transition: color 0.15s ease;
         }
         .inline-link:hover {
+          color: #1d4ed8;
           text-decoration: underline;
+          text-underline-offset: 3px;
         }
         .footer {
+          margin-top: auto;
           background: #0d1216;
           color: #97a3ad;
           padding: 24px 20px 32px;
@@ -2270,17 +4190,26 @@ export default function PortfolioClient() {
           color: #ffffff;
         }
         @media (max-width: 860px) {
-          .nav-wrapper {
-            align-items: flex-start;
+          .nav-inner {
+            display: flex;
             flex-direction: column;
-            padding: 14px 16px;
+            align-items: stretch;
+            padding: 14px 12px;
+          }
+          .nav-brand {
+            align-self: flex-start;
           }
           .nav-links {
             width: 100%;
+            justify-content: flex-start;
             gap: 14px;
           }
           .nav-search {
             width: 100%;
+            justify-self: auto;
+          }
+          .experience-grid {
+            grid-template-columns: 1fr;
           }
         }
         @media (max-width: 720px) {
@@ -2297,10 +4226,27 @@ export default function PortfolioClient() {
             white-space: normal;
           }
           .page-hero {
-            padding: 36px 16px 40px;
+            padding: 40px 16px 44px;
           }
           .page-hero p {
             font-size: 15px;
+          }
+          .experience-card {
+            min-height: 0;
+            padding: 18px;
+          }
+          .experience-card-top {
+            grid-template-columns: 72px minmax(0, 1fr);
+            align-items: start;
+          }
+          .experience-logo-wrap {
+            width: 72px;
+            height: 72px;
+          }
+          .experience-timeline {
+            grid-column: 1 / -1;
+            justify-self: start;
+            margin-top: 2px;
           }
         }
         .entry-row-footer {
@@ -2331,20 +4277,22 @@ export default function PortfolioClient() {
       `}</style>
 
       <nav className="nav-wrapper">
-        <div className="nav-brand">Animesh</div>
-        <div className="nav-links">
-          {navLinks.map((link) => (
-            <button
-              key={link.id}
-              onClick={() => activateTab(link.id)}
-              className={`nav-link ${!searchQuery && activeTab === link.id ? 'active' : ''}`}
-            >
-              {link.name}
-            </button>
-          ))}
+        <div className="nav-inner">
+          <div className="nav-brand">Animesh</div>
+          <div className="nav-links">
+            {navLinks.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => activateTab(link.id)}
+                className={`nav-link ${!searchQuery && activeTab === link.id ? 'active' : ''}`}
+              >
+                {link.name}
+              </button>
+            ))}
+          </div>
           <div className="nav-search">
             <svg
-              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', stroke: '#7e8a94' }}
+              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', stroke: '#a0aec0' }}
               width="14"
               height="14"
               viewBox="0 0 24 24"
@@ -2373,9 +4321,7 @@ export default function PortfolioClient() {
           <h1>{pageTitle}</h1>
           <p>{pageSubtitle}</p>
           {!searchQuery && activeTab === 'home' ? (
-            <div className="hero-links">
-              <BracketLinks links={homeLinks} />
-            </div>
+            <HeroActionLinks links={homeLinks} />
           ) : null}
         </div>
       </header>
@@ -2395,14 +4341,14 @@ export default function PortfolioClient() {
               <li className="document-row">
                 <div className="document-stamp">Location</div>
                 <div className="document-body">
-                  <p className="document-text">Delhi, India</p>
+                  <p className="document-text">India</p>
                 </div>
               </li>
               <li className="document-row">
-                <div className="document-stamp">Contact</div>
+                <div className="document-stamp">Email</div>
                 <div className="document-body">
                   <p className="document-text">
-                    am847@snu.edu.in <BracketLinks links={homeLinks.slice(0, 3)} />
+                    <a className="inline-link" href="mailto:am847@snu.edu.in">am847@snu.edu.in</a>
                   </p>
                 </div>
               </li>
@@ -2414,7 +4360,7 @@ export default function PortfolioClient() {
           <section className="document-section">
             <h2 className="section-heading">Summary</h2>
             <p className="section-summary">
-              Strong Python engineering background across distributed data processing, synthetic data generation, and empirical evaluation workflows aligned with frontier open-source model development.
+              I work at the intersection of machine learning systems, data engineering, and research implementation. Most of my work has focused on building end-to-end pipelines, evaluation-heavy workflows, and applied AI systems that have to be useful outside a notebook.
             </p>
             <h2 className="section-heading">Education</h2>
             <ul className="document-list">
@@ -2428,11 +4374,11 @@ export default function PortfolioClient() {
         {matchQuery('experience') ? (
           <section className="document-section">
             <h2 className="section-heading">Professional Experience</h2>
-            <ul className="document-list">
+            <div className="experience-grid">
               {experienceEntries.map((entry) => (
-                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} />
+                <ExperienceCard key={`${entry.stamp}-${entry.title}`} entry={entry} />
               ))}
-            </ul>
+            </div>
           </section>
         ) : null}
 
@@ -2451,8 +4397,15 @@ export default function PortfolioClient() {
           <section className="document-section">
             <h2 className="section-heading">Other Projects</h2>
             <ul className="document-list">
-              {projectEntries.map((entry) => (
-                <EntryRow key={`${entry.stamp}-${entry.title}`} entry={entry} />
+              {projectEntries.map((entry, idx) => (
+                <EntryRow
+                  key={`${entry.stamp}-${entry.title}`}
+                  entry={entry}
+                  compact
+                  titleOnly
+                  expandLabel="Open project →"
+                  onExpand={() => setExpandedProjectIdx(idx)}
+                />
               ))}
             </ul>
           </section>
@@ -2486,6 +4439,9 @@ export default function PortfolioClient() {
       </footer>
       {expandedResearchIdx !== null ? (
         <ResearchOverlay idx={expandedResearchIdx} onClose={() => setExpandedResearchIdx(null)} />
+      ) : null}
+      {expandedProjectIdx !== null ? (
+        <ProjectOverlay idx={expandedProjectIdx} onClose={() => setExpandedProjectIdx(null)} />
       ) : null}
       {expandedLegalPage !== null ? (
         <LegalOverlay page={expandedLegalPage} onClose={() => setExpandedLegalPage(null)} onSwitch={setExpandedLegalPage} />

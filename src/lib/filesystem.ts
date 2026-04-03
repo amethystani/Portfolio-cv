@@ -32,86 +32,102 @@ function mkDir(children: Record<string, FSNode>): DirNode {
 export const vfs: DirNode = {
   type: 'dir',
   children: {
-    'about.txt': mkFile(`Animesh
--------
-Software Engineer  |  India
+    'about.txt': mkFile(`Animesh Mishra
+--------------
+ML Engineer  |  India
 
-I build things for the web — products that are fast, reliable, and actually
-pleasant to use. I care deeply about the craft: clean architecture, thoughtful
-UX, and code that future-me won't hate.
+I work across machine learning systems, research engineering, and data-heavy
+software. A lot of my recent work has involved building pipelines, evaluation
+workflows, and applied AI systems that need to hold up outside experiments.
 
-I'm comfortable across the full stack, but my instinct leans toward systems
-thinking — how pieces connect, where things break, why they scale (or don't).
+My background is a mix of research and implementation: large-scale data
+processing, multi-model evaluation, synthetic-data workflows, forecasting,
+retrieval systems, and end-to-end product prototypes.
 
-This site is a small example of that obsession. It's a real terminal emulator
-running in a browser, with a custom command interpreter and a virtual
-filesystem. Probably overkill for a portfolio. That's the point.
+I like problems that sit between theory and systems work: where the modeling
+matters, but the infrastructure and the product surface matter just as much.
 
-Currently open to full-time roles and interesting contract work.
+This terminal is another version of the portfolio. Instead of cards and pages,
+you can inspect the same profile through files, folders, and commands.
+
+Currently interested in ML engineering, research engineering, evaluation, and
+data infrastructure roles.
 
 ---
   cat skills.txt      — technical skills
-  ls projects/        — things I've built
+  ls projects/        — selected work
   cat contact.txt     — get in touch
   open portfolio      — visual portfolio page`),
 
     'skills.txt': mkFile(`Languages
 ---------
-  TypeScript    JavaScript    Python    Go    SQL    Bash
+  Python (primary)    SQL    Java    LaTeX
 
-Frontend
---------
-  React         Next.js       Tailwind CSS    Framer Motion
-  HTML/CSS      Three.js      WebGL
+Machine Learning
+----------------
+  PyTorch             HuggingFace Transformers
+  XGBoost             Scikit-learn
+  LangChain           Ollama
+  FlashAttention-2    Triton kernels
 
-Backend
--------
-  Node.js       Express       FastAPI         tRPC
-  PostgreSQL    Redis         Prisma          GraphQL
-  REST APIs     WebSockets
+Data & Pretraining
+------------------
+  Datatrove           FineWeb / FineWebEDU
+  FinePDFs            CommonCrawl processing
+  Dataset deduplication and quality filtering
+  Synthetic-data workflows with NeMo DataDesigner
 
-Infrastructure & DevOps
+Evaluation
+----------
+  Multi-model ablation harnesses
+  LLM-as-judge evaluation
+  Factuality and validity audits
+  ICC / ANOVA / Gauge R&R style statistical evaluation
+
+Systems & Infrastructure
 ------------------------
-  Docker        Kubernetes    GitHub Actions  Terraform
-  Linux         Nginx         Vercel          AWS (EC2, S3, RDS, Lambda)
+  Apache Kafka         Dask
+  Spark (familiar)     Docker
+  Kubernetes           AWS EKS
+  FastAPI              Redis
+  Git
 
-Tools
------
-  Git           Neovim        tmux            Figma (enough to be useful)
-  Postman       Datadog       Sentry
+Data Science
+------------
+  Pandas               NumPy
+  GeoPandas            Matplotlib
+  NetworkX             Folium`),
 
-Currently Exploring
--------------------
-  Rust          WebAssembly   Edge computing`),
-
-    'contact.txt': mkFile(`Let's talk.
+    'contact.txt': mkFile(`Get in touch
+-----------
 
   GitHub    →  github.com/amethystani
-  LinkedIn  →  linkedin.com/in/amethystani
-  Email     →  hi@animesh.dev
+  LinkedIn  →  linkedin.com/in/animeshmishra0
+  Email     →  am847@snu.edu.in
+  Location  →  India
 
-I'm most responsive over email. Response time: usually same day.
+Most reliable contact channel: email.
 
-I'm interested in:
-  - Senior / lead engineering roles
-  - Interesting contract or consulting work
-  - Open source collaboration
-  - Conversations about systems, UX, and building things well
+Best fit conversations:
+  - ML engineering and research engineering roles
+  - Data infrastructure and evaluation systems
+  - Research collaborations
+  - Applied AI products and experimentation
 
 ---
   open portfolio    — view the visual portfolio
-  open resume.pdf   — view / download my resume`),
+  open resume.pdf   — view / download the resume`),
 
     'resume.pdf': mkFile('[binary PDF] Use "open resume.pdf" to open in a new tab.'),
 
     'now.txt': mkFile(`What I'm doing now  (updated April 2026)
 
-  - Building: side projects exploring edge runtimes and local-first apps
-  - Reading: "Designing Data-Intensive Applications" — Kleppmann
-  - Learning: Rust (slowly, but getting there)
+  - Building: portfolio updates, applied ML systems, and research-heavy tools
+  - Focus: evaluation workflows, data pipelines, and practical AI products
+  - Exploring: statistical modeling, retrieval systems, and efficient inference
   - Location: India
 
-This is a /now page. Inspired by nownownow.com.`),
+This is a lightweight /now page in terminal form.`),
 
     '.bashrc': mkFile(`# Animesh's .bashrc
 export EDITOR=nvim
@@ -142,8 +158,8 @@ vim.opt.expandtab = true`),
       }),
       'git': mkDir({
         'config': mkFile(`[user]
-  name = Animesh
-  email = hi@animesh.dev
+  name = Animesh Mishra
+  email = am847@snu.edu.in
 [core]
   editor = nvim
 [init]
@@ -164,10 +180,11 @@ gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA...`),
     'projects': mkDir({
       'README.md': mkFile(`Projects
 --------
-  portfolio-terminal.md   — this site
-  synapse.md              — realtime collaborative notes
-  deploykit.md            — self-hosted deployment tool
-  vizql.md                — SQL query visualizer
+  portfolio-terminal.md         — terminal-style portfolio
+  llm-bias.md                   — scholarly bias evaluation platform
+  legalnexus.md                 — legal reasoning and retrieval system
+  evpredai.md                   — EV demand forecasting and placement
+  bips-pkd.md                   — edge inference acceleration
 
 Run 'cat <filename>' to read about each project.`),
 
@@ -179,76 +196,98 @@ Tech stack:
   Next.js 14 · TypeScript · xterm.js · Tailwind CSS
 
 What it does:
-  Runs a real terminal emulator (xterm.js) in the browser with a custom
-  bash-like interpreter and a mock virtual filesystem. All portfolio
-  content is navigable via standard Unix commands.
+  Runs a real terminal emulator in the browser with a custom bash-like
+  interpreter and a mock virtual filesystem. Portfolio content is navigable
+  through commands like ls, cat, open, grep, and tree.
 
-  Features: tab completion, command history (↑↓), cursor movement,
-  Ctrl+A/E/L/C, man pages, ls/cd/cat/open/echo/pwd/whoami.
+  Features: tab completion, command history, shell-style navigation,
+  mock files, and a second visual portfolio view.
 
 Why:
-  Most developer portfolios are forgettable. This one you have to use.
+  I wanted the site to reflect how I like to work: inspectable, interactive,
+  and a little more systems-minded than a standard portfolio.
 
   github.com/amethystani/Portfolio-cv`),
 
-      'synapse.md': mkFile(`# Synapse
+      'llm-bias.md': mkFile(`# Scholarly Bias In LLMs
 
-Realtime collaborative note-taking with a local-first architecture.
+Research platform for measuring factual accuracy gaps in how large language
+models describe scholars.
 
-Tech stack:
-  Next.js · Y.js · Hocuspocus · PostgreSQL · Tiptap · Vercel
+Focus:
+  Multi-model evaluation across biography and genealogy tasks
+  Structured scoring with human raters and automated checks
+  Bias analysis across gender, geography, discipline, and career stage
 
-What it does:
-  Multiplayer document editing with CRDTs (Y.js) for conflict-free merging.
-  Notes sync instantly across devices and work fully offline — changes merge
-  automatically when reconnected.
+Built at:
+  Complexity Science Hub Vienna
 
-  Supports rich text, inline code blocks, slash commands, and shared cursors.
+Why it matters:
+  It treats bias as an accuracy and representation problem, not just a
+  prompting problem.
 
-Scale:
-  Handles 100+ concurrent editors per document without coordination overhead.
+Repo:
+  github.com/amethystani/csh-llmbias-website`),
 
-Status: private beta`),
+      'legalnexus.md': mkFile(`# LegalNexus
 
-      'deploykit.md': mkFile(`# DeployKit
-
-Self-hosted deployment platform for small teams who don't want to pay
-Heroku prices or manage raw Kubernetes.
-
-Tech stack:
-  Go · Docker API · Caddy · PostgreSQL · React
+Hyperbolic multi-agent legal reasoning and retrieval system.
 
 What it does:
-  Git-push deploys to your own VPS. Caddy handles SSL automatically.
-  Includes a dashboard for env vars, logs, rollbacks, and health checks.
+  Encodes legal cases in hyperbolic space so authority structure and semantic
+  similarity both matter during retrieval.
 
-  One binary, one config file, one server. No YAML sprawl.
+Core ideas:
+  HGCN embeddings
+  Multi-agent citation graph construction
+  Argument structure extraction
+  Temporal relevance scoring
 
-Why:
-  Fly.io is great. Railway is great. But sometimes you want the machine
-  to be yours. DeployKit is for that.
+Outcome:
+  Built as a research-heavy retrieval system rather than a plain RAG wrapper.
 
-Status: open source — github.com/amethystani/deploykit`),
+Repo:
+  github.com/amethystani/legalnexus-backend`),
 
-      'vizql.md': mkFile(`# VizQL
+      'evpredai.md': mkFile(`# EVPredAI
 
-Interactive SQL query visualizer and explainer.
-
-Tech stack:
-  React · Monaco Editor · PostgreSQL · pg_query (WASM) · D3.js
+Forecasting and placement system for EV charging demand.
 
 What it does:
-  Paste a SQL query, get back an interactive execution plan diagram.
-  Highlights expensive nodes, estimates row counts, and suggests indexes.
+  Combines geospatial features, time-series modeling, and spatial statistics
+  to estimate charging demand and recommend where infrastructure should go.
 
-  Runs the query parser in WebAssembly (pg_query compiled to WASM) so
-  parse trees are available instantly, in-browser, with no server round-trip.
+Methods:
+  XGBoost
+  SARIMA
+  Moran's I and LISA
+  GeoPandas / Folium / OpenStreetMap
 
-Use case:
-  Useful for teaching SQL internals, debugging slow queries, and impressing
-  people in code reviews.
+Context:
+  Built with Exicom Group around real operator needs and geospatial workflows.
 
-Status: live at vizql.animesh.dev`),
+Repo:
+  github.com/amethystani/EVPredAI`),
+
+      'bips-pkd.md': mkFile(`# BIPS-PKD
+
+Backbone-Integrated Partial Split with Progressive Knowledge Distillation.
+
+What it does:
+  Improves edge inference efficiency by replacing dense frame-by-frame
+  execution with patch-based activation and an event-driven NSGS runtime.
+
+Focus:
+  Partial split architecture
+  Distillation from teacher to student
+  Runtime-aware execution on constrained devices
+
+Why it matters:
+  The project is about making model deployment cheaper and more practical on
+  edge hardware, not just improving a benchmark table.
+
+Repo:
+  github.com/amethystani/NSGSAlgorithm`),
     }),
 
     'Documents': mkDir({
