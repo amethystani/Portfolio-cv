@@ -120,6 +120,33 @@ const experienceEntries: Entry[] = [
 const researchEntries: Entry[] = [
   {
     stamp: '2025',
+    title: 'Scholarly Bias in LLMs: Multi-Model Evaluation Platform',
+    meta: 'Complexity Science Hub Vienna — with Lisette Espin-Noboa',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'LLMs may exhibit systematic bias when describing academic scholars — misidentifying affiliations, research areas, or gender, particularly for researchers from underrepresented demographics. Quantifying this bias requires a structured, multi-model evaluation framework that itself avoids introducing assessor bias.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Built a full-stack evaluation platform (React + Flask) serving a curated dataset of scientists with two parallel assessment tracks: (1) Genealogy Track — queried LLMs on academic supervision relationships (advisors/advisees) and compared outputs against ground truth from OpenAlex and APS APIs; (2) Biography Track — compared 12+ LLM outputs (DeepSeek, GPT, Qwen, Gemma, Claude, Gemini, LLaMA, Mistral, Cohere, PaLM, Yi) on scientist biography accuracy across affiliation, research topic, and gender identification.',
+          'Models were presented under anonymized labels (Bio 1–12) to prevent meta-bias in human raters. Implemented Evaluator and Auditor modules computing error-rate, consistency, and graph-based similarity features; added demographic annotations and discipline-wise statistical plots for downstream bias slicing.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Deployed multi-model comparison framework revealing systematic bias patterns in LLM descriptions of scholars; structured rating dataset across 12+ models and multiple scientist demographics for ongoing research at CSH Vienna.',
+        ],
+      },
+    ],
+    links: [{ label: 'github', href: 'https://github.com/amethystani/csh-llmbias-website' }],
+  },
+  {
+    stamp: '2025',
     title: 'Byzantine-Robust Decentralized Federated Learning on Blockchain',
     meta: 'Systems + ML preprint',
     sections: [
