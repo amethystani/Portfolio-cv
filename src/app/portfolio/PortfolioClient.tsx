@@ -9,11 +9,18 @@ type LinkItem = {
   href: string
 }
 
+type EntrySection = {
+  label: string
+  items: string[]
+}
+
 type Entry = {
   stamp: string
   title: string
   meta?: string
   details?: string[]
+  sections?: EntrySection[]
+  image?: string
   links?: LinkItem[]
 }
 
@@ -115,10 +122,28 @@ const researchEntries: Entry[] = [
     stamp: '2025',
     title: 'Byzantine-Robust Decentralized Federated Learning on Blockchain',
     meta: 'Systems + ML preprint',
-    details: [
-      'Designed an RMT-driven Byzantine detector tracking gradient covariance eigenspectra against the Marchenko-Pastur law and scaled it with Frequent Directions sketching at O(k^2) memory.',
-      'Validated the method across 144 attack-aggregator settings, achieving 78.4% average accuracy versus 48-63% baselines.',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'In federated learning, Byzantine nodes can submit adversarial gradient updates to corrupt the global model. Existing defenses degrade sharply when attack scale or aggregation strategy varies, and centralized servers create single points of failure.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Built "Spectral Sentinel" — an RMT detector that tracks gradient covariance eigenspectra against the Marchenko-Pastur distribution to flag outlier updates at O(k²) memory via Frequent Directions sketching.',
+          'On-chain Solidity smart contracts coordinate decentralized aggregation, removing the trusted-server assumption entirely.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Validated across 144 attack-aggregator combinations; 78.4% average accuracy vs. 48–63% for baseline defenses.',
+        ],
+      },
     ],
+    image: '/projects/bfl-architecture.png',
     links: [
       { label: 'arxiv', href: 'https://arxiv.org/abs/2512.12617' },
       { label: 'github', href: 'https://github.com/amethystani/blockchain_enabled_federated_learning-main' },
@@ -128,20 +153,59 @@ const researchEntries: Entry[] = [
     stamp: '2025',
     title: 'Multi-Agent Hyperbolic Framework for Legal Reasoning & Retrieval',
     meta: 'Legal AI, Geometric Deep Learning',
-    details: [
-      'Built Hyperbolic Legal Networks embedding 49,633 cases in a Poincare ball with court-authority radial encoding and achieved 0.92 Precision@5.',
-      'Designed a game-theoretic multi-agent pipeline that resolved 94% of citation conflicts and translated multi-model consensus ideas into dataset quality auditing workflows.',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'Legal citation networks form natural hierarchies (Supreme Court → lower courts) that Euclidean embedding spaces cannot represent efficiently, losing relational authority context critical for accurate retrieval and reasoning.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Embedded 49,633 cases in a Poincaré ball using HGCNs — radial position encodes court authority, angular position captures semantic similarity.',
+          'Three specialized agents (Linker, Interpreter, Conflict) coordinate via Nash Equilibrium to resolve citation conflicts. Combined five retrieval algorithms (semantic, structural, citation-weighted, hyperbolic, GNN-enhanced) through adversarial prosecutor-defense-judge simulation.',
+          'Temporal decay scoring with a "resurrection" boost for re-cited old precedents; Toulmin argumentation extraction decomposes claims, grounds, warrants, and rebuttals.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Precision@5 of 0.92; 94% citation conflict resolution; Gromov delta of 0.029 — 13.7× better hierarchical structure capture vs. Euclidean baseline.',
+        ],
+      },
     ],
+    image: '/projects/legalnexus-poincare.png',
     links: [{ label: 'github', href: 'https://github.com/amethystani/legalnexus-backend' }],
   },
   {
-    stamp: '2024',
-    title: 'Neuro-Scheduling for Graph Segmentation (NSGS)',
-    meta: "Neuromorphic Computing, Image Segmentation, CVPR '26 submission",
-    details: [
-      'Designed an event-driven neuromorphic segmentation framework reducing redundant operations by 38-62%.',
-      'Achieved a 17.5x speedup and 65.8% average mIoU with 4.4x less energy versus YOLOv8m-seg.',
+    stamp: '2025',
+    title: 'BIPS-PKD: Backbone-Integrated Partial Split with Progressive Knowledge Distillation',
+    meta: "Edge Inference Acceleration, NSGS Runtime, CVPR '26 submission",
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'State-of-the-art segmentation models (SAM, SegFormer, Mask2Former) are prohibitively slow on edge devices — EfficientSAM takes 3.6 seconds per image on a 4-thread CPU, blocking real-time mobile use.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'BIPS (Backbone-Integrated Partial Split): splits the backbone at a learned intermediate layer, replacing the heavy teacher tail with a lightweight student head trained to mimic teacher features — only the student runs at inference.',
+          'PKD (Progressive Knowledge Distillation): trains the student head in stages, progressively tightening feature-matching loss to close the accuracy gap.',
+          'Underlying NSGS (Neuro-Scheduling for Graph Segmentation) runtime provides event-driven, spike-based scheduling across CPU cores with minimal synchronization. Supports 9 model families: SAM, SegFormer, Mask2Former, YOLOv8, PIDNet, DINOv3, MobileSAM, SAM2, YOLOv12.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          '60.8× speedup on EfficientSAM (3612 ms → 59 ms); 50.3× on EfficientSAM-tiny; 15.3× on SegFormer-B5.',
+          '65.8% average mIoU maintained; 4.4× energy reduction vs. YOLOv8m-seg baseline.',
+        ],
+      },
     ],
+    image: '/projects/nsgs-benchmark.png',
     links: [{ label: 'github', href: 'https://github.com/amethystani/NSGSAlgorithm' }],
   },
 ]
@@ -151,10 +215,26 @@ const projectEntries: Entry[] = [
     stamp: '2025',
     title: 'Tiny Recursive Models (TRM) + Open Model Training',
     meta: 'Independent ML research based on arXiv:2510.04871',
-    details: [
-      'Re-implemented the Recursive Latent State architecture in PyTorch, integrating FlashAttention-2 and custom Triton kernels to fuse recurrence-loop operations.',
-      'Ran pretraining mixture experiments informed by SmolLM and Nemotron data strategies, studying domain weighting, data-source ablations, and quality-filter configurations.',
-      'Benchmarked custom filtered corpora against FineWebEDU and FinePDFs reference distributions on reasoning and knowledge-intensive tasks.',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'Recursive Latent State architectures share weights across recurrence steps for parameter efficiency, but their sensitivity to training data mixtures and quality-filter thresholds is poorly understood — making it hard to reproduce or improve the claimed gains.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Re-implemented TRM in PyTorch with FlashAttention-2 and custom Triton kernels fusing recurrence-loop operations to bring training to practical speed.',
+          'Ran controlled pretraining ablations over domain mixes (web, code, math, science) informed by SmolLM and Nemotron data strategies; varied quality-filter configurations across FineWebEDU, FinePDFs, and CommonCrawl-derived corpora.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Established data-efficiency trade-off curves for recursive architectures; identified optimal quality-filter thresholds for knowledge-intensive benchmarks; produced a reproducible open training framework.',
+        ],
+      },
     ],
     links: [{ label: 'paper', href: 'https://arxiv.org/abs/2510.04871' }],
   },
@@ -162,39 +242,110 @@ const projectEntries: Entry[] = [
     stamp: '2024',
     title: 'ClerkTree',
     meta: 'Founder; enterprise AI claims orchestration platform',
-    details: [
-      'Architected an event-driven multi-tenant system on AWS EKS with Apache Kafka and FastAPI microservices for asynchronous high-throughput data ingest.',
-      'Engineered agentic AI workflows with fine-tuned Mixtral-8x7B and Gemini Pro, orchestrating Twilio Voice and SMS plus atomic database mutations from real-time sentiment velocity.',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'Insurance claims processing involves high-volume asynchronous ingest from phone, SMS, and documents, requiring real-time sentiment routing and atomic state management across concurrent, multi-tenant claims workflows.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Multi-tenant event-driven system on AWS EKS; Apache Kafka for async streaming, FastAPI microservices for high-throughput claims ingest with deduplication and schema enforcement.',
+          'Fine-tuned Mixtral-8x7B and Gemini Pro for claims intelligence; Twilio Voice/SMS integration with atomic DB mutations triggered by real-time sentiment velocity thresholds from the LLM pipeline.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Production enterprise system live at clerktree.com; handling agentic claims orchestration workflows with multi-channel ingest at scale.',
+        ],
+      },
     ],
     links: [{ label: 'site', href: 'https://clerktree.com' }],
   },
   {
     stamp: '2024',
     title: 'EVPredAI',
-    meta: 'EV charging demand forecasting and placement',
-    details: [
-      'Built a multi-modal forecasting and placement system spanning Bayesian-tuned XGBoost models, seasonal forecasting, spatial autocorrelation analysis, and geospatial data engineering.',
-      'Connected the modeling workflow to synthetic data generation, vector retrieval, and deployment tooling for real-world operator use.',
+    meta: 'EV charging demand forecasting and optimal placement',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'EV charging infrastructure is undersupplied in high-demand zones. Operators need data-driven tools to select optimal station locations from heterogeneous geospatial, temporal, and behavioral signals.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Ensemble combining Bayesian-tuned XGBoost (20+ geospatial and temporal features), SARIMA for seasonal demand cycles, and Moran\'s I / LISA statistics for spatial autocorrelation clustering.',
+          'Geospatial feature pipeline via OpenStreetMap, GeoPandas, and Folium; BERT/RoBERTa-based chatbot fine-tuned on 15K+ EV-specific conversations for operator recommendations.',
+          'NeMo DataDesigner for synthetic data augmentation; MLOps workflow with LangChain and Ollama for batched inference.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Interactive demand heatmap and placement recommendation system deployed at Exicom Group; 85% user satisfaction; 5-fold cross-validated location model supporting real-world operator placement decisions.',
+        ],
+      },
     ],
+    image: '/projects/evpredai-1.png',
     links: [{ label: 'github', href: 'https://github.com/amethystani/EVPredAI' }],
   },
   {
     stamp: '2025',
     title: 'LegalNexus',
-    meta: 'Hyperbolic multi-agent legal reasoning system',
-    details: [
-      'Combined hyperbolic graph representations, adversarial retrieval, and multi-agent coordination for case search and conflict resolution.',
-      'Used large structured legal datasets with semantic and relational annotations to support robust retrieval and reasoning experiments.',
+    meta: 'Hyperbolic multi-agent legal reasoning and retrieval system',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          'Traditional legal retrieval systems fail on hierarchical authority structures and citation semantics, leading to poor recall on jurisdictionally constrained queries across large case law corpora.',
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'HGCN embedding of 49,634 cases using 768-dim Gemini embeddings in Poincaré ball space — radial distance encodes judicial authority, angular position captures semantic similarity.',
+          'Game-theoretic multi-agent system (Nash Equilibrium coordination) for citation graph construction; Toulmin argumentation extraction decomposing claims, grounds, warrants, and rebuttals; temporal decay scoring with resurrection effect for re-cited precedents.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'Precision@5: 0.896 · NDCG@10: 0.893 · MAP@100: 0.816 · 98.3% citation conflict resolution · +62.4% resurrection effect boost for re-cited precedents.',
+        ],
+      },
     ],
+    image: '/projects/legalnexus-model.png',
     links: [{ label: 'github', href: 'https://github.com/amethystani/legalnexus-backend' }],
   },
   {
     stamp: '2024',
     title: 'NewSky',
-    meta: 'Topic clustering and digest generation over Bluesky data',
-    details: [
-      'Built a pipeline to ingest, cluster, and summarize topics from the Bluesky API into short conversational digests.',
-      'Deployed the stack with Flutter, PostgreSQL, Docker, and Kubernetes.',
+    meta: 'Topic clustering and digest generation over Bluesky social data',
+    sections: [
+      {
+        label: 'Problem',
+        items: [
+          "Bluesky's decentralized social graph lacks topic discovery tools, making it hard to surface coherent conversation clusters across the firehose of AT Protocol posts.",
+        ],
+      },
+      {
+        label: 'Approach',
+        items: [
+          'Real-time ingestion from the Bluesky AT Protocol API; unsupervised topic clustering grouping posts by semantic similarity; LLM-powered summarization into short conversational digests.',
+          'Full-stack deployment: Flutter mobile app, PostgreSQL for persistence, Docker + Kubernetes for orchestration.',
+        ],
+      },
+      {
+        label: 'Results',
+        items: [
+          'End-to-end topic clustering and digest delivery system surfacing structured topic feeds from unstructured social data.',
+        ],
+      },
     ],
   },
 ]
@@ -350,6 +501,25 @@ function EntryRow({ entry }: { entry: Entry }) {
               <li key={detail}>{detail}</li>
             ))}
           </ul>
+        ) : null}
+        {entry.sections?.length ? (
+          <div className="entry-sections">
+            {entry.sections.map((section) => (
+              <div key={section.label} className="entry-section">
+                <span className="entry-section-label">{section.label}</span>
+                <ul className="detail-list">
+                  {section.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {entry.image ? (
+          <div className="entry-image-wrap">
+            <img src={entry.image} alt={entry.title} className="entry-image" loading="lazy" />
+          </div>
         ) : null}
         {entry.links?.length ? (
           <p className="document-links">
@@ -615,6 +785,40 @@ export default function PortfolioClient() {
         }
         .document-links {
           margin: 10px 0 0;
+        }
+        .entry-sections {
+          margin-top: 12px;
+        }
+        .entry-section {
+          margin-bottom: 10px;
+        }
+        .entry-section:last-child {
+          margin-bottom: 0;
+        }
+        .entry-section-label {
+          font-size: 10.5px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.09em;
+          color: #4a7b9f;
+          display: block;
+          margin-bottom: 4px;
+        }
+        .entry-image-wrap {
+          margin-top: 16px;
+          border-radius: 6px;
+          overflow: hidden;
+          border: 1px solid #e5ebf0;
+          background: #f8fafc;
+        }
+        .entry-image {
+          width: 100%;
+          height: auto;
+          display: block;
+          max-height: 320px;
+          object-fit: contain;
+          object-position: center top;
+          background: #f8fafc;
         }
         .inline-links,
         .inline-link {
