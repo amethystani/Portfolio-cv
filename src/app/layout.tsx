@@ -29,7 +29,7 @@ const personSchema = {
   },
   "knowsAbout": ["Machine Learning", "Software Engineering", "Computer Science"],
   "sameAs": [
-    "https://www.linkedin.com/in/animeshmishra0/",
+    "https://www.linkedin.com/in/animesh-mishra-in/",
     "https://github.com/amethystani",
     "https://scholar.google.com/citations?user=tRgC6SMAAAAJ",
     "https://www.researchgate.net/profile/Animesh-Mishra-17",
