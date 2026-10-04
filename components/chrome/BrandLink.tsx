@@ -3,12 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/icons';
+import { posts } from '@/content/posts';
 
-/** Top-level routes that are not blog articles. Everything else with a single slug segment is an article. */
-const SECTION_ROUTES = ['blog', 'releases', 'careers'];
-
-export const isArticlePath = (pathname: string) =>
-  /^\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(pathname) && !SECTION_ROUTES.includes(pathname.slice(1));
+/** Only the real posts count as articles: an unknown address (the 404 page) must keep the home logo, or the
+ *  404 page, which is built ahead under /_not-found, would render differently in the browser (hydration error). */
+const ARTICLES = new Set(posts.map((p) => `/${p.slug}`));
+export const isArticlePath = (pathname: string) => ARTICLES.has(pathname);
 
 function Badges({ className = 'nw-research-badge' }: { className?: string }) {
   return <Logo aria-hidden="true" weight={9} className={className} />;
