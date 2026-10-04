@@ -431,6 +431,59 @@ function useAssistant(query: string, enabled: boolean) {
   return { status, local: local?.query === trimmed ? local : undefined };
 }
 
+/** A 12x12 pixel sparkle: the "AI" mark beside the Answer title. */
+function PixelSparkle({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M5 0h2v3h1v1h1v1h3v2H9v1H8v1H7v3H5V9H4V8H3V7H0V5h3V4h1V3h1z" />
+      <path d="M10 0h1v1h1v1h-1v1h-1V2H9V1h1z" opacity=".7" />
+    </svg>
+  );
+}
+
+const THINK_MS = 260; // the brief "thinking" shimmer before the words start
+const WORD_MS = 16; // between words while the answer writes itself out
+
+/**
+ * The quick answer, presented like a streamed AI reply: a moment of shimmer, then the words fade in one by one
+ * with the source numbers after their sentences. All CSS (styles/pixel-ui.css), keyed by
+ * the answer, so it replays only when the answer changes, not on every keystroke.
+ */
+function StreamedAnswer({ summary, onNavigate }: { summary: AiPassage[]; onNavigate: () => void }) {
+  let n = 0;
+  const parts = summary.map((s, i) => {
+    const words = s.text.split(/\s+/).filter(Boolean);
+    const start = n;
+    n += words.length + 1;
+    return (
+      <span key={s.id + i}>
+        {words.map((w, k) => (
+          <span key={k} className="nw-ai-w" style={{ '--i': start + k } as CSSProperties}>
+            {w}{' '}
+          </span>
+        ))}
+        <span className="nw-ai-w" style={{ '--i': start + words.length } as CSSProperties}>
+          <PromptLink href={s.url} className="nw-ai-cite" onClick={onNavigate} aria-label={`Source: ${s.title}`}>
+            {i + 1}
+          </PromptLink>{' '}
+        </span>
+      </span>
+    );
+  });
+  return (
+    <div className="nw-ai-stream" style={{ '--think': `${THINK_MS}ms`, '--step': `${WORD_MS}ms` } as CSSProperties}>
+      <div className="nw-ai-thinking" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <p className="nw-ai-text">
+        {parts}
+      </p>
+    </div>
+  );
+}
+
 function AnswerPanel({
   query,
   assist,
@@ -442,29 +495,22 @@ function AnswerPanel({
 }) {
   const { local } = assist;
   if (query.trim().length < 2 || !local) return null;
+  const key = local.summary.map((s) => s.text).join('|') || 'none';
   return (
     <section className="nw-ai-panel" aria-label="Quick answer" aria-live="polite">
       <div className="nw-prompt-layout">
-        <div className="nw-search-sidebar">
+        <div className="nw-search-sidebar nw-ai-title" key={`t-${key}`}>
           <PanelTitle>Answer</PanelTitle>
+          <PixelSparkle className="nw-ai-spark" />
         </div>
         <div className="nw-ai-body">
           {local.summary.length ? (
-            <p className="nw-ai-text">
-              {local.summary.map((s, i) => (
-                <span key={s.id + i}>
-                  {s.text}{' '}
-                  <PromptLink href={s.url} className="nw-ai-cite" onClick={onNavigate} aria-label={`Source: ${s.title}`}>
-                    {i + 1}
-                  </PromptLink>{' '}
-                </span>
-              ))}
-            </p>
+            <StreamedAnswer key={key} summary={local.summary} onNavigate={onNavigate} />
           ) : (
             <p className="nw-ai-text nw-ai-muted">Nothing on the site matches that closely. Try other words.</p>
           )}
           <p className="nw-ai-meta">
-            From the site, found on your device in {local.ms < 1 ? '<1' : Math.round(local.ms)} ms
+            On-device AI search · answered from the site in {local.ms < 1 ? '<1' : Math.round(local.ms)} ms
             {local.semantic ? '' : ' (keywords only, meaning search still loading)'}
           </p>
         </div>

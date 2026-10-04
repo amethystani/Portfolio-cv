@@ -548,3 +548,96 @@ nav[data-pro-nav] .nw-research-pinned-badge {
   letter-spacing: 0.02em;
   opacity: var(--nw-muted, 0.7);
 }
+
+/* ---- the quick answer, streamed like an AI reply (StreamedAnswer in components/research/Composer.tsx) ----
+   --think: the shimmer before the first word; --step: between words. */
+.nw-ai-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.nw-ai-spark {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  shape-rendering: crispEdges;
+  animation: nw-ai-spark 0.5s steps(2, end) 3;
+}
+@keyframes nw-ai-spark {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.7) rotate(45deg);
+    opacity: 0.55;
+  }
+}
+.nw-ai-stream {
+  position: relative;
+}
+.nw-ai-thinking {
+  position: absolute;
+  inset: 4px 0 auto;
+  display: grid;
+  gap: 9px;
+  pointer-events: none;
+  animation: nw-ai-fade-out 0.18s ease-out var(--think) both;
+}
+.nw-ai-thinking span {
+  height: 10px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, currentColor 10%, transparent) 0%,
+    color-mix(in srgb, currentColor 38%, transparent) 50%,
+    color-mix(in srgb, currentColor 10%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: nw-ai-shimmer 0.9s linear infinite;
+}
+.nw-ai-thinking span:nth-child(2) {
+  width: 86%;
+}
+.nw-ai-thinking span:nth-child(3) {
+  width: 58%;
+}
+@keyframes nw-ai-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+@keyframes nw-ai-fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.nw-ai-w {
+  display: inline;
+  animation: nw-ai-word 0.32s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--think) + var(--i) * var(--step));
+}
+@keyframes nw-ai-word {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nw-ai-spark,
+  .nw-ai-w,
+  .nw-ai-thinking span {
+    animation: none;
+  }
+  .nw-ai-thinking {
+    display: none;
+  }
+}
