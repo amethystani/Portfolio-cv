@@ -167,7 +167,7 @@ export function ArticlePage({ post, body }: { post: Post; body: string }) {
                   About the author
                 </span>
                 <h2>{post.author}</h2>
-                <p>Author of {post.title}.</p>
+                <p>ML/NLP researcher in New Delhi, working on evaluation, retrieval and scientific AI.</p>
                 <a href={portfolio.links.linkedin}>Follow on LinkedIn</a>
               </div>
             </aside>

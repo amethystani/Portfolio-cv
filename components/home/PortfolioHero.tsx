@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { portfolio } from '@/content/portfolio';
+import { HeroNow } from './HeroNow';
 
 /**
  * The portfolio's opening: the role above the name set across the full width, then the poster running
@@ -19,6 +20,7 @@ export function PortfolioHero() {
         >
           {role}
         </p>
+        <HeroNow />
         <h1
           id="portfolio-name"
           className="fit-text font-[family-name:var(--font-rules-gothic-cmp)] font-normal text-inherit uppercase text-cap-trim cap-rules w-full"

@@ -1,5 +1,5 @@
 export type Announcement = {
-  /** Where the card links to (a post on LinkedIn). */
+  /** Where the card links to: the post on this site (or the project, when there is no post). */
   url: string;
   /** 1000x563 (16:9), cropped to fill the card; files are in public/assets/portfolio/updates. */
   image: string;
@@ -12,12 +12,10 @@ export type Announcement = {
   date: string;
 };
 
-const POSTS = 'https://www.linkedin.com/in/animesh-mishra-in/recent-activity/all/';
-
-/** Cards in the home page "Updates" strip, newest first. They summarise posts on LinkedIn. */
+/** Cards in the home page "Updates" strip, newest first. Each opens the full post. */
 export const announcements: Announcement[] = [
   {
-    url: `${POSTS}#digital-discovery`,
+    url: '/notation-matters-in-digital-discovery',
     image: '/assets/portfolio/updates/halftone-circle.webp',
     width: 1000,
     height: 563,
@@ -26,7 +24,7 @@ export const announcements: Announcement[] = [
     date: 'Sep 23, 2026',
   },
   {
-    url: `${POSTS}#fruit-fly`,
+    url: '/fruit-fly-connectome-trading',
     image: '/assets/portfolio/updates/sheep.webp',
     width: 1000,
     height: 563,
@@ -35,7 +33,7 @@ export const announcements: Announcement[] = [
     date: 'Sep 20, 2026',
   },
   {
-    url: `${POSTS}#global-fintech-fest`,
+    url: '/global-fintech-fest-2026',
     image: '/assets/portfolio/updates/low-frequency.webp',
     width: 1000,
     height: 563,
@@ -44,7 +42,7 @@ export const announcements: Announcement[] = [
     date: 'Sep 14, 2026',
   },
   {
-    url: `${POSTS}#wmt-2026`,
+    url: '/wmt-2026-translation-metrics',
     image: '/assets/portfolio/updates/error-mountains.webp',
     width: 1000,
     height: 563,
@@ -53,7 +51,7 @@ export const announcements: Announcement[] = [
     date: 'Sep 4, 2026',
   },
   {
-    url: `${POSTS}#emnlp-2026`,
+    url: '/emnlp-2026-beyond-epistemic-collapse',
     image: '/assets/portfolio/updates/error-walker.webp',
     width: 1000,
     height: 563,
@@ -62,7 +60,7 @@ export const announcements: Announcement[] = [
     date: 'Aug 22, 2026',
   },
   {
-    url: `${POSTS}#machina`,
+    url: 'https://github.com/clerktree',
     image: '/assets/portfolio/updates/pixel-satellite.webp',
     width: 1000,
     height: 563,
@@ -71,7 +69,7 @@ export const announcements: Announcement[] = [
     date: 'Jul 26, 2026',
   },
   {
-    url: `${POSTS}#juris-vakra`,
+    url: '/juris-ibm-vakra',
     image: '/assets/portfolio/updates/halftone-circle.webp',
     width: 1000,
     height: 563,

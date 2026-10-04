@@ -19,7 +19,6 @@ export const footerColumns: FooterColumn[] = [
       { label: 'Publications', href: '/releases' },
       { label: 'Experience', href: '/careers' },
       { label: 'Writing', href: '/blog' },
-      { label: 'Contact', href: `mailto:${portfolio.email}` },
     ],
   },
   {
@@ -47,7 +46,6 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: 'Email', href: `mailto:${portfolio.email}` },
       { label: 'Message on LinkedIn', href: portfolio.links.linkedin, newTab: true },
-      { label: 'animeshmishra.us', href: portfolio.links.site, newTab: true },
     ],
   },
 ];

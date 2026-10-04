@@ -24,9 +24,7 @@ export const metadata = pageMetadata({
   title: `${portfolio.name} | ${portfolio.role}`,
   description: site.homeDescription,
   path: '/',
-  image: portfolio.poster.src,
-  imageAlt: portfolio.poster.alt,
-  imageSize: { width: portfolio.poster.width, height: portfolio.poster.height },
+  // the 1200x630 signature card unfurls cleanly everywhere (a square WebP portrait does not on LinkedIn)
 });
 
 export default function HomePage() {
@@ -43,6 +41,24 @@ export default function HomePage() {
               jobTitle: portfolio.role,
               image: `${site.url}${portfolio.poster.src}`,
               url: `${site.url}/`,
+              email: `mailto:${portfolio.email}`,
+              address: { '@type': 'PostalAddress', addressLocality: 'New Delhi', addressCountry: 'IN' },
+              alumniOf: { '@type': 'CollegeOrUniversity', name: 'Shiv Nadar Institution of Eminence' },
+              knowsAbout: [
+                'Natural language processing',
+                'Machine learning evaluation',
+                'Retrieval-augmented generation',
+                'Scientific AI',
+                'Machine translation evaluation',
+              ],
+              sameAs: site.sameAs,
+            },
+            {
+              '@id': `${site.url}/#website`,
+              '@type': 'WebSite',
+              name: site.name,
+              url: `${site.url}/`,
+              author: { '@id': `${site.url}/#person` },
             },
           ],
         }}

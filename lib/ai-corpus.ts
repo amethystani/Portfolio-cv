@@ -64,7 +64,7 @@ export function buildAiCorpus(): AiChunk[] {
   );
   mission.rows.forEach((row, i) => add(`mission-${i}`, row.heading, '/', 'page', `${row.eyebrow}: ${row.heading}. ${row.body}`));
   add('statement', statement.label, '/', 'page', statement.text);
-  add('work', work.title, '/#hermes', 'page', `${work.eyebrow}. ${work.intro.join(' ')}`);
+  add('work', work.title, '/#work', 'page', `${work.eyebrow}. ${work.intro.join(' ')}`);
   hermesFeatures.forEach((f) =>
     add(`project-${f.id}`, f.title, f.cta.desktop.href, 'project', `${f.title}: ${f.eyebrow.desktop}.`),
   );

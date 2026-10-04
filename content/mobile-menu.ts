@@ -38,7 +38,6 @@ export const mobileMenu: MenuSection[] = [
     links: [
       { label: 'Email', href: `mailto:${portfolio.email}` },
       { label: 'LinkedIn', href: links.linkedin, newTab: true },
-      { label: 'animeshmishra.us', href: links.site, newTab: true },
     ],
   },
 ];

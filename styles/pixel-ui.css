@@ -641,3 +641,148 @@ nav[data-pro-nav] .nw-research-pinned-badge {
     display: none;
   }
 }
+
+/* ---- 404 (app/not-found.tsx) ---- */
+.nf {
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  padding: clamp(64px, 12vw, 160px) 24px clamp(80px, 12vw, 160px);
+  text-align: center;
+  color: var(--nw-ink);
+}
+html[data-research-theme='dark'] .nf {
+  color: var(--nw-theme-heading);
+}
+.nf-code {
+  margin: 0;
+  font-family: var(--font-rules-gothic-cmp);
+  font-size: clamp(120px, 26vw, 320px);
+  line-height: 0.8;
+}
+.nf-title {
+  margin: 0;
+  font-family: var(--font-rules-gothic-cnd);
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+.nf-copy {
+  max-width: 44ch;
+  margin: 0;
+  font: 15px/1.5 var(--font-rules);
+  opacity: 0.85;
+}
+.nf-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 12px 18px;
+  border: 1px solid currentColor;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.nf-search:hover,
+.nf-search:focus-visible {
+  background: currentColor;
+}
+.nf-search:hover > *,
+.nf-search:hover {
+  color: var(--nw-stage);
+}
+.nf-search kbd {
+  padding: 0 6px;
+  border: 1px solid currentColor;
+  font: inherit;
+}
+.nf-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nf-links a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ---- Selected Work cards (components/home/HermesBlock.tsx): each project in one line, set like a printed card ---- */
+.nw-work-card {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 16px;
+  padding: clamp(18px, 2.2vw, 30px);
+  color: var(--nw-paper, #efe6de);
+  background:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, #fff 14%, transparent), transparent 60%),
+    var(--nw-ink, #9a0002);
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+html[data-research-theme='dark'] .nw-work-card,
+html[data-research-theme='dark'] .nw-work-card > * {
+  /* a broader dark-mode text colour rule would otherwise turn this pink on cream */
+  color: #1b0305 !important;
+}
+html[data-research-theme='dark'] .nw-work-card {
+  background:
+    radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, #fff 30%, transparent), transparent 60%),
+    var(--nw-theme-heading, #efe6de);
+}
+/* a faint grid, like the poster's paper */
+.nw-work-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, currentColor 10%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, transparent, #000 70%);
+  pointer-events: none;
+}
+.nw-work-card > * {
+  position: relative;
+}
+.nw-work-card-repo {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.nw-work-card-blurb {
+  align-self: center;
+  font-family: var(--font-rules-gothic-cnd);
+  font-size: clamp(22px, 2.3vw, 34px);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+.nw-work-card-repo::after {
+  content: ' ↗';
+}
+.nw-work-card:hover .nw-work-card-blurb,
+.nw-work-card:focus-visible .nw-work-card-blurb {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+}
+.nw-work-card:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -6px;
+}

@@ -36,7 +36,7 @@ const PAGES: { title: string; url: string; text: string }[] = [
   },
   {
     title: 'Selected work',
-    url: '/#hermes',
+    url: '/#work',
     text: 'EVIRAG-Bench, Notation Matters and Palimpsest: open benchmarks, metrics and research code on GitHub.',
   },
   {

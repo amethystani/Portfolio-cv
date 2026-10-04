@@ -382,18 +382,18 @@ function SearchPanel({
                   <ul className="nw-search-matches">
                     {result.matches.map((match) => (
                       <li key={match.id} className="nw-search-match">
-                        <a
-                          href={`mailto:${portfolio.email}?subject=${encodeURIComponent(match.title)}`}
+                        <PromptLink
+                          href={`/careers/${match.id}`}
                           className="nw-composer-hit nw-search-result nw-search-role"
                           data-search-result=""
-                          aria-label={`Apply for ${match.title}`}
+                          aria-label={`Open ${match.title}`}
                           onClick={onNavigate}
                           onKeyDown={onKeyDown}
                         >
                           <span className="nw-search-match-title">{match.title}</span>
                           <ArrowPixelIcon className="nw-prompt-icon" />
                           <span className="nw-search-excerpt">{match.text}</span>
-                        </a>
+                        </PromptLink>
                       </li>
                     ))}
                   </ul>

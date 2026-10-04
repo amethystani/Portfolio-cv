@@ -1,10 +1,11 @@
 /**
  * Site-wide settings. Change these first when adapting the project: name, description, share image
- * and the public URL (set NEXT_PUBLIC_SITE_URL in production).
+ * and the public URL (NEXT_PUBLIC_SITE_URL overrides it, e.g. for a preview domain).
  */
 export const site = {
   name: 'Animesh Mishra',
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+  // the canonical address: sitemap, robots, canonical links, share cards and structured data all use it
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.animeshmishra.us',
   description:
     'Animesh Mishra is an ML/NLP researcher working on evaluation, retrieval and scientific AI. Papers at EMNLP 2026 Main, WMT 2026 and Digital Discovery.',
   /** The longer line used for the home page's description and share cards. */

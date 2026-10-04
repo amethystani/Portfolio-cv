@@ -1,1 +1,13 @@
 .nw-orb-sigil{position:absolute;inset:0}.nw-orb-stage,.nw-orb-fallback{top:calc(349 * var(--nw-u));width:460px;max-width:100%;height:460px;position:absolute;left:50%;translate:-50% -50%}.nw-orb-fallback{object-fit:contain;background:var(--nw-paper);pointer-events:none;border-radius:50%}.nw-orb-fallback[data-stamp=dark]{display:none}.nw-orb-stage{visibility:hidden;cursor:grab;touch-action:pan-y}.nw-orb-stage:active{cursor:grabbing}.nw-orb-stage:focus-visible{outline-offset:4px;border-radius:50%;outline:2px solid}.nw-orb-stage canvas{width:100%;height:100%;display:block}.nw-orb-sigil[data-ready] .nw-orb-stage{visibility:visible}.nw-orb-sigil[data-ready] .nw-orb-fallback{visibility:hidden}.nw-orb-orbits{top:calc(349 * var(--nw-u));width:calc(1310 * var(--nw-u));height:calc(590 * var(--nw-u));z-index:-1;pointer-events:none;position:absolute;left:50%;transform:translate(-50%,-50%)}.nw-orb-layer{object-fit:contain;pointer-events:none;max-width:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}.nw-orb-layer-0{width:calc(633 * var(--nw-u));height:calc(596 * var(--nw-u));opacity:.4}.nw-orb-layer-1{width:calc(1323 * var(--nw-u));height:calc(962 * var(--nw-u));opacity:.1}.nw-orb-layer-2{width:calc(1383 * var(--nw-u));height:calc(920 * var(--nw-u));opacity:.1;transform:translate(-50%,-50%)rotate(-90deg)}.nw-orb-layer-3,.nw-orb-layer-4{width:calc(1353 * var(--nw-u));height:calc(941 * var(--nw-u));opacity:.1}.nw-orb-layer-3{transform:translate(-50%,-50%)rotate(46.28deg)skew(2.56deg)}.nw-orb-layer-4{transform:translate(-50%,-50%)rotate(-46.28deg)skew(-2.56deg)}@media (max-width:767px){.nw-orb-stage,.nw-orb-fallback{width:310px;height:310px;top:50%}.nw-orb-orbits{--nw-u:1px;top:50%;transform:translate(-50%,-50%)scale(.42)}}
+
+/* The medal's canvas is drawn 1.7x larger than its box (SPREAD in lib/orb.ts), centred on it, so the orbits and
+   particles have room around the medal; only the medal's own box takes the pointer. */
+.nw-orb-stage canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 170%;
+  height: 170%;
+  translate: -50% -50%;
+  pointer-events: none;
+}

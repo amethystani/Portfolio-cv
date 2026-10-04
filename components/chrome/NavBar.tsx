@@ -39,7 +39,7 @@ function SearchButton() {
       aria-controls="research-composer"
       aria-expanded="false"
       aria-label="Search the site"
-      title="Search (⌘K)"
+      title="Search (⌘K or /)"
     >
       <SearchIcon />
     </button>

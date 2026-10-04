@@ -91,10 +91,10 @@ export function PromoBanner({ active, preset }: { active: boolean; preset: strin
         </Link>
       )}
       <div className="promo-controls">
-        <button type="button" aria-label="Previous promotion" onClick={() => go(index - 1)}>
+        <button type="button" aria-label="Previous highlight" onClick={() => go(index - 1)}>
           <img alt="" src={art('chevron')} />
         </button>
-        <button type="button" aria-label="Next promotion" onClick={() => go(index + 1)}>
+        <button type="button" aria-label="Next highlight" onClick={() => go(index + 1)}>
           <img alt="" src={art('chevron')} />
         </button>
       </div>

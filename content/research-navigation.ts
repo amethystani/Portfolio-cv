@@ -80,13 +80,18 @@ export const navPanels: Record<NavPanelName, NavPanel> = {
         category: 'Venues',
         heading: 'Papers',
         links: [
-          { label: 'EMNLP 2026', muted: 'At', description: 'Main conference, Budapest', href: '/releases' },
-          { label: 'WMT 2026', muted: 'At', description: 'Proceedings, Budapest', href: '/releases' },
+          {
+            label: 'EMNLP 2026',
+            muted: 'At',
+            description: 'Main conference, Budapest',
+            href: '/emnlp-2026-beyond-epistemic-collapse',
+          },
+          { label: 'WMT 2026', muted: 'At', description: 'Proceedings, Budapest', href: '/wmt-2026-translation-metrics' },
           {
             label: 'Digital Discovery',
             muted: 'In',
             description: 'Royal Society of Chemistry',
-            href: '/releases',
+            href: '/notation-matters-in-digital-discovery',
           },
         ],
       },
@@ -144,18 +149,6 @@ export const navPanels: Record<NavPanelName, NavPanel> = {
           },
         ],
       },
-      {
-        category: 'Site',
-        heading: 'Web',
-        links: [
-          {
-            label: 'animeshmishra.us',
-            description: 'Portfolio site',
-            href: portfolio.links.site,
-            newTab: true,
-          },
-        ],
-      },
     ],
   },
 };
@@ -174,7 +167,8 @@ export const promos = [
     label: 'Get in touch',
     text: 'Looking for my next research role before a PhD. Say hello.',
     href: `mailto:${portfolio.email}`,
-    external: true,
+    // a mailto opens the mail app; a new tab would only leave a blank page behind
+    external: false,
   },
   {
     kind: 'nous',

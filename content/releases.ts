@@ -26,7 +26,7 @@ export const releases: Release[] = [
     type: 'PAPER',
     title:
       'Notation matters: cross-representation inconsistency in chemistry language models and its mechanistic origins',
-    href: 'https://lnkd.in/dBrV7SGx',
+    href: 'https://pubs.rsc.org/en/content/articlelanding/2026/dd/d6dd00309e',
     description:
       'Digital Discovery, Royal Society of Chemistry (Gold Open Access). The same molecule written as SMILES, IUPAC, InChI or SELFIES gave inconsistent predictions for 88% of 1,072 molecules, and ChemBERTa-2 representations of identical molecules diverge layer by layer.',
   },
@@ -34,7 +34,7 @@ export const releases: Release[] = [
     date: '09/20/26',
     type: 'CODE',
     title: 'Fruit-fly connectome trader',
-    href: 'https://lnkd.in/d898bxDe',
+    href: 'https://github.com/amethystani/gnat',
     description:
       'A weekend project with Krishang Sharma: the fruit-fly mushroom-body circuit wired into a trading system on Binance Spot Testnet, with dopamine-gated plasticity driven by realised P&L. Open-sourced on GitHub.',
   },
@@ -44,7 +44,7 @@ export const releases: Release[] = [
     title: 'Translation Metrics Cannot Judge What Their Tokeniser Deletes',
     href: portfolio.links.palimpsest,
     description:
-      'WMT26 (poster), co-located with EMNLP 2026, Budapest. LIGATUR and AEGIS submissions to the shared task on automated translation quality evaluation, with Krishang Sharma and Sonia Khetarpaul.',
+      'WMT 2026 (poster), co-located with EMNLP 2026, Budapest. LIGATUR and AEGIS submissions to the shared task on automated translation quality evaluation, with Krishang Sharma and Sonia Khetarpaul.',
   },
   {
     date: '09/04/26',
@@ -76,7 +76,7 @@ export const releases: Release[] = [
     date: '07/26/26',
     type: 'CODE',
     title: 'Machina (ClerkTree)',
-    href: 'https://lnkd.in/d-fipCH7',
+    href: 'https://github.com/clerktree',
     description:
       "ClerkTree's first public research release: open machine intelligence for industrial machines, covering bearing-fault classification, remaining useful life, visual quality inspection and evidence-grounded industrial reasoning.",
   },

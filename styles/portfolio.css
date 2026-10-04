@@ -70,3 +70,45 @@ html[data-research-theme='dark'] .pf-eyebrow {
     object-position: 50% 50%;
   }
 }
+
+/* ---- the live status line under the role (components/home/HeroNow.tsx) ---- */
+.pf-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.8;
+}
+.pf-now-dot {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #1f9d55;
+}
+.pf-now-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pf-now-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes pf-now-ping {
+  75%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf-now-dot::after {
+    animation: none;
+  }
+}

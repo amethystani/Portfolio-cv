@@ -11,10 +11,17 @@ const ORBIT_SUFFIX = [
 
 const PHYSICAL = { iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 400] as [number, number] };
 
+/** The canvas is drawn this much larger than the medal's box (and the camera pulled back to match), so the
+ * tilted, wobbling medal and its orbit rings are never clipped. Must match styles/home-orb.css. */
+const SPREAD = 1.7;
+const TAU = Math.PI * 2;
+
 /**
- * Mounts the interactive "Nous girl medal": a thin metal disc textured with the seal artwork, lit by a soft
- * studio environment, that you can drag to spin (it springs back) or turn with the arrow keys. The five
- * orbit-ring images behind it tilt with the medal.
+ * Mounts the interactive medal: a thin metal disc textured with the seal artwork, lit by a soft studio
+ * environment. Drag to turn it; fling it and it keeps flipping like a tossed coin, wobbling as it spins, then
+ * settles face front the short way round. The faint orbit rings show up while it spins, and on a mouse it leans
+ * toward the pointer. The five orbit-ring images behind it tilt and turn with it.
+ * Arrow keys turn it, Home resets. Reduced motion keeps only the plain turn-and-return.
  *
  * `root` is the .nw-orb-sigil element containing the stamp <img>s and the .nw-orb-stage placeholder.
  * Returns a function that tears everything down.
@@ -40,9 +47,8 @@ export async function mountOrbSigil(
   let themeWatcher: MutationObserver | undefined;
   let visibility: IntersectionObserver | undefined;
   let renderFrame = 0;
-  let settleFrame = 0;
   let destroyed = false;
-  let drag: { x: number; y: number; id: number } | null = null;
+  let drag: { x: number; y: number; id: number; t: number } | null = null;
 
   const destroy = () => {
     if (destroyed) return;
@@ -50,7 +56,6 @@ export async function mountOrbSigil(
     listeners.abort();
     signal.removeEventListener('abort', destroy);
     cancelAnimationFrame(renderFrame);
-    cancelAnimationFrame(settleFrame);
     resize?.disconnect();
     themeWatcher?.disconnect();
     visibility?.disconnect();
@@ -116,14 +121,16 @@ export async function mountOrbSigil(
       pmrem.dispose();
     }
 
-    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 30);
-    camera.position.z = 4.1;
-    const medal = new THREE.Group(); // spins when dragged
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 40);
+    camera.position.z = 4.1 * SPREAD;
+    const tilt = new THREE.Group(); // leans toward the pointer
+    const medal = new THREE.Group(); // spins when dragged or flung
     const rings = new THREE.Group(); // faint orbit lines that appear while spinning
-    scene.add(medal, rings);
+    tilt.add(medal);
+    scene.add(tilt, rings);
 
     const ringMaterial = track(
-      new THREE.LineBasicMaterial({ color: 0xc4585a, transparent: true, opacity: 0, depthWrite: false }),
+      new THREE.LineBasicMaterial({ color: 0x9a0002, transparent: true, opacity: 0, depthWrite: false }),
     );
     for (let i = 0; i < 4; i++) {
       const points = Array.from(
@@ -192,31 +199,70 @@ export async function mountOrbSigil(
     scene.add(key, fill);
     stage.append(renderer.domElement);
 
-    // ------------------------------------------------------------ drawing
+    // ------------------------------------------------------------ motion state
+    const velocity = { x: 0, y: 0 }; // rad/s after a fling
+    const dragSpeed = { x: 0, y: 0 }; // smoothed rad/s while dragging
+    const lean = { x: 0, y: 0, tx: 0, ty: 0 }; // pointer lean, current and target
+    let energy = 0; // 0 at rest, ~1 for a hard spin: drives the orbital show
+    let settling = false;
+    let orbitSpin = 0; // extra turn of the orbit images behind
+    let lastTick = 0;
+    let clock = 0;
+
+    const draw = (dt: number) => {
+      clock += dt;
+      const calm = reduced.matches;
+      const e = Math.min(1.4, energy);
+      // the medal wobbles (precesses) a little while energised
+      medal.rotation.z = calm ? 0 : 0.11 * Math.min(1, e) * Math.sin(clock * 6.5);
+      tilt.rotation.set(lean.x, lean.y, 0);
+      rings.rotation.set(0.8 * medal.rotation.x, -(0.8 * medal.rotation.y), 0.2 * medal.rotation.y + clock * 0.3 * e);
+      // the orbit rings show while it is turned or spinning
+      const turned = Math.max(0, Math.hypot(Math.sin(medal.rotation.x), Math.sin(medal.rotation.y)) - 0.2);
+      ringMaterial.opacity = calm ? 0 : Math.min(0.5, 0.35 * turned + 0.4 * e);
+
+      try {
+        renderer?.render(scene, camera);
+      } catch {
+        destroy();
+        return;
+      }
+      // the orbit images behind turn while it spins, then ease back to where they were
+      orbitSpin += dt * 0.6 * e;
+      if (e < 0.25) orbitSpin *= Math.exp(-dt * 1.5);
+      if (Math.abs(orbitSpin) < 0.0005) orbitSpin = 0;
+      orbits.forEach((el, i) => {
+        const strength = (0.55 + 0.2 * i) * (i % 2 ? -1 : 1);
+        const rx = calm ? 0 : Math.sin(medal.rotation.x + lean.x) * strength;
+        const ry = calm ? 0 : Math.sin(medal.rotation.y + lean.y) * strength;
+        const rz = calm ? 0 : orbitSpin * (i % 2 ? -1 : 1) * (0.4 + 0.15 * i);
+        el.style.transform = `translate(-50%,-50%) perspective(1100px) rotateX(${rx}rad) rotateY(${ry}rad) rotateZ(${rz}rad)${ORBIT_SUFFIX[i] ?? ''}`;
+      });
+      root.dataset.ready = 'true'; // CSS swaps the static stamp for the live canvas
+      stage.tabIndex = 0;
+      stamps.forEach((el) => el.setAttribute('aria-hidden', 'true'));
+    };
+
+    // One loop for everything; it stops by itself when nothing is moving, so an idle medal costs nothing.
+    const busy = () =>
+      !!drag ||
+      settling ||
+      energy > 0.003 ||
+      orbitSpin !== 0 ||
+      Math.abs(lean.x - lean.tx) + Math.abs(lean.y - lean.ty) > 0.0005;
+    const tick = (time: number) => {
+      renderFrame = 0;
+      if (destroyed || document.hidden) return;
+      const dt = Math.min((time - lastTick) / 1000 || 1 / 60, 1 / 30);
+      lastTick = time;
+      step(dt);
+      draw(dt);
+      if (busy()) renderFrame = requestAnimationFrame(tick);
+      else lastTick = 0;
+    };
     const render = () => {
       if (destroyed || renderFrame || document.hidden) return;
-      renderFrame = requestAnimationFrame(() => {
-        renderFrame = 0;
-        rings.rotation.set(0.8 * medal.rotation.x, -(0.8 * medal.rotation.y), 0.2 * medal.rotation.y);
-        ringMaterial.opacity = reduced.matches
-          ? 0
-          : Math.min(0.45, 0.35 * Math.max(0, Math.hypot(medal.rotation.x, medal.rotation.y) - 0.25));
-        try {
-          renderer?.render(scene, camera);
-        } catch {
-          destroy();
-          return;
-        }
-        orbits.forEach((el, i) => {
-          const strength = (0.55 + 0.2 * i) * (i % 2 ? -1 : 1);
-          const rx = reduced.matches ? 0 : Math.sin(medal.rotation.x) * strength;
-          const ry = reduced.matches ? 0 : Math.sin(medal.rotation.y) * strength;
-          el.style.transform = `translate(-50%,-50%) perspective(1100px) rotateX(${rx}rad) rotateY(${ry}rad)${ORBIT_SUFFIX[i] ?? ''}`;
-        });
-        root.dataset.ready = 'true'; // CSS swaps the static stamp for the live canvas
-        stage.tabIndex = 0;
-        stamps.forEach((el) => el.setAttribute('aria-hidden', 'true'));
-      });
+      renderFrame = requestAnimationFrame(tick);
     };
 
     // Dark mode swaps in the dark artwork (and hides the plain edge colour).
@@ -224,60 +270,73 @@ export async function mountOrbSigil(
       const dark = document.documentElement.dataset.researchTheme === 'dark';
       faces.forEach((m) => (m.map = dark ? darkTexture : lightTexture));
       backEdge.colorWrite = !dark;
+      ringMaterial.color.setHex(dark ? 0xefe6de : 0xc4585a);
       render();
     };
     themeWatcher = new MutationObserver(applyTheme);
     themeWatcher.observe(document.documentElement, { attributeFilter: ['data-research-theme'] });
     applyTheme();
     resize = new ResizeObserver(() => {
-      renderer?.setSize(stage.clientWidth, stage.clientWidth);
+      const size = Math.round(stage.clientWidth * SPREAD);
+      renderer?.setSize(size, size, false);
       render();
     });
     resize.observe(stage);
 
-    // ------------------------------------------------------------ interaction
-    const velocity = { x: 0, y: 0 };
-    let lastTime = 0;
+    // ------------------------------------------------------------ physics
     const stopSettling = () => {
-      cancelAnimationFrame(settleFrame);
-      settleFrame = 0;
+      settling = false;
       velocity.x = velocity.y = 0;
-      lastTime = 0;
     };
     const reset = () => {
       stopSettling();
+      energy = 0;
       medal.rotation.set(0, 0, 0);
       render();
     };
-    // After letting go, a damped spring pulls the medal back to face front.
-    const settle = (time: number) => {
-      const dt = Math.min((time - lastTime) / 1000 || 1 / 60, 1 / 30);
-      lastTime = time;
-      for (const axis of ['x', 'y'] as const) {
-        velocity[axis] += (-65 * medal.rotation[axis] - 12 * velocity[axis]) * dt;
-        medal.rotation[axis] += velocity[axis] * dt;
-      }
-      render();
-      if (
-        Math.abs(medal.rotation.x) +
-          Math.abs(medal.rotation.y) +
-          Math.abs(velocity.x) +
-          Math.abs(velocity.y) >
-        0.001
-      )
-        settleFrame = requestAnimationFrame(settle);
-      else reset();
+    /** Per frame: the fling's free spin, then a spring to the nearest face-front turn; energy follows speed. */
+    const step = (dt: number) => {
+      let speed = 0;
+      if (settling) {
+        let moving = 0;
+        for (const axis of ['x', 'y'] as const) {
+          const target = Math.round(medal.rotation[axis] / TAU) * TAU; // face front, the short way round
+          const fast = Math.abs(velocity[axis]) / 4;
+          const soft = 1 / (1 + fast * fast); // a fast spin is barely held back; a slow one snaps home
+          velocity[axis] += (-(1.5 + 60 * soft) * (medal.rotation[axis] - target) - (2.2 + 11 * soft) * velocity[axis]) * dt;
+          medal.rotation[axis] += velocity[axis] * dt;
+          moving += Math.abs(medal.rotation[axis] - target) + Math.abs(velocity[axis]);
+        }
+        speed = Math.hypot(velocity.x, velocity.y);
+        if (moving < 0.002) {
+          settling = false;
+          medal.rotation.x = medal.rotation.y = 0; // a whole number of turns: the same pose
+        }
+      } else if (drag) speed = Math.hypot(dragSpeed.x, dragSpeed.y);
+      const target = Math.min(1.4, speed / 9);
+      energy += (target - energy) * Math.min(1, dt * (target > energy ? 10 : 3.5));
+      if (energy < 0.003 && !drag && !settling) energy = 0;
+      lean.x += (lean.tx - lean.x) * Math.min(1, dt * 7);
+      lean.y += (lean.ty - lean.y) * Math.min(1, dt * 7);
     };
     const release = () => {
       if (!drag) return;
       const id = drag.id;
       drag = null;
       if (stage.hasPointerCapture(id)) stage.releasePointerCapture(id);
-      stopSettling();
-      for (const axis of ['x', 'y'] as const)
-        medal.rotation[axis] = Math.atan2(Math.sin(medal.rotation[axis]), Math.cos(medal.rotation[axis]));
-      if (reduced.matches || document.hidden) reset();
-      else settleFrame = requestAnimationFrame(settle);
+      if (reduced.matches || document.hidden) {
+        for (const axis of ['x', 'y'] as const)
+          medal.rotation[axis] = Math.atan2(Math.sin(medal.rotation[axis]), Math.cos(medal.rotation[axis]));
+        velocity.x = velocity.y = 0;
+        settling = true; // the plain spring back, no fling
+        render();
+        return;
+      }
+      // fling: keep the drag's speed (capped) and let the medal fly
+      velocity.x = Math.max(-22, Math.min(22, dragSpeed.x));
+      velocity.y = Math.max(-22, Math.min(22, dragSpeed.y));
+      settling = true;
+      render();
     };
 
     const opts = { signal: listeners.signal };
@@ -286,9 +345,11 @@ export async function mountOrbSigil(
       (e) => {
         if (e.button !== 0 || drag) return;
         stopSettling();
-        drag = { x: e.clientX, y: e.clientY, id: e.pointerId };
+        dragSpeed.x = dragSpeed.y = 0;
+        drag = { x: e.clientX, y: e.clientY, id: e.pointerId, t: e.timeStamp };
         stage.setPointerCapture(e.pointerId);
-        stage.focus({ preventScroll: true });
+        // no focus() here: it left the keyboard focus ring drawn round the medal after every drag
+        // (keyboard users still Tab to it, and get the ring)
       },
       opts,
     );
@@ -297,10 +358,48 @@ export async function mountOrbSigil(
       (e) => {
         if (!drag || drag.id !== e.pointerId) return;
         if (e.buttons === 0) return release();
-        medal.rotation.y += (e.clientX - drag.x) * 0.012;
-        medal.rotation.x += (e.clientY - drag.y) * 0.008;
+        const dy = (e.clientX - drag.x) * 0.012;
+        const dx = (e.clientY - drag.y) * 0.008;
+        medal.rotation.y += dy;
+        medal.rotation.x += dx;
+        // smoothed angular speed (rad/s), which becomes the fling on release
+        const dt = Math.max(0.004, (e.timeStamp - drag.t) / 1000);
+        dragSpeed.x += (dx / dt - dragSpeed.x) * 0.5;
+        dragSpeed.y += (dy / dt - dragSpeed.y) * 0.5;
         drag.x = e.clientX;
         drag.y = e.clientY;
+        drag.t = e.timeStamp;
+        render();
+      },
+      opts,
+    );
+    // a drag that stops before letting go is not a fling
+    const stillTimer = { id: 0 };
+    stage.addEventListener(
+      'pointermove',
+      () => {
+        clearTimeout(stillTimer.id);
+        stillTimer.id = window.setTimeout(() => drag && ((dragSpeed.x = 0), (dragSpeed.y = 0)), 90);
+      },
+      opts,
+    );
+    // on a mouse, the medal leans toward the pointer
+    const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+    stage.addEventListener(
+      'pointermove',
+      (e) => {
+        if (!finePointer.matches || reduced.matches || drag) return;
+        const box = stage.getBoundingClientRect();
+        lean.ty = ((e.clientX - box.left) / box.width - 0.5) * 0.9;
+        lean.tx = ((e.clientY - box.top) / box.height - 0.5) * 0.7;
+        render();
+      },
+      opts,
+    );
+    stage.addEventListener(
+      'pointerleave',
+      () => {
+        lean.tx = lean.ty = 0;
         render();
       },
       opts,

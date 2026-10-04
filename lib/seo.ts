@@ -35,7 +35,8 @@ export function pageMetadata({
   const ogTitle = shareTitle ?? title;
   const size = imageSize ?? (type === 'website' ? { width: 1200, height: 630 } : {});
   const alt = imageAlt ?? (type === 'website' ? site.name : ogTitle);
-  const images = image ? [{ url: image, ...size, alt }] : undefined;
+  // every page gets a share image: its own, or the site card
+  const images = [{ url: image ?? site.ogImage, ...(image ? size : { width: 1200, height: 630 }), alt }];
   return {
     title: { absolute: title },
     description,
@@ -47,14 +48,14 @@ export function pageMetadata({
       url: path,
       siteName: site.name,
       type,
-      ...(images ? { images } : {}),
+      images,
       ...(type === 'article' ? { publishedTime, authors: author ? [author] : undefined } : {}),
     },
     twitter: {
-      card: image ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title: ogTitle,
       description,
-      ...(images ? { images } : {}),
+      images,
     },
   };
 }

@@ -34,7 +34,9 @@ export type HermesFeature = {
   kind: 'terminal' | 'desktop' | 'portal';
   eyebrow: { desktop: string; mobile: string };
   title: string;
-  image: string;
+  /** One line on the project's card, and the repository it lives in. */
+  blurb: string;
+  repo: string;
   /** Desktop and mobile can show different call-to-action wording and targets. */
   cta: { desktop: Cta; mobile: Cta };
 };
@@ -46,7 +48,8 @@ export const hermesFeatures: (HermesFeature & { id: string })[] = [
     kind: 'terminal',
     eyebrow: { desktop: 'Benchmark · EMNLP 2026', mobile: 'Benchmark' },
     title: 'EVIRAG-Bench',
-    image: '/assets/nous-web/mobile-home/product-terminal.png',
+    blurb: 'Retrieval that keeps conflicting scientific evidence apart instead of collapsing it into one answer.',
+    repo: 'amethystani/evirag-bench',
     cta: {
       desktop: { label: 'View on GitHub', href: 'https://github.com/amethystani/evirag-bench' },
       mobile: { label: 'View on GitHub', href: 'https://github.com/amethystani/evirag-bench' },
@@ -57,7 +60,8 @@ export const hermesFeatures: (HermesFeature & { id: string })[] = [
     kind: 'desktop',
     eyebrow: { desktop: 'Paper · Digital Discovery', mobile: 'Paper' },
     title: 'Notation Matters',
-    image: '/assets/nous-web/mobile-home/product-desktop.webp',
+    blurb: 'The same molecule, written four ways, gets four different predictions from chemistry language models.',
+    repo: 'amethystani/notation-matters',
     cta: {
       desktop: { label: 'View on GitHub', href: 'https://github.com/amethystani/notation-matters' },
       mobile: { label: 'View on GitHub', href: 'https://github.com/amethystani/notation-matters' },
@@ -68,7 +72,8 @@ export const hermesFeatures: (HermesFeature & { id: string })[] = [
     kind: 'portal',
     eyebrow: { desktop: 'Metric · WMT 2026', mobile: 'Metric' },
     title: 'Palimpsest',
-    image: '/assets/nous-web/mobile-home/product-portal.webp',
+    blurb: 'Translation metrics cannot judge what their tokeniser deletes. LIGATUR and AEGIS can.',
+    repo: 'amethystani/palimpsest',
     cta: {
       desktop: { label: 'View on GitHub', href: 'https://github.com/amethystani/palimpsest' },
       mobile: { label: 'View on GitHub', href: 'https://github.com/amethystani/palimpsest' },
@@ -87,7 +92,6 @@ export const work = {
   ],
   primary: { label: 'Publications', href: '/releases' },
   secondary: { label: 'GitHub', href: 'https://github.com/amethystani' },
-  band: { poster: '/assets/nous-web/hermes-demo-poster.webp', video: '/media/hermes-desktop.mp4' },
 };
 
 /** The perspective-scroll statement on the home page, in the words of the CV's research statement. */
@@ -95,3 +99,4 @@ export const statement = {
   label: 'Research statement',
   text: 'My research asks when language models, and the measurements used to judge them, can be trusted when the underlying knowledge is heterogeneous, conflicting, or uncertain. In scientific retrieval-augmented generation I studied how standard RAG collapses real disagreement between sources into one answer, and proposed a disagreement-aware alternative. In chemistry language models I showed that the same molecule written in different notations gets inconsistent predictions. In LLM fairness auditing I used partial identification to make evaluation uncertainty explicit instead of hiding it.',
 };
+

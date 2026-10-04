@@ -44,6 +44,14 @@ export function ResearchUiController() {
         researchUi.get().composer.open
           ? researchUi.closeComposer()
           : researchUi.openComposer(document.querySelector<HTMLElement>('[data-composer-target]'));
+        return;
+      }
+      // "/" opens search too (as on GitHub and most docs sites), unless you are typing somewhere
+      const typing =
+        e.target instanceof HTMLElement && e.target.closest('input, textarea, select, [contenteditable="true"]');
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !typing && !researchUi.get().composer.open) {
+        e.preventDefault();
+        researchUi.openComposer(document.querySelector<HTMLElement>('[data-composer-target]'));
       }
     };
 

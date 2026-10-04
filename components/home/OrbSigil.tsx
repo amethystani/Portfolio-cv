@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react';
 
 const ORBITS = ['Workspaces', 'Source', 'Source1', 'Source2', 'Source3'];
-const STAMP_ALT = 'Decorative seal artwork.';
+// the live stage below already describes the medal, so the picture under it stays silent
+const STAMP_ALT = '';
 
 /**
  * The seal at the end of the home page. The server renders a flat picture of it (the "fallback" stamps);

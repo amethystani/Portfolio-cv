@@ -14,8 +14,6 @@ export type Job = {
   /** Intro paragraphs under the title. */
   intro: string[];
   sections: JobSection[];
-  /** Subject line of the application email. */
-  subject: string;
 };
 
 export const jobs: Job[] = [
@@ -27,7 +25,7 @@ export const jobs: Job[] = [
     location: 'Remote',
     eyebrow: 'Volunteer, September 2026 to present',
     intro: [
-      'Research Volunteer Coordinator at the Association for Computational Linguistics, in the science and technology cause area.',
+      'Research Volunteer Coordinator at the Association for Computational Linguistics.',
     ],
     sections: [
       {
@@ -38,7 +36,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Research Volunteer Coordinator, Association for Computational Linguistics',
   },
   {
     slug: 'nous-research-contributor',
@@ -60,7 +57,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Contributor, Nous Research',
   },
   {
     slug: 'measurement-validity-of-hidden-bias-audits',
@@ -83,7 +79,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Measurement Validity of Hidden-Bias Audits',
   },
   {
     slug: 'implicit-control-plane-gpu-kernels',
@@ -105,7 +100,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'The Implicit Control Plane',
   },
   {
     slug: 'post-decapsulation-leakage-ml-kem',
@@ -127,13 +121,12 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Post-Decapsulation Leakage in ML-KEM',
   },
   {
     slug: 'clerktree-co-founder',
     title: 'Co-Founder, Tech at ClerkTree',
     summary: 'Governed machine-intelligence systems for industrial operations; led development of Machina.',
-    employment: 'Self-employed',
+    employment: 'Co-founder',
     location: 'Straubing, Germany',
     eyebrow: 'Co-founder, February to December 2025, Straubing, Bavaria (hybrid)',
     intro: [
@@ -148,7 +141,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Co-Founder, Tech at ClerkTree',
   },
   {
     slug: 'complexity-science-hub-student-researcher',
@@ -170,7 +162,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Student Researcher, Complexity Science Hub',
   },
   {
     slug: 'consultadd-quantitative-research-analyst',
@@ -190,7 +181,6 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'Quantitative Research Analyst, Consultadd',
   },
   {
     slug: 'hfcl-dct-research-and-development',
@@ -212,15 +202,14 @@ export const jobs: Job[] = [
         ],
       },
     ],
-    subject: 'DCT-R&D, HFCL Limited',
   },
 ];
 
 /** Topics listed in the "Get in touch" block (identical on every page). */
-export const applicationChecklist: string[] = [
+export const contactTopics: string[] = [
   'NLP and ML evaluation',
   'Scientific AI and retrieval-augmented generation',
   'Research roles ahead of a PhD',
 ];
 
-export const recruitingEmail = portfolio.email;
+export const contactEmail = portfolio.email;

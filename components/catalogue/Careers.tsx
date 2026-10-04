@@ -6,10 +6,9 @@ import { CatalogueHero, WRAP } from '@/components/catalogue/CatalogueHero';
 import { PageMotion } from '@/components/behavior/PageMotion';
 import { Body, Mono, RowTitle, SectionTitle } from '@/components/ui/Type';
 import { FilteredList, type FilterItem } from '@/components/catalogue/FilteredList';
-import { applicationChecklist, recruitingEmail, type Job } from '@/content/jobs';
+import { contactTopics, contactEmail, type Job } from '@/content/jobs';
 
-const mailto = (subject?: string) =>
-  `mailto:${recruitingEmail}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
+const mailto = `mailto:${contactEmail}`;
 
 /** Large statement text next to the careers photo. */
 function Statement({ children }: { children: string }) {
@@ -44,19 +43,16 @@ function RoleRow({ job }: { job: Job }) {
       </RowTitle>
       <Body className="nw-catalogue-description">{job.summary}</Body>
       <Mono className="nw-role-location">{job.location}</Mono>
-      <a
-        href={mailto(job.title)}
-        className="nw-catalogue-link nw-role-apply"
-        aria-label={`Get in touch about ${job.title}`}
-      >
-        <Mono>Get in touch</Mono>
-      </a>
+      {/* these are his own past roles, so the row opens the role's page (not an "apply" email) */}
+      <Link href={`/careers/${job.slug}`} className="nw-catalogue-link nw-role-apply" aria-label={`Details: ${job.title}`}>
+        <Mono>Details</Mono>
+      </Link>
     </article>
   );
 }
 
-/** The "How to apply" block, shared by the careers index and every job page. */
-function ApplySection({ subject }: { subject?: string }) {
+/** The "Get in touch" block, shared by the experience index and every role page. */
+function ApplySection() {
   return (
     <section
       id="apply"
@@ -67,21 +63,21 @@ function ApplySection({ subject }: { subject?: string }) {
         id="apply-heading"
         title="Get in touch"
         icon="/assets/nous-web/catalogue/careersContext_imgMail.svg"
-        link={{ href: mailto(subject), label: 'Email Animesh' }}
+        link={{ href: mailto, label: 'Email Animesh' }}
       />
-      <Button variant="ghost" className="nw-catalogue-message" href={mailto(subject)}>
+      <Button variant="ghost" className="nw-catalogue-message" href={mailto}>
         Send a message
       </Button>
       <div className="nw-career-apply-copy">
         <Body>
           {'Email '}
-          <a className="nw-catalogue-link" href={mailto(subject)}>
-            {recruitingEmail}
+          <a className="nw-catalogue-link" href={mailto}>
+            {contactEmail}
           </a>
           {' if you work in any of these areas and want to talk shop:'}
         </Body>
         <Body as="ul">
-          {applicationChecklist.map((item) => (
+          {contactTopics.map((item) => (
             <li key={item}>{item}</li>
           ))}
         </Body>
@@ -181,7 +177,7 @@ export function JobPage({ job }: { job: Job }) {
             </section>
           );
         })}
-        <ApplySection subject={job.subject} />
+        <ApplySection />
         <nav aria-label="All experience" className={`${WRAP} nw-catalogue-section nw-role-back`}>
           <Link className="nw-catalogue-link" href="/careers#role-list">
             <Mono>All experience</Mono>

@@ -262,7 +262,7 @@ export const assistant: AssistantAnswer[] = [
     answer:
       'He co-founded ClerkTree with Shobhit Mishra and Kenshin Park (February to December 2025, Straubing, Germany), building governed machine-intelligence systems for industrial operations. He led Machina, an open model family for machine monitoring: bearing faults, remaining useful life, quality-inspection vision and a diagnostic reasoning agent, built to run on-premises.',
     url: '/careers/clerktree-co-founder',
-    source: 'Co-Founder, ClerkTree',
+    source: 'Co-Founder, Tech at ClerkTree',
   },
   {
     id: 'internships',

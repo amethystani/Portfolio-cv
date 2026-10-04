@@ -31,7 +31,7 @@ export const answers: CuratedAnswer[] = [
   {
     question: 'Where has he published?',
     answer:
-      'EMNLP 2026 Main (Beyond Epistemic Collapse: Disagreement-Aware Scientific Retrieval-Augmented Generation), WMT 2026 (Translation Metrics Cannot Judge What Their Tokeniser Deletes) and Digital Discovery, Royal Society of Chemistry (Notation matters: cross-representation inconsistency in chemistry language models and its mechanistic origins).',
+      'EMNLP 2026 Main (Beyond Epistemic Collapse: Disagreement-Aware Scientific Retrieval-Augmented Generation), WMT 2026 (Translation Metrics Cannot Judge What Their Tokeniser Deletes) and Digital Discovery, Royal Society of Chemistry (Notation matters: cross-representation inconsistency in chemistry language models and its mechanistic origins), plus the AACL-IJCNLP 2026 Student Research Workshop (Where Does Politeness Live in Hindi?) and Measurement, an Elsevier journal.',
     learn: portfolio.links.orcid,
     learnSource: 'ORCID',
     cta: 'See publications',

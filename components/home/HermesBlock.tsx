@@ -1,11 +1,10 @@
 import type { CSSProperties } from 'react';
 import { hermesFeatures, work } from '@/content/home';
 import { Button } from '@/components/ui/Button';
-import { DemoVideo } from './DemoVideo';
 
 export function HermesBlock() {
   return (
-    <div className="w-full px-[var(--nw-band-inset)] flex flex-col" data-band="hermes" id="hermes">
+    <div className="w-full px-[var(--nw-band-inset)] flex flex-col" data-band="hermes" id="work">
       <div
         data-el="hermes-title"
         className="grid h-[var(--nw-hermes-title-h)] content-start justify-items-center gap-[var(--nw-seam-block)] pt-[calc(120*var(--nw-u))] max-lg:h-auto max-lg:px-[var(--nw-gutter)] max-lg:py-[var(--nw-seam-band)]"
@@ -63,9 +62,6 @@ export function HermesBlock() {
           </Button>
         </div>
       </div>
-      <div className="relative overflow-clip h-[var(--nw-demo-h)] w-full" data-el="hermes-demo">
-<DemoVideo poster={work.band.poster} src={work.band.video} />
-      </div>
       <div
         data-el="hermes-products"
         className="flex h-[var(--nw-hermes-products-h)] items-center px-[var(--nw-section-pad)] max-lg:h-auto max-lg:py-[var(--nw-seam-band)]"
@@ -103,26 +99,11 @@ export function HermesBlock() {
                 </h3>
               </div>
               <div className="relative overflow-clip h-[var(--nw-feature-art-h)] w-full max-lg:aspect-[347/313] max-lg:h-auto">
-                <div className="nw-mobile-product-preview" data-kind={feature.kind} aria-hidden="true">
-                  <div
-                    className="nw-mobile-product-texture"
-                    style={{ backgroundImage: "url('/assets/nous-web/mobile-home/product-texture.png')" }}
-                  />
-                  <img
-                    className="nw-color-reveal"
-                    src={feature.image}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <img
-                    className="nw-mobile-product-color nw-color-reveal"
-                    src={feature.image}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
+                {/* the project in one line, set like a printed card */}
+                <a className="nw-work-card" href={`https://github.com/${feature.repo}`} target="_blank" rel="noopener noreferrer">
+                  <span className="nw-work-card-blurb">{feature.blurb}</span>
+                  <span className="nw-work-card-repo">github.com/{feature.repo}</span>
+                </a>
               </div>
               <div className="w-full">
                 <Button variant="secondary" className="nw-desktop-only" href={feature.cta.desktop.href}>

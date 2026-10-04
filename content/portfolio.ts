@@ -15,6 +15,12 @@ export const portfolio = {
     palimpsest: 'https://github.com/amethystani/palimpsest',
     deferseg: 'https://github.com/amethystani/deferseg',
   },
+  /** The live line under the role on the home page: a status, and the local time where he is. */
+  now: {
+    status: 'Open to research roles',
+    city: 'New Delhi',
+    timeZone: 'Asia/Kolkata',
+  },
   /** The poster shown as the main photo on the home page. */
   poster: {
     src: '/assets/portfolio/animesh-mishra-poster.webp',

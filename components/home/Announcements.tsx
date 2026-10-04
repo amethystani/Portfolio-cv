@@ -11,9 +11,9 @@ function AnnouncementCard({ url, image, width, height, handle, text, date }: Ann
     <a
       className="grid justify-items-start gap-[var(--nw-seam-item)] nw-announcement-card group"
       href={url}
-      rel="noopener noreferrer"
       style={{ '--nw-card-tail': 'calc(10 * var(--nw-u))' } as CSSProperties}
-      target="_blank"
+      // posts on this site open in place; outside links in a new tab
+      {...(url.startsWith('/') ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
     >
       <div
         className="relative overflow-clip bg-[var(--nw-ink)] nw-announcement-media rounded-t-md"
