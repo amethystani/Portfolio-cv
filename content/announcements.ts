@@ -1,6 +1,7 @@
 export type Announcement = {
   /** Where the card links to (a post on LinkedIn). */
   url: string;
+  /** 1000x563 (16:9), cropped to fill the card; files are in public/assets/portfolio/updates. */
   image: string;
   /** Intrinsic size of the image (sets the card's aspect ratio). */
   width: number;
@@ -17,7 +18,7 @@ const POSTS = 'https://www.linkedin.com/in/animesh-mishra-in/recent-activity/all
 export const announcements: Announcement[] = [
   {
     url: `${POSTS}#digital-discovery`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/halftone-circle.webp',
     width: 1000,
     height: 563,
     handle: 'Published',
@@ -26,7 +27,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#fruit-fly`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/sheep.webp',
     width: 1000,
     height: 563,
     handle: 'Weekend project',
@@ -35,7 +36,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#global-fintech-fest`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/low-frequency.webp',
     width: 1000,
     height: 563,
     handle: 'Conference',
@@ -44,7 +45,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#wmt-2026`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/error-mountains.webp',
     width: 1000,
     height: 563,
     handle: 'Accepted',
@@ -53,7 +54,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#emnlp-2026`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/error-walker.webp',
     width: 1000,
     height: 563,
     handle: 'Accepted',
@@ -62,7 +63,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#machina`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/pixel-satellite.webp',
     width: 1000,
     height: 563,
     handle: 'Shared',
@@ -71,7 +72,7 @@ export const announcements: Announcement[] = [
   },
   {
     url: `${POSTS}#juris-vakra`,
-    image: '/assets/nous-web/announcements/default.webp',
+    image: '/assets/portfolio/updates/halftone-circle.webp',
     width: 1000,
     height: 563,
     handle: 'Benchmark',
