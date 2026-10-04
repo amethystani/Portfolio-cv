@@ -149,8 +149,19 @@ html[data-research-theme='dark'] :is(.nous-web, .nous-web-viewport, .nw-composer
  *   - the border is a single solid cherry, so every side and every corner is the same colour;
  *   - the sweeping light is ONE conic gradient clipped to the ring (the old version was four separate bands that
  *     never met at the corners), so it travels round the whole frame without a seam;
- *   - the inside corners are softly rounded (a 9px radius filled with the ring colour);
+ *   - the inside corners are square;
  *   - it is shown on phones too, at the same weight. */
+/* Phones: a fixed frame with bottom: 0 follows the browser toolbar as it hides and shows while scrolling, so the
+   bottom edge slid up and down like an overlay. Pin it to the top and size it to the large viewport instead: it
+   never moves, and while the toolbar is showing its bottom edge simply sits behind it. */
+@media (max-width: 767px) {
+  .nw-research-shell > .hw-frame {
+    bottom: auto;
+    height: 100vh;
+    height: 100lvh;
+  }
+}
+
 @property --hw-ring-angle {
   syntax: '<angle>';
   inherits: false;
@@ -166,12 +177,12 @@ html[data-research-theme='dark'] .hw-frame {
 .hw-frame-ambient {
   display: none !important;
 }
-/* soft inner corners */
+/* square inner corners */
 .hw-frame::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 9px;
+  border-radius: 0;
   box-shadow: 0 0 0 12px var(--hermes-primary);
   pointer-events: none;
   z-index: 1;

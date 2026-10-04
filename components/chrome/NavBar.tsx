@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { GitHubIcon, LinkedInIcon, Logo, SearchIcon } from '@/components/icons';
 import { navigation } from '@/content/navigation';
 import { BrandLink } from './BrandLink';
+import { ThemeButton } from '@/components/behavior/ThemeButton';
 
 type Variant = 'main' | 'pinned';
 
@@ -43,20 +44,6 @@ function SearchButton() {
       <span>Search</span>
       <kbd aria-hidden="true">⌘K</kbd>
     </button>
-  );
-}
-
-/**
- * An invisible copy of the search button at the left end of the desktop nav, so the links on both sides of the
- * signature mirror each other exactly (the real search button closes the right side).
- */
-function SearchBalance() {
-  return (
-    <span className="nw-search-pill nw-search-balance px-box max-md:hidden" aria-hidden="true">
-      <SearchIcon />
-      <span>Search</span>
-      <kbd>⌘K</kbd>
-    </span>
   );
 }
 
@@ -124,7 +111,7 @@ export function NavBar({
       className={`${NAV_CLASS} ${main ? 'pt-10 pb-5' : 'py-2.5'}`}
     >
       <div className="flex items-center gap-x-6 max-md:hidden">
-        <SearchBalance />
+        <ThemeButton variant="header" />
         {navigation.left.map((label) => (
           <NavTrigger key={label} label={label} variant={variant} align="left" />
         ))}

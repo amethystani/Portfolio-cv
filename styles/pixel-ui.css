@@ -433,8 +433,8 @@ nav[data-pro-nav] .nw-research-pinned-badge {
   }
 }
 
-/* ---- desktop header: Search sits at the right edge and an invisible copy of it (.nw-search-balance) holds the
-   left edge, so About/Work and Elsewhere/Contact are spaced evenly and mirror each other around the signature ---- */
+/* ---- desktop header: Theme holds the left edge and Search the right, so About/Work and Elsewhere/Contact are
+   spaced evenly and mirror each other around the signature ---- */
 @media (min-width: 768px) {
   nav[data-pro-nav] > div.max-md\:hidden {
     justify-content: space-between;
@@ -442,7 +442,37 @@ nav[data-pro-nav] .nw-research-pinned-badge {
   nav[data-pro-nav] > div.max-md\:hidden > span {
     flex: none;
   }
-  .nw-search-balance {
-    visibility: hidden;
+  /* Theme (left) and Search (right) are the same box at the same width, so they mirror exactly */
+  nav[data-pro-nav] .nw-search-pill {
+    width: 150px;
+    justify-content: center;
   }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  nav[data-pro-nav] .nw-search-pill {
+    width: 112px;
+  }
+}
+/* hover / keyboard focus fills the box with ink and flips the text to the paper colour; in dark mode a broader
+   nav colour rule used to win, leaving cream text on a cream fill */
+nav[data-pro-nav] button.nw-search-pill:hover,
+nav[data-pro-nav] button.nw-search-pill:focus-visible {
+  color: var(--px-bg) !important;
+}
+.nw-theme-pill svg {
+  shape-rendering: crispEdges;
+}
+.nw-theme-pill kbd {
+  min-width: 4.2em;
+  text-align: center;
+}
+/* phone menu: the theme button pairs with the close button (same 44px box, 24px icon) */
+/* same cream as the close icon beside it */
+.nw-menu-theme {
+  color: var(--nw-paper, #efe6de);
+}
+.nw-menu-theme svg {
+  width: 18px;
+  height: 18px;
+  shape-rendering: crispEdges;
 }

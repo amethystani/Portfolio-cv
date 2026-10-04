@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Logo } from '@/components/icons';
 import { mobileMenu, menuSocials, type MenuLink } from '@/content/mobile-menu';
 import { researchUi, useResearchUi } from '@/lib/research-ui';
+import { ThemeButton } from '@/components/behavior/ThemeButton';
 
 const ASSET = (name: string) => `/assets/nous-web/mobile-menu/${name}.svg`;
 const FADE_MS = 300;
@@ -237,8 +238,8 @@ export function MobileMenu() {
         <Link href="/" aria-label="Animesh Mishra" onClick={close}>
           <Logo aria-hidden="true" weight={9} style={{ width: 120, height: 'auto' }} />
         </Link>
-        <div className="flex items-center gap-3">
-          <div />
+        <div className="flex items-center gap-1">
+          <ThemeButton variant="menu" />
           <button
             aria-label="Close menu"
             className="-mr-2 grid size-11 cursor-pointer place-items-center"

@@ -2,10 +2,8 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal, flushSync } from 'react-dom';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { PixelTheme } from '@/components/icons';
 import { observeSystemColorScheme, resolveThemePreference, THEME_STORAGE_KEY, type Theme } from '@/lib/theme';
+import { themeControl } from '@/lib/theme-control';
 
 type Running = { next: Theme; cancel: () => void };
 
@@ -106,14 +104,13 @@ function retune(apply: () => void): { finished: Promise<unknown>; cancel: () => 
 }
 
 /**
- * The folded page corner at the top right that flips the site between light and dark.
+ * Owns the light / dark theme and its switch animation. The buttons that flip it (ThemeButton: the desktop
+ * header and the phone menu) talk to it through lib/theme-control.
  * The choice is saved in localStorage; with nothing saved the OS setting decides.
  */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('light');
   const [ready, setReady] = useState(false);
-  const [viewport, setViewport] = useState<Element | null>(null);
-  const pathname = usePathname();
   const preference = useRef<string>('system');
   const systemDark = useRef(false);
   const running = useRef<Running | null>(null);
@@ -182,8 +179,6 @@ export function ThemeToggle() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useLayoutEffect(() => setViewport(document.querySelector('.nous-web-viewport')), [pathname]);
-
   useEffect(() => {
     document.documentElement.dataset.hydrated = 'true';
   }, []);
@@ -200,31 +195,12 @@ export function ThemeToggle() {
     });
   };
 
+  themeControl.register(toggle);
+  useEffect(() => themeControl.set({ theme, ready }), [theme, ready]);
+
   if (!ready) return null;
-  const label = theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
   return (
     <>
-      {viewport &&
-        createPortal(
-          <Button
-            variant="icon"
-            bare
-            className="nw-research-theme-fold"
-            aria-label={label}
-            aria-pressed={theme === 'dark'}
-            title={label}
-            data-icon-only="true"
-            onClick={toggle}
-          >
-            <span className="nw-theme-icon px-box" aria-hidden="true">
-              <PixelTheme mode={theme === 'dark' ? 'moon' : 'sun'} />
-            </span>
-            <span className="nw-theme-label" aria-hidden="true">
-              {theme === 'dark' ? 'Dark' : 'Light'}
-            </span>
-          </Button>,
-          viewport,
-        )}
       {createPortal(
         <>
           <div className="nw-research-theme-signal" aria-hidden="true" />
