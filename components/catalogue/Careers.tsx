@@ -5,7 +5,7 @@ import { SectionHead } from '@/components/catalogue/SectionHead';
 import { CatalogueHero, WRAP } from '@/components/catalogue/CatalogueHero';
 import { PageMotion } from '@/components/behavior/PageMotion';
 import { Body, Mono, RowTitle, SectionTitle } from '@/components/ui/Type';
-import { ListDisclosure } from '@/components/ui/ListDisclosure';
+import { FilteredList, type FilterItem } from '@/components/catalogue/FilteredList';
 import { applicationChecklist, recruitingEmail, type Job } from '@/content/jobs';
 
 const mailto = (subject?: string) =>
@@ -102,8 +102,8 @@ export function CareersPage({ jobs }: { jobs: Job[] }) {
               models. Papers at EMNLP 2026 Main, WMT 2026 and Digital Discovery.
             </Body>
             <Body>
-              WORK: open-source contributions at Nous Research, research at Complexity Science Hub Vienna
-              and DRDO, and co-founding ClerkTree. Looking for my next research role before a PhD.
+              WORK: open-source contributions at Nous Research, research at Complexity Science Hub Vienna and
+              DRDO, and co-founding ClerkTree. Looking for my next research role before a PhD.
             </Body>
           </div>
         </CatalogueHero>
@@ -125,19 +125,28 @@ export function CareersPage({ jobs }: { jobs: Job[] }) {
             id="roles-heading"
             title="Roles"
             icon="/assets/nous-web/catalogue/careersContext_imgContact.svg"
-            link={{ href: '#role-list', label: 'Jump to roles' }}
+            link={{ href: '#role-filters', label: 'Jump to the filters' }}
           />
-          <ListDisclosure
-            id="role-list"
-            pageSize={9}
-            itemLabel="roles"
-            buttonClassName="nw-catalogue-more nw-role-more"
-            paginationMedia={{ query: '(max-width: 767px)', overflowClassName: 'nw-role-overflow' }}
-          >
-            {jobs.map((job) => (
-              <RoleRow key={job.slug} job={job} />
-            ))}
-          </ListDisclosure>
+          <FilteredList
+            id="role-filters"
+            noun="roles"
+            groupLabel="Kind"
+            items={jobs.map((job, i): FilterItem => ({
+              key: job.slug,
+              node: <RoleRow job={job} />,
+              group: job.employment,
+              title: job.title,
+              text: `${job.summary} ${job.location} ${job.eyebrow} ${job.intro.join(' ')}`,
+              order: jobs.length - i,
+            }))}
+            listProps={{
+              id: 'role-list',
+              pageSize: 9,
+              itemLabel: 'roles',
+              buttonClassName: 'nw-catalogue-more nw-role-more',
+              paginationMedia: { query: '(max-width: 767px)', overflowClassName: 'nw-role-overflow' },
+            }}
+          />
         </section>
         <ApplySection />
       </main>

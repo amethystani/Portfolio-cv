@@ -119,7 +119,7 @@ function HoverExpand({ label, badges, first = 0 }: { label: string; badges: Badg
 /** Venues the work appeared at, and the places it was done. Edit content/affiliations.ts. */
 export function Affiliations() {
   return (
-    <section className="af" data-band="affiliations" aria-labelledby="af-heading">
+    <section className="af" id="affiliations" data-band="affiliations" aria-labelledby="af-heading">
       <div className="mx-auto w-full max-w-[calc(var(--hw-teams-col)+2*var(--hw-teams-pad-x))] px-[var(--hw-teams-pad-x)]">
         <h2
           id="af-heading"

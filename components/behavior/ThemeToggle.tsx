@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
+import { PixelTheme } from '@/components/icons';
 import { observeSystemColorScheme, resolveThemePreference, THEME_STORAGE_KEY, type Theme } from '@/lib/theme';
 
 type Running = { next: Theme; cancel: () => void };
@@ -215,22 +216,12 @@ export function ThemeToggle() {
             data-icon-only="true"
             onClick={toggle}
           >
-            <img
-              className="nw-research-fold-front"
-              src="/assets/nous-web/theme/theme-fold-front.svg"
-              alt=""
-              width={12}
-              height={12}
-              draggable={false}
-            />
-            <img
-              className="nw-research-fold-back"
-              src="/assets/nous-web/theme/theme-fold-back.svg"
-              alt=""
-              width={12}
-              height={12}
-              draggable={false}
-            />
+            <span className="nw-theme-icon px-box" aria-hidden="true">
+              <PixelTheme mode={theme === 'dark' ? 'moon' : 'sun'} />
+            </span>
+            <span className="nw-theme-label" aria-hidden="true">
+              {theme === 'dark' ? 'Dark' : 'Light'}
+            </span>
           </Button>,
           viewport,
         )}

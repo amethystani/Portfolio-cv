@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { GitHubIcon, LinkedInIcon, Logo } from '@/components/icons';
+import { GitHubIcon, LinkedInIcon, Logo, SearchIcon } from '@/components/icons';
 import { navigation } from '@/content/navigation';
 import { BrandLink } from './BrandLink';
 
@@ -28,6 +28,38 @@ function NavTrigger({ label, variant, align }: { label: string; variant: Variant
   );
 }
 
+/** Opens the site-wide search palette (also on Cmd/Ctrl+K). Wired by ResearchUiController via data-composer-target. */
+function SearchButton() {
+  return (
+    <button
+      type="button"
+      className="nw-search-pill px-box max-md:hidden"
+      data-composer-target="Questions"
+      aria-controls="research-composer"
+      aria-expanded="false"
+      aria-label="Search the site"
+    >
+      <SearchIcon />
+      <span>Search</span>
+      <kbd aria-hidden="true">⌘K</kbd>
+    </button>
+  );
+}
+
+/**
+ * An invisible copy of the search button at the left end of the desktop nav, so the links on both sides of the
+ * signature mirror each other exactly (the real search button closes the right side).
+ */
+function SearchBalance() {
+  return (
+    <span className="nw-search-pill nw-search-balance px-box max-md:hidden" aria-hidden="true">
+      <SearchIcon />
+      <span>Search</span>
+      <kbd>⌘K</kbd>
+    </span>
+  );
+}
+
 /** The brand mark in the header (sized by .nw-research-badge in styles/custom.css). */
 function BadgePair({ className }: { className: string; width?: number; height?: number }) {
   return <Logo aria-hidden="true" weight={9} className={className} />;
@@ -52,7 +84,17 @@ function SocialLinks({ items }: { items: { label: keyof typeof SOCIAL_ICONS; hre
 
 function MenuButton() {
   return (
-    <div className="flex items-center gap-3 md:hidden">
+    <div className="flex items-center gap-1 md:hidden">
+      <button
+        type="button"
+        className="nw-search-icon"
+        data-composer-target="Questions"
+        aria-controls="research-composer"
+        aria-expanded="false"
+        aria-label="Search the site"
+      >
+        <SearchIcon />
+      </button>
       <button
         aria-controls="research-mobile-menu"
         aria-expanded="false"
@@ -82,6 +124,7 @@ export function NavBar({
       className={`${NAV_CLASS} ${main ? 'pt-10 pb-5' : 'py-2.5'}`}
     >
       <div className="flex items-center gap-x-6 max-md:hidden">
+        <SearchBalance />
         {navigation.left.map((label) => (
           <NavTrigger key={label} label={label} variant={variant} align="left" />
         ))}
@@ -95,7 +138,7 @@ export function NavBar({
         <Link
           href="/"
           aria-label="Animesh Mishra"
-          className="grid size-[var(--hw-teams-wing-box)] shrink-0 place-items-center"
+          className="nw-pinned-brand grid shrink-0 place-items-center"
         >
           <BadgePair className="nw-research-pinned-badge" width={34} height={48} />
         </Link>
@@ -104,6 +147,7 @@ export function NavBar({
         {navigation.right.map((label) => (
           <NavTrigger key={label} label={label} variant={variant} align="right" />
         ))}
+        <SearchButton />
       </div>
       <MenuButton />
     </nav>

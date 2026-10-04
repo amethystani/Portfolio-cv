@@ -1,6 +1,8 @@
 /** One entry per blog post. The article body lives in content/posts/<slug>.html. */
 export type Post = {
   slug: string;
+  /** Topic chip in the Writing filters: Paper, Project, Conference, Benchmark. */
+  tag?: string;
   /** Headline on the article page (the browser title adds the site name). */
   title: string;
   /** Headline in blog lists and related articles, when it differs from the article headline. */
@@ -45,6 +47,7 @@ export type Post = {
 export const posts: Post[] = [
   {
     slug: 'notation-matters-in-digital-discovery',
+    tag: 'Paper',
     title: 'Notation matters: chemistry language models and what is inside them',
     description:
       'My paper on cross-representation inconsistency in chemistry language models and its mechanistic origins is published in Digital Discovery (Royal Society of Chemistry) as a Gold Open Access article.',
@@ -62,6 +65,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'fruit-fly-connectome-trading',
+    tag: 'Project',
     title: 'I made a fruit fly trade crypto',
     description:
       'A weekend project with Krishang Sharma: the fruit-fly connectome wired into a trading system on Binance Spot Testnet, with dopamine-gated plasticity driven by realised P&L.',
@@ -75,6 +79,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'global-fintech-fest-2026',
+    tag: 'Conference',
     title: 'What I took away from Global Fintech Fest 2026',
     description:
       'Notes from Global Fintech Fest 2026: real-world language data, voice agents, and where verification should happen when AI creates and acts inside the same system.',
@@ -88,6 +93,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'wmt-2026-translation-metrics',
+    tag: 'Paper',
     title: 'Translation metrics cannot judge what their tokeniser deletes',
     description:
       'Our WMT 2026 paper on blind spots in machine translation evaluation: invisible Unicode corruptions that get normalised away during tokenisation, explored through LIGATUR and AEGIS.',
@@ -105,6 +111,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'emnlp-2026-beyond-epistemic-collapse',
+    tag: 'Paper',
     title: 'Beyond epistemic collapse: disagreement-aware scientific RAG',
     description:
       'Our paper at EMNLP 2026 (CORE A*): EVIRAG, a disagreement-aware retrieval-augmented generation framework, and EVIRAG-BENCH, a 1,250-query benchmark across five scientific domains.',
@@ -118,6 +125,7 @@ export const posts: Post[] = [
   },
   {
     slug: 'juris-ibm-vakra',
+    tag: 'Benchmark',
     title: 'Juris ranked #2 globally on IBM VAKRA for tool selection',
     description:
       'Our agent Juris ranked #2 globally on the IBM VAKRA benchmark for tool selection, using a 36B model and a capability-specific routing stack.',

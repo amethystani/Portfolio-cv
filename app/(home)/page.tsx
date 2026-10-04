@@ -3,6 +3,7 @@ import { JsonLd } from '@/components/JsonLd';
 import { Affiliations } from '@/components/home/Affiliations';
 import { Announcements } from '@/components/home/Announcements';
 import { PortfolioHero } from '@/components/home/PortfolioHero';
+import { SearchBar } from '@/components/home/SearchBar';
 import { HermesBlock } from '@/components/home/HermesBlock';
 import { Mission } from '@/components/home/Mission';
 import { PerspectiveStatement } from '@/components/home/PerspectiveStatement';
@@ -49,6 +50,7 @@ export default function HomePage() {
       <PageMotion kind="home" />
       <main className="nw-page-body">
         <PortfolioHero />
+        <SearchBar />
         <Mission />
         <PerspectiveStatement label={statement.label} text={statement.text} />
         <Affiliations />

@@ -14,6 +14,7 @@ import '@/styles/07-badge-theme.css';
 import '@/styles/08-surfaces.css';
 import '@/styles/09-prose-table.css';
 import '@/styles/custom.css';
+import '@/styles/pixel-ui.css';
 
 import { FilmGrain } from '@/components/chrome/FilmGrain';
 import { Frame } from '@/components/chrome/Frame';

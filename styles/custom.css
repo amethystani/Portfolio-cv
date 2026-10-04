@@ -131,3 +131,178 @@ html[data-research-theme='dark'] :is(.nous-web, .nous-web-viewport, .nw-composer
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
 }
+
+/* ---- Frame polish ---- */
+/* The design system reserves a scrollbar gutter on <html>. On touch screens and in responsive mode the scrollbar
+   overlays the page, so the gutter just showed up as a blank strip down the right edge and made the frame
+   lopsided. Phones get no gutter and no scrollbar. */
+@media (max-width: 767px) {
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* One continuous ring.
+ *   - the border is a single solid cherry, so every side and every corner is the same colour;
+ *   - the sweeping light is ONE conic gradient clipped to the ring (the old version was four separate bands that
+ *     never met at the corners), so it travels round the whole frame without a seam;
+ *   - the inside corners are softly rounded (a 9px radius filled with the ring colour);
+ *   - it is shown on phones too, at the same weight. */
+@property --hw-ring-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+.hw-frame {
+  border-color: var(--hermes-primary) !important;
+  --hw-ring-light: #efe6de;
+}
+html[data-research-theme='dark'] .hw-frame {
+  --hw-ring-light: #efe6de;
+}
+.hw-frame-ambient {
+  display: none !important;
+}
+/* soft inner corners */
+.hw-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  box-shadow: 0 0 0 12px var(--hermes-primary);
+  pointer-events: none;
+  z-index: 1;
+}
+/* the light */
+.hw-frame::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--hw-frame));
+  padding: var(--hw-frame);
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--hw-ring-angle),
+    transparent 0deg,
+    transparent 40deg,
+    color-mix(in srgb, var(--hw-ring-light) 35%, transparent) 90deg,
+    color-mix(in srgb, var(--hw-ring-light) 95%, transparent) 130deg,
+    color-mix(in srgb, var(--hw-ring-light) 35%, transparent) 170deg,
+    transparent 220deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: hw-ring-spin 16s linear infinite;
+  z-index: 2;
+}
+@keyframes hw-ring-spin {
+  to {
+    --hw-ring-angle: 360deg;
+  }
+}
+.hw-frame.animation-paused::before {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hw-frame::before {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+/* the scroll and click cues share the ring's geometry, so they follow the same corners */
+.hw-frame-click,
+.hw-frame-scroll {
+  z-index: 3;
+}
+/* the design system reserves a scrollbar gutter on desktop too; with overlay scrollbars (macOS, touch) it
+   showed as a blank strip beside the frame, so the page and the frame now use the full width */
+html {
+  scrollbar-gutter: auto !important;
+}
+/* ---- the theme button: a pixel sun / moon, bottom right, never touching the frame ----
+   (the CRT scan-line wipe that plays when it is pressed is unchanged) */
+.nw-research-theme-fold.hermes-button {
+  position: fixed !important;
+  top: auto !important;
+  left: auto !important;
+  right: 22px !important;
+  bottom: 22px !important;
+  width: auto !important;
+  height: auto !important;
+  z-index: 95;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 10px;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: var(--px-text, var(--nw-ink));
+  cursor: pointer;
+}
+.nw-theme-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  --px-s: 5px;
+  --px-b: 2px;
+  --px-bg: var(--nw-paper, #efe6de);
+  transition: transform 0.12s steps(2, end);
+}
+html[data-research-theme='dark'] .nw-theme-icon {
+  --px-bg: #1b0305;
+}
+.nw-theme-icon svg {
+  width: 30px;
+  height: 30px;
+  shape-rendering: crispEdges;
+}
+.nw-theme-label {
+  order: -1;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--px-ink, var(--nw-ink));
+  color: var(--px-bg, var(--nw-paper));
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity 0.15s steps(3, end), transform 0.15s steps(3, end);
+  pointer-events: none;
+}
+.nw-research-theme-fold.hermes-button:hover .nw-theme-label,
+.nw-research-theme-fold.hermes-button:focus-visible .nw-theme-label {
+  opacity: 1;
+  transform: none;
+}
+.nw-research-theme-fold.hermes-button:hover .nw-theme-icon,
+.nw-research-theme-fold.hermes-button:focus-visible .nw-theme-icon {
+  transform: translate(-2px, -2px);
+}
+.nw-research-theme-fold.hermes-button:hover .nw-theme-icon::before,
+.nw-research-theme-fold.hermes-button:focus-visible .nw-theme-icon::before {
+  background: var(--px-ink);
+}
+.nw-research-theme-fold.hermes-button:hover .nw-theme-icon,
+.nw-research-theme-fold.hermes-button:focus-visible .nw-theme-icon {
+  color: var(--px-bg);
+}
+.nw-research-theme-fold.hermes-button:focus-visible {
+  outline: 2px dashed var(--px-ink, currentColor) !important;
+  outline-offset: 4px !important;
+}
+@media (max-width: 767px) {
+  .nw-research-theme-fold.hermes-button {
+    right: 14px !important;
+    bottom: 14px !important;
+  }
+  .nw-theme-label {
+    display: none;
+  }
+}

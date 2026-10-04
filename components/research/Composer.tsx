@@ -4,7 +4,6 @@ import { portfolio } from '@/content/portfolio';
 import { type CSSProperties, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Kbd } from '@/components/ui/Kbd';
 import { ANSWER_ART, answers, QUESTION_ORDER, QUESTION_PAGES, QUESTIONS_PER_PAGE } from '@/content/composer';
@@ -134,7 +133,6 @@ function QuestionsPanel({
               {current.question}
             </h3>
             <p>{current.answer}</p>
-            <small>Curated response · not live AI</small>
           </article>
         ) : (
           <div className="nw-prompt-list">
@@ -412,7 +410,6 @@ function SearchPanel({
  */
 export function Composer() {
   const { composer } = useResearchUi();
-  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(0);
@@ -429,7 +426,7 @@ export function Composer() {
   const results = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
-  const available = mounted && pathname === '/';
+  const available = mounted; // search works on every page
   const open = composer.open && available;
   const search = useSearch(query, open);
   const dismiss = useCallback(() => researchUi.closeComposer(), []);
@@ -442,7 +439,8 @@ export function Composer() {
         ? composer.trigger
         : document.querySelector<HTMLElement>('[data-composer-target]');
       const rect = anchor?.getBoundingClientRect();
-      const visible = rect && rect.top >= 0 && rect.bottom <= innerHeight && rect.width > 0;
+      // Only a wide anchor (the home page's question bar) is covered in place; the small header buttons dock instead.
+      const visible = rect && rect.top >= 0 && rect.bottom <= innerHeight && rect.width >= 300;
       const width = visible ? rect.width : Math.min(720, innerWidth - 2 * MARGIN);
       const left = visible ? rect.left : (innerWidth - width) / 2;
       const top = visible ? rect.top : 96;

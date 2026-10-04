@@ -114,12 +114,35 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
   await ctx.close();
 }
 
+// ---------------------------------------------------------------- filters and global search
+{
+  const { page, errors, ctx } = await open('/releases');
+  const rows = () => page.$$eval('#release-list > div:not([hidden])', (d) => d.length);
+  await page.click('.fl-chip:has-text("PAPER")'); await page.waitForTimeout(200);
+  check('a type chip filters the list and the address bar', (await rows()) === 5 && /g=PAPER/.test(page.url()), String(await rows()));
+  await page.fill('.fl-search input', 'epistemic'); await page.waitForTimeout(200);
+  check('the text box narrows it further', (await rows()) === 1);
+  await page.fill('.fl-search input', 'zzzz'); await page.waitForTimeout(200);
+  check('no matches shows an empty state with a way out', !!(await page.$('.fl-empty button')));
+  await page.click('.fl-empty button'); await page.waitForTimeout(200);
+  check('clear filters restores the list', (await rows()) === 9 && !/\?/.test(page.url()));
+  await page.goto(BASE + '/releases?q=wmt&g=PAPER', { waitUntil: 'networkidle' }); await page.waitForTimeout(400);
+  check('a filtered link restores its filters', (await page.$eval('.fl-search input', (i) => i.value)) === 'wmt' && (await rows()) === 1);
+  await page.goto(BASE + '/careers', { waitUntil: 'networkidle' });
+  await page.click('.nw-search-pill'); await page.waitForTimeout(700);
+  check('the header search button opens the palette on any page', (await page.getAttribute('#research-composer', 'data-open')) === 'true');
+  await page.fill('.nw-composer-search-input', 'evirag'); await page.waitForTimeout(1500);
+  check('and searches the whole site', (await page.$$('[data-search-result]')).length >= 1);
+  check('no console errors with filters and search', errors.length === 0, errors.slice(0, 2).join(' | '));
+  await ctx.close();
+}
+
 // ---------------------------------------------------------------- an article: dialogs, rail, dock
 {
   const slug = '/notation-matters-in-digital-discovery';
   const { page, errors, ctx } = await open(slug);
   await ctx.grantPermissions(['clipboard-read', 'clipboard-write']);
-  const dialog = () => page.$('[role="dialog"]');
+  const dialog = () => page.$('[role="dialog"]:not(#research-composer):not(#research-mobile-menu)');
   await page.click('button[aria-label="Share article"]'); await page.waitForTimeout(600);
   check('Share opens a side panel with focus on its close button', !!(await dialog()) && (await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))) === 'Close');
   check('the page behind the panel is inert', await page.evaluate(() => document.querySelector('main')?.closest('[inert]') !== null));

@@ -72,6 +72,12 @@ Almost all copy lives in `content/`. Edit, save, and the page updates.
 article's "Contents" list and reading rail. The post appears on `/blog`, in search, in the sitemap and
 under any post that lists it in `related`.
 
+**Filters and search.** Publications, Experience and Writing each have a filter bar (text box, type chips with live counts,
+sort, reset) from `components/catalogue/FilteredList.tsx`; the chips come from each item's type (`type` in
+`content/releases.ts`, `employment` in `content/jobs.ts`, `tag` in `content/posts.ts`). The filters live in the address
+(`?q=&g=&s=`) so a filtered view can be linked, and `/` jumps to the box. The header's Search button (and Cmd/Ctrl+K)
+opens the site-wide palette on every page. The pixel-style UI kit is `styles/pixel-ui.css`.
+
 **Search** (`lib/search.ts`) is built from your own content: pages, posts, publications and experience. There is no
 external index to maintain.
 

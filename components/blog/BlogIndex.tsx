@@ -3,7 +3,7 @@ import { SectionHead } from '@/components/catalogue/SectionHead';
 import { CatalogueHero, WRAP } from '@/components/catalogue/CatalogueHero';
 import { PageMotion } from '@/components/behavior/PageMotion';
 import { Body, Mono, RowTitle } from '@/components/ui/Type';
-import { ListDisclosure } from '@/components/ui/ListDisclosure';
+import { FilteredList, type FilterItem } from '@/components/catalogue/FilteredList';
 import { HermesBlock } from '@/components/home/HermesBlock';
 import type { Post } from '@/content/posts';
 import { cardTitle } from '@/lib/posts';
@@ -91,17 +91,26 @@ export function BlogIndex({ featured, archive }: { featured: Post[]; archive: Po
               icon="/assets/nous-web/blog/heading-book.svg"
               data-blog-reveal="true"
             />
-            <ListDisclosure
-              id="blog-archive-list"
-              pageSize={9}
-              itemLabel="archive articles"
-              buttonClassName="nw-catalogue-more nw-archive-more"
-              paginationMedia={{ query: '(max-width: 767px)', overflowClassName: 'nw-archive-overflow' }}
-            >
-              {archive.map((post) => (
-                <ArchiveRow key={post.slug} post={post} />
-              ))}
-            </ListDisclosure>
+            <FilteredList
+              id="blog-filters"
+              noun="posts"
+              groupLabel="Topic"
+              items={archive.map((post, i): FilterItem => ({
+                key: post.slug,
+                node: <ArchiveRow post={post} />,
+                group: post.tag ?? 'Post',
+                title: cardTitle(post),
+                text: `${post.excerpt} ${post.description} ${post.dateLabel ?? ''}`,
+                order: Date.parse(post.publishedTime ?? '') || archive.length - i,
+              }))}
+              listProps={{
+                id: 'blog-archive-list',
+                pageSize: 9,
+                itemLabel: 'archive articles',
+                buttonClassName: 'nw-catalogue-more nw-archive-more',
+                paginationMedia: { query: '(max-width: 767px)', overflowClassName: 'nw-archive-overflow' },
+              }}
+            />
           </section>
         </div>
       </main>
