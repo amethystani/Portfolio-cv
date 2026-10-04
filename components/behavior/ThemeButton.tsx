@@ -5,7 +5,7 @@ import { themeControl, useThemeControl } from '@/lib/theme-control';
 
 /**
  * Flips light / dark (the switch itself, with its animation, lives in ThemeToggle).
- *   header: a box the same size as the Search box, at the left end of the desktop nav, so the two mirror each other;
+ *   header: an icon beside the search icon at the right end of the desktop nav;
  *   menu:   an icon button in the phone menu's top bar, paired with the close button.
  */
 export function ThemeButton({ variant }: { variant: 'header' | 'menu' }) {
@@ -31,14 +31,12 @@ export function ThemeButton({ variant }: { variant: 'header' | 'menu' }) {
   return (
     <button
       type="button"
-      className="nw-search-pill nw-theme-pill px-box max-md:hidden"
+      className="nw-header-icon nw-header-theme"
       aria-label={label}
       title={label}
       onClick={() => themeControl.toggle()}
     >
       {icon}
-      <span>Theme</span>
-      <kbd aria-hidden="true">{dark ? 'Dark' : 'Light'}</kbd>
     </button>
   );
 }

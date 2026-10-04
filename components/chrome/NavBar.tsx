@@ -34,16 +34,25 @@ function SearchButton() {
   return (
     <button
       type="button"
-      className="nw-search-pill px-box max-md:hidden"
+      className="nw-header-icon"
       data-composer-target="Questions"
       aria-controls="research-composer"
       aria-expanded="false"
       aria-label="Search the site"
+      title="Search (⌘K)"
     >
       <SearchIcon />
-      <span>Search</span>
-      <kbd aria-hidden="true">⌘K</kbd>
     </button>
+  );
+}
+
+/** Theme and Search, as two icons at the right end of the desktop nav. */
+function HeaderIcons() {
+  return (
+    <span className="nw-header-icons">
+      <ThemeButton variant="header" />
+      <SearchButton />
+    </span>
   );
 }
 
@@ -111,7 +120,7 @@ export function NavBar({
       className={`${NAV_CLASS} ${main ? 'pt-10 pb-5' : 'py-2.5'}`}
     >
       <div className="flex items-center gap-x-6 max-md:hidden">
-        <ThemeButton variant="header" />
+        <span className="nw-header-icons nw-header-icons-balance" aria-hidden="true" />
         {navigation.left.map((label) => (
           <NavTrigger key={label} label={label} variant={variant} align="left" />
         ))}
@@ -134,7 +143,7 @@ export function NavBar({
         {navigation.right.map((label) => (
           <NavTrigger key={label} label={label} variant={variant} align="right" />
         ))}
-        <SearchButton />
+        <HeaderIcons />
       </div>
       <MenuButton />
     </nav>
