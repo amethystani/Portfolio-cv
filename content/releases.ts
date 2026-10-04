@@ -8,7 +8,8 @@ export type Release = {
   /** Optional size column (omit to show an em dash). */
   size?: string;
   title: string;
-  href: string;
+  /** Where the title links; leave out for work that is not online yet. */
+  href?: string;
   description: string;
 };
 
@@ -26,7 +27,7 @@ export const releases: Release[] = [
     type: 'PAPER',
     title:
       'Notation matters: cross-representation inconsistency in chemistry language models and its mechanistic origins',
-    href: 'https://pubs.rsc.org/en/content/articlelanding/2026/dd/d6dd00309e',
+    href: 'https://doi.org/10.1039/D6DD00309E',
     description:
       'Digital Discovery, Royal Society of Chemistry (Gold Open Access). The same molecule written as SMILES, IUPAC, InChI or SELFIES gave inconsistent predictions for 88% of 1,072 molecules, and ChemBERTa-2 representations of identical molecules diverge layer by layer.',
   },
@@ -84,7 +85,7 @@ export const releases: Release[] = [
     date: '05/24/26',
     type: 'AGENT',
     title: 'Juris on IBM VAKRA',
-    href: portfolio.links.linkedin,
+    href: '/juris-ibm-vakra',
     description:
       'Ranked #2 globally for tool selection. A 36B model with a capability-specific routing stack over roughly 8,000 APIs in 62 domains: shortlist the tools, force one choice, normalise arguments, return answers directly from tool output.',
   },
@@ -93,7 +94,7 @@ export const releases: Release[] = [
     type: 'PAPER',
     title:
       'A comprehensive reliability framework for nonbonded and reusable configurations based EMI measurements in construction steel rebar: a proof of concept',
-    href: portfolio.links.orcid,
+    href: 'https://doi.org/10.1016/j.measurement.2026.121021',
     description: 'Measurement, Vol. 274, Art. 121021, Elsevier. With Lukesh Parida and Sumedha Moharana.',
   },
   {
@@ -101,7 +102,7 @@ export const releases: Release[] = [
     type: 'PAPER',
     title:
       'Where Does Politeness Live in Hindi? A Mechanistic Case Study of Honorific Encoding in Gemma Scope SAEs',
-    href: portfolio.links.orcid,
+    // accepted, not yet published: no link until the paper is online
     description: 'AACL-IJCNLP 2026, Student Research Workshop (accepted). With Krishang Sharma.',
   },
 ];

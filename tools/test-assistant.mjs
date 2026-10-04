@@ -91,6 +91,11 @@ const CASES = [
   ['who are his advisors', 'collaborators'],
   ['who does he collaborate with', 'collaborators'],
   ['acl volunteer', 'acl'],
+  // asked as if to him
+  ['which languages do you code in?', 'skills'],
+  ['where did you work?', 'experience'],
+  ['what do you research', 'research'],
+  ['how can i contact you', 'contact'],
   // typos
   ['whos animesh', 'who'],
   ['publicatons', 'publications'],

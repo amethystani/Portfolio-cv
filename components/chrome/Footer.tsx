@@ -74,9 +74,10 @@ export function Footer() {
             aria-hidden="true"
             className="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_bottom,transparent,var(--hermes-primary)_86%)]"
           />
+          {/* the name sits on the bottom edge of the picture, clear of the signature and link columns below */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 translate-y-[calc(32%+(1-var(--hw-footer-opacity,0))*45%)] opacity-[var(--hw-footer-opacity,0)] will-change-[translate,opacity] motion-reduce:translate-y-[32%] motion-reduce:opacity-100"
+            className="absolute inset-x-0 bottom-0 translate-y-[calc(2%+(1-var(--hw-footer-opacity,0))*45%)] opacity-[var(--hw-footer-opacity,0)] will-change-[translate,opacity] motion-reduce:translate-y-[2%] motion-reduce:opacity-100"
           >
             <p
               className={`fit-text ${CONTAINER} hw-ghost hw-teams-ghost-white hw-teams-gothic text-center font-normal`}

@@ -25,7 +25,8 @@ function SubnavLink({ link, described }: { link: NavLink; described: boolean }) 
     <>
       {label}
       {link.description && <span className="nw-subnav-description">{link.description}</span>}
-      <ExternalLinkIcon className="block shrink-0 size-4" />
+      {/* ↗ leaves the site; the same arrow turned to → stays on it */}
+      <ExternalLinkIcon className={`block shrink-0 size-4${link.href.startsWith('/') ? ' rotate-45' : ''}`} />
     </>
   );
   if (link.href.startsWith('/')) {

@@ -295,22 +295,38 @@ function search(id, query) {
 }
 
 // ------------------------------------------------------------------------------------------- messages
+// The index loads once; every request waits for it, so a search sent while it is still downloading is answered
+// from the real index instead of an empty one (and meaning search never embeds an empty list).
+let indexReady = null;
+const loadIndex = (url) =>
+  (indexReady ??= fetch(url)
+    .then((r) => r.json())
+    .then(({ chunks, answers }) => {
+      state.chunks = chunks;
+      state.answers = answers || [];
+      state.bags = state.answers.map((a) => new Set(words(a.ask.join(' '))));
+      state.answerBags = state.answers.map((a) => new Set(words(`${a.source} ${a.answer}`)));
+      state.known = new Set([...state.bags.flatMap((b) => [...b]), ...[...SYN.keys()]]);
+      state.bm25 = buildBm25(chunks);
+    })
+    .catch((e) => {
+      indexReady = null; // let a later request try again
+      throw e;
+    }));
+
 self.onmessage = async ({ data }) => {
   try {
     if (data.type === 'init') {
-      if (!state.bm25) {
-        const { chunks, answers } = await (await fetch(data.indexUrl)).json();
-        state.chunks = chunks;
-        state.answers = answers || [];
-        state.bags = state.answers.map((a) => new Set(words(a.ask.join(' '))));
-        state.answerBags = state.answers.map((a) => new Set(words(`${a.source} ${a.answer}`)));
-        state.known = new Set([...state.bags.flatMap((b) => [...b]), ...[...SYN.keys()]]);
-        state.bm25 = buildBm25(chunks);
-      }
+      await loadIndex(data.indexUrl);
       status();
       if (data.semantic) loadSemantic(data.base);
-    } else if (data.type === 'loadSemantic') loadSemantic(data.base);
-    else if (data.type === 'search') search(data.id, data.query);
+    } else if (data.type === 'loadSemantic') {
+      await indexReady;
+      loadSemantic(data.base);
+    } else if (data.type === 'search') {
+      await indexReady;
+      search(data.id, data.query);
+    }
   } catch (e) {
     post({ type: 'error', id: data.id, error: String(e?.message || e) });
   }

@@ -689,10 +689,16 @@ export function Composer() {
         <button
           type="button"
           className="nw-composer-hit nw-composer-dismiss"
-          aria-label="Close composer"
+          aria-label="Close search"
           onClick={() => researchUi.closeComposer()}
         >
-          <Kbd>esc</Kbd>
+          {/* a key hint on keyboards; touch screens have no Escape key, so they get a cross */}
+          <span className="nw-dismiss-key">
+            <Kbd>esc</Kbd>
+          </span>
+          <span className="nw-dismiss-touch" aria-hidden="true">
+            ✕
+          </span>
         </button>
       </div>
       <div ref={results} className="nw-composer-results" data-lenis-prevent="">

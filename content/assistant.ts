@@ -45,6 +45,8 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'research',
     ask: [
+      'What do you research?',
+      'What are your research interests?',
       'What is he working on?',
       'What are you working on?',
       'What does he research?',
@@ -80,6 +82,7 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'education',
     ask: [
+      'Where did you study?',
       'Did he graduate?',
       'B.Tech',
       'Is he still in college?',
@@ -225,6 +228,9 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'experience',
     ask: [
+      'Where did you work?',
+      'Where have you worked?',
+      'What jobs have you had?',
       'Where has he worked?',
       'What is his work experience?',
       'Experience',
@@ -290,6 +296,8 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'next',
     ask: [
+      'Are you looking for a job?',
+      'Are you open to work?',
       'What is he looking for next?',
       'Is he looking for a job?',
       'Is he open to work?',
@@ -307,6 +315,8 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'contact',
     ask: [
+      'How can I contact you?',
+      'How do I reach you?',
       'How can I get in touch?',
       'How do I contact him?',
       'How do I reach him?',
@@ -351,6 +361,9 @@ export const assistant: AssistantAnswer[] = [
   {
     id: 'skills',
     ask: [
+      'Which languages do you code in?',
+      'What programming languages do you know?',
+      'Do you know Python or Rust?',
       'What can he do?',
       'What programming languages does he use?',
       'What are his skills?',

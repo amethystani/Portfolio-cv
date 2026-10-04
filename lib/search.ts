@@ -81,7 +81,7 @@ function build(): Doc[] {
       id: `release:${r.title}`,
       kind: 'release',
       title: r.title,
-      url: r.href,
+      url: r.href ?? '/releases',
       excerpt: `${r.description} Type: ${r.type} Date: ${r.date}`,
     }),
   );

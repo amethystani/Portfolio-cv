@@ -21,9 +21,13 @@ function ReleaseRow({ release }: { release: Release }) {
         <Mono className="nw-release-size">{release.size ?? '—'}</Mono>
       </div>
       <RowTitle className="nw-catalogue-row-title">
-        <a className="nw-catalogue-link" href={release.href}>
-          {release.title}
-        </a>
+        {release.href ? (
+          <a className="nw-catalogue-link" href={release.href}>
+            {release.title}
+          </a>
+        ) : (
+          release.title
+        )}
       </RowTitle>
       <Body className="nw-catalogue-description">{release.description}</Body>
     </article>

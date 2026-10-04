@@ -71,7 +71,7 @@ export function buildAiCorpus(): AiChunk[] {
 
 
   releases.forEach((r, i) =>
-    add(`release-${i}`, r.title, r.href, 'publication', `${r.type} (${r.date}): ${r.title}. ${r.description}`),
+    add(`release-${i}`, r.title, r.href ?? '/releases', 'publication', `${r.type} (${r.date}): ${r.title}. ${r.description}`),
   );
 
   // e.g. "EMNLP, conference, 2026: Main Conference · CORE A* · Budapest. Status: accepted."

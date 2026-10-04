@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { hermesFeatures, work } from '@/content/home';
 import { Button } from '@/components/ui/Button';
 import { DemoVideo } from './DemoVideo';
+import { WorkTerminal } from './WorkTerminal';
 
 export function HermesBlock() {
   return (
@@ -63,8 +64,14 @@ export function HermesBlock() {
           </Button>
         </div>
       </div>
-      <div className="relative overflow-clip h-[var(--nw-demo-h)] w-full" data-el="hermes-demo">
+      <div className="relative overflow-clip h-[var(--nw-demo-h)] w-full nw-term-band" data-el="hermes-demo">
         <DemoVideo poster={work.band.poster} sources={work.band.sources} />
+        {/* recolours the footage to the site's red, then scanlines and a vignette so the text reads */}
+        <div className="nw-term-tint" aria-hidden="true" />
+        <WorkTerminal />
+        <a className="nw-term-link" href={work.secondary.href} target="_blank" rel="noopener noreferrer">
+          View code on GitHub <span aria-hidden="true">↗</span>
+        </a>
       </div>
       <div
         data-el="hermes-products"
