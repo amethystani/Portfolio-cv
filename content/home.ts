@@ -91,6 +91,14 @@ export const work = {
     'notice what tokenisers delete, and chemistry language models probed from the inside, all public on GitHub.',
   ],
   primary: { label: 'Publications', href: '/releases' },
+  /** The looping video band under Selected Work (converted from a GIF: about 1 MB instead of 3). */
+  band: {
+    poster: '/assets/portfolio/terminal-loop-poster.webp',
+    sources: [
+      { src: '/media/terminal-loop.webm', type: 'video/webm' },
+      { src: '/media/terminal-loop.mp4', type: 'video/mp4' },
+    ],
+  },
   secondary: { label: 'GitHub', href: 'https://github.com/amethystani' },
 };
 

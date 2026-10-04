@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { hermesFeatures, work } from '@/content/home';
 import { Button } from '@/components/ui/Button';
+import { DemoVideo } from './DemoVideo';
 
 export function HermesBlock() {
   return (
@@ -61,6 +62,9 @@ export function HermesBlock() {
             {work.primary.label}
           </Button>
         </div>
+      </div>
+      <div className="relative overflow-clip h-[var(--nw-demo-h)] w-full" data-el="hermes-demo">
+        <DemoVideo poster={work.band.poster} sources={work.band.sources} />
       </div>
       <div
         data-el="hermes-products"
