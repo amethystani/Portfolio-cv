@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Superposition — Interactive Walkthrough</title>
+<script>p5.disableFriendlyErrors = true;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.3/p5.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---- light theme, matches Nous blog (#023750 ink, #0471a9 accent, Helvetica) ---- */
+  html, body {
+    margin: 0; padding: 0;
+    background: #ffffff;
+    color: #023750;
+    font-family: Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  #wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 24px 18px;
+  }
+  #canvas-host {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  #step-box {
+    margin: 18px 0 18px 0;
+    padding: 14px 18px;
+    background: #f8f9fa;
+    border-left: 3px solid #0471a9;
+    border-radius: 0 4px 4px 0;
+    min-height: 78px;
+    transition: opacity 0.35s ease;
+    opacity: 1;
+  }
+  #step-box.fading { opacity: 0; }
+  #step-title {
+    margin: 0 0 6px 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #0471a9;
+  }
+  #step-text {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: #023750;
+    max-width: 780px;
+    font-weight: 500;
+  }
+  #step-text code {
+    font-family: "Geist Mono", "JetBrains Mono", monospace;
+    font-size: 0.85em;
+    background: #eef2f5;
+    color: #023750;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid #e2e6e9;
+  }
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .nav-btn {
+    padding: 7px 16px;
+    background: #ffffff;
+    border: 1px solid #0471a9;
+    color: #0471a9;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    transition: all 0.15s ease;
+    min-width: 88px;
+  }
+  .nav-btn:hover:not(:disabled) { background: #0471a9; color: #ffffff; }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  #step-slider {
+    flex: 1;
+    min-width: 220px;
+    accent-color: #0471a9;
+    background: transparent;
+  }
+  #step-label {
+    font-family: "Geist Mono", "JetBrains Mono", monospace;
+    font-size: 0.8rem;
+    color: #023750;
+    opacity: 0.75;
+    min-width: 82px;
+    text-align: right;
+    font-weight: 500;
+  }
+  .kbd-hint {
+    font-family: "Geist Mono", "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: #023750;
+    opacity: 0.5;
+    margin-top: 10px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="canvas-host"></div>
+  <div id="step-box">
+    <h3 id="step-title">loading…</h3>
+    <p id="step-text">&nbsp;</p>
+  </div>
+  <div id="controls">
+    <button class="nav-btn" id="prev-btn">← prev</button>
+    <input type="range" id="step-slider" min="0" max="7" step="1" value="0">
+    <span id="step-label">1 of 8</span>
+    <button class="nav-btn" id="next-btn">next →</button>
+  </div>
+  <div class="kbd-hint">← / → to step · drag slider to scrub</div>
+</div>
+
+<script>
+// ============================================================================
+// TST Interactive Walkthrough — a user-paced slideshow
+// ============================================================================
+//
+// One scalar drives everything: displayStep ∈ [0, 7], eased toward targetStep.
+// All visual parameters derive from displayStep so scrubbing works.
+//
+// The numbers baked in correspond to the paper's 3B dense row at s=6, r=0.3:
+//   - baseline: 20k steps, 42B tokens, final loss 2.808
+//   - TST:      20k steps, 75B tokens in phase 1, 105B total, final loss 2.676
+// ============================================================================
+
+const CFG = {
+  canvasW: 900,
+  canvasH: 560,
+  ease: 0.10,
+};
+
+const PALETTE = {
+  bg: [0, 0, 100],            // white
+  bgGlow: [200, 5, 97],       // faint cool tint for subtle depth
+  ink: [200, 90, 22],         // #023750 body ink
+  mutedInk: [200, 90, 35],
+  dimInk: [200, 40, 55],
+  amber: [358, 72, 70],       // baseline: matches paper's red (#c83737-ish)
+  amberSoft: [358, 55, 60],
+  sage: [202, 96, 66],        // TST: Nous blue #0471a9
+  sageSoft: [202, 80, 55],
+  red: [25, 85, 75],           // transition annotation: warm amber, not to clash with baseline red
+  brace: [200, 50, 40],
+};
+
+// Token strip sentence — 32 tokens so s=16 yields exactly 2 bags (or 4 bags at s=8, etc.)
+const SENTENCE = [
+  "the","cat","sat","on","the","mat","and","stared",
+  "out","the","window","at","the","cold","grey","rain",
+  "that","soaked","the","empty","dim","stone","street","until",
+  "the","quiet","dark","finally","settled","over","the","house"
+];
+const S_VAL = 16;  // 10B-A1B MoE config
+const R_VAL = 0.25;
+const N_TOK = SENTENCE.length;
+
+// Paper numbers — 10B-A1B MoE
+const BASELINE_TOKENS = 1050;   // B (1.05T)
+const TST_PHASE1_TOKENS = 1600; // B (1.6T consumed during phase 1, s=16 × ~0.25 × total)
+const TST_TOTAL_TOKENS = 2000;  // B (2T)
+const BASELINE_LOSS_FINAL = 2.252;
+const TST_LOSS_FINAL = 2.236;
+const BASELINE_MAX_STEP = 125000;
+const TRANSITION_STEP = 12483;  // r=0.25 × 49983 (rounded to paper row)
+
+// Actual loss curves from the paper's qwen10b-isoloss.pgf, baked in as [step, loss] arrays.
+// baseline: 10B-A1B MoE, 125k steps, 1.05T tokens, AdamW + WSD
+const BASELINE_CURVE = [[442,4.4545],[2369,3.0852],[4278,2.8146],[6205,2.7215],[8129,2.6645],[10066,2.6275],[11968,2.6015],[13898,2.5808],[15834,2.5637],[17740,2.5479],[19689,2.5362],[21628,2.526],[23557,2.516],[25525,2.508],[27433,2.5012],[29331,2.4938],[31260,2.489],[33202,2.4819],[35064,2.4779],[37060,2.473],[38975,2.4699],[40873,2.4655],[42843,2.4597],[44758,2.4569],[46679,2.4525],[48579,2.4505],[50531,2.447],[52419,2.4436],[54391,2.4404],[56312,2.4385],[58250,2.4348],[60173,2.4348],[62107,2.4303],[64009,2.4299],[65962,2.4274],[67900,2.4248],[69821,2.4219],[71708,2.4219],[73656,2.4196],[75592,2.4177],[77544,2.4181],[79478,2.4156],[81321,2.4138],[83269,2.41],[85221,2.4093],[87150,2.4088],[89078,2.4091],[90994,2.4061],[92902,2.4032],[94786,2.4025],[96758,2.4014],[98665,2.401],[100623,2.3986],[102553,2.3971],[104482,2.3958],[106434,2.3973],[108363,2.3936],[110228,2.3925],[112163,2.3921],[114097,2.3941],[116057,2.3888],[117971,2.3809],[119920,2.3687],[121848,2.3569],[123787,2.3443],[125731,2.3308],[127687,2.3207],[128254,2.3171]];
+
+// TST: 10B-A1B MoE, 50k steps, s=16, r=0.25, phase transition at step 12483
+const TST_CURVE = [[234,5.0961],[1264,4.8663],[2287,4.786],[3329,4.7227],[4368,4.689],[5373,4.668],[6405,4.6555],[7419,4.6422],[8431,4.6337],[9452,4.6257],[10504,4.6198],[11021,4.6175],[11245,4.6163],[11541,4.615],[11803,4.6131],[12025,4.6122],[12268,4.6111],[12568,4.6097],[12822,4.2274],[13065,2.9931],[13321,2.8414],[13557,2.7833],[13851,2.7369],[14600,2.6692],[15631,2.6161],[16654,2.5814],[17672,2.5579],[18708,2.5363],[19727,2.5208],[20752,2.5072],[21776,2.4957],[22798,2.4857],[23834,2.4743],[24854,2.4682],[25879,2.4597],[26900,2.4532],[27934,2.4459],[28961,2.4402],[29996,2.4351],[31016,2.4301],[32034,2.4253],[33079,2.4195],[34089,2.4175],[35119,2.4153],[36121,2.4103],[37158,2.4067],[38184,2.4031],[39204,2.398],[40239,2.391],[41270,2.3821],[42280,2.3744],[43318,2.3657],[44349,2.3609],[45377,2.3511],[46390,2.3438],[47411,2.3369],[48436,2.3308],[49471,2.3239],[50488,2.3177]];
+
+// Loss chart coordinate system (in canvas pixels)
+const CHART = {
+  x: 70, y: 40, w: 790, h: 220,
+  xMin: 0, xMax: BASELINE_MAX_STEP,   // x in steps
+  yMin: 2.2, yMax: 5.3,
+};
+function xToPix(x) { return CHART.x + (x - CHART.xMin) / (CHART.xMax - CHART.xMin) * CHART.w; }
+function yToPix(y) { return CHART.y + (CHART.yMax - y) / (CHART.yMax - CHART.yMin) * CHART.h; }
+
+// Token strip layout
+const STRIP = {
+  x: 30, y: 300, w: 840, h: 52,
+};
+
+// Counter row layout (bottom) — pushed below the predict label
+const COUNTERS = { y: 410 };
+// Code snippet / final callout share a slot below the counters
+const OVERLAY = { y: 484, h: 62 };
+
+// ============================================================================
+// Loss curves (fabricated but plausible; endpoints match paper)
+// ============================================================================
+// ============================================================================
+// Curve helpers: draw the baked-in polyline up to a fractional progress ∈ [0,1]
+// ============================================================================
+function drawCurvePartial(curve, progress, strokeColor, weight) {
+  if (progress <= 0) return null;
+  const n = curve.length;
+  const maxI = Math.max(1, Math.floor(progress * (n - 1)));
+  // Partial last segment
+  const partial = progress * (n - 1) - Math.floor(progress * (n - 1));
+
+  stroke(...strokeColor);
+  strokeWeight(weight);
+  noFill();
+  beginShape();
+  for (let i = 0; i <= maxI; i++) {
+    const [step, loss] = curve[i];
+    vertex(xToPix(step), yToPix(loss));
+  }
+  // interpolated final point
+  if (maxI < n - 1 && partial > 0) {
+    const [s0, l0] = curve[maxI];
+    const [s1, l1] = curve[maxI + 1];
+    const s = s0 + (s1 - s0) * partial;
+    const l = l0 + (l1 - l0) * partial;
+    vertex(xToPix(s), yToPix(l));
+    endShape();
+    return [s, l];
+  }
+  endShape();
+  return curve[maxI];
+}
+
+// ============================================================================
+// Step definitions
+// ============================================================================
+const STEPS = [
+  {
+    title: "Step 1: Standard pretraining",
+    text: "A training step: the model reads a sequence of <b>L</b> tokens and is trained to predict the next one. Every step, <b>L</b> tokens of compute are spent to learn from <b>L</b> tokens of text. Watch the arrow move through the sequence."
+  },
+  {
+    title: "Step 2: Run it to completion",
+    text: "Over <b>125,000 steps</b> on a 10B-A1B MoE, the loss descends to <b>2.252</b>. The model sees <b>~1.05 trillion tokens</b>. This is the baseline we want to beat."
+  },
+  {
+    title: "Step 3: The bottleneck",
+    text: "At fixed FLOPs per step, sequence length <b>L</b> caps the amount of text each step can teach the model about. Can we push more tokens through each step, without changing the model we get at the end?"
+  },
+  {
+    title: "Step 4: Fold the sequence",
+    text: "Group <b>s = 16</b> adjacent tokens into a \"bag\" by averaging their embeddings. The transformer processes a <b>16×</b> shorter latent sequence — same FLOPs per step, but each step now ingests <b>16×</b> more text."
+  },
+  {
+    title: "Step 5: Predict the next bag",
+    text: "The loss becomes a cross-entropy against the <em>next bag of 16 tokens</em> rather than the next single token. Implementation: <code>inputs.reshape(bs, seq // 16, 16)</code> + summed CE. No new parameters."
+  },
+  {
+    title: "Step 6: Phase 1 — loss is high, but training is fast",
+    text: "Run superposition for the first <b>r = 0.25</b> of training (12,483 steps). The training loss sits around <b>4.6</b> — bag-level cross-entropy is a harder target than per-token CE — but the model is consuming text at <b>16×</b> baseline rate. By step 12k, TST has seen <b>1.6T tokens</b> while baseline has seen <b>100B</b>."
+  },
+  {
+    title: "Step 7: Switch back — loss drops",
+    text: "At step 12,483 we discard superposition and resume standard next-token training. The loss collapses from <b>4.6 → 2.8</b> within ~500 steps, landing slightly above baseline. The head had already learned \"what's coming next\"; it just needed to re-align to per-token prediction."
+  },
+  {
+    title: "Step 8: Recovery and crossover",
+    text: "TST finishes in <b>50,000 steps</b> at a final loss of <b>2.236</b>, lower than baseline's <b>2.252</b>. Same architecture, same optimizer, <b>40% of baseline's wall-clock</b>. Downstream: +1.1 HellaSwag, +0.4 ARC-E, +1.0 ARC-C, +1.6 MMLU."
+  }
+];
+
+// ============================================================================
+// State
+// ============================================================================
+let targetStep = 0;
+let displayStep = 0;
+
+// Arrow-on-strip cycling position, continuous
+let arrowPos = 0;
+
+// ============================================================================
+// Derived parameters as a function of displayStep (continuous)
+// ============================================================================
+function smoothstep(x, a, b) {
+  if (b === a) return x >= a ? 1 : 0;
+  const t = constrain((x - a) / (b - a), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+function paramsAt(s) {
+  // Convention: smoothstep(s, i, i+1) produces an animation that begins as the user
+  // leaves step i and completes on arrival at step i+1. Narrative steps:
+  //
+  //   step 0: NTP intro (tokens + arrow)
+  //   step 1: baseline curve draws in  -> animates during (0, 1)
+  //   step 2: bottleneck brace appears -> animates during (1, 2)
+  //   step 3: bags form                -> animates during (2, 3)
+  //   step 4: bag prediction arrow + code -> animates during (3, 4)
+  //   step 5: TST phase-1 plateau draws -> animates during (4, 5)
+  //   step 6: transition drop (spike)  -> animates during (5, 6)
+  //   step 7: recovery + final callout -> animates during (6, 7)
+
+  // TST curve progress — continuous through steps 4→7
+  // The TST curve has natural shape: plateau (0 → ~0.3), sharp drop (~0.3 → ~0.38), recovery (→ 1.0)
+  // At step 5 we want ~0.30 (end of phase 1, just before transition)
+  // At step 6 we want ~0.45 (through the drop)
+  // At step 7 we want 1.0 (complete recovery + endpoint visible)
+  const tstCurveP = (
+      0.30 * smoothstep(s, 4.0, 5.0)
+    + 0.15 * smoothstep(s, 5.0, 6.0)   // the drop reveals
+    + 0.55 * smoothstep(s, 6.0, 7.0)   // the recovery
+  );
+
+  return {
+    // bags form between steps 2 and 3, unfold again during transition (5.2 → 6.0)
+    bagBlend:                smoothstep(s, 2.0, 3.0) * (1 - smoothstep(s, 5.2, 6.0)),
+
+    // arrow: NTP → bag mode between steps 3 and 4, reverts during transition
+    arrowBagMode:            smoothstep(s, 3.0, 4.0) * (1 - smoothstep(s, 5.2, 6.0)),
+
+    // arrow dims briefly during the transition
+    arrowVisible:            1 - (smoothstep(s, 5.5, 6.0) * (1 - smoothstep(s, 6.2, 6.8))),
+
+    // baseline curve draws between steps 0 and 1
+    baselineCurveProgress:   smoothstep(s, 0.0, 1.0),
+
+    // TST curve (combined progress through plateau/drop/recovery)
+    tstCurveProgress:        tstCurveP,
+
+    // TST phase-1 region band on chart — appears steps 4-5
+    tstPhase1RegionVisible:  smoothstep(s, 4.0, 5.0),
+
+    // phase boundary vertical line — fades in with phase-1 region
+    phaseBoundaryVisible:    smoothstep(s, 4.3, 5.2),
+
+    // baseline token counter fills 0→1.05T between steps 0 and 1
+    baselineTokensProgress:  smoothstep(s, 0.0, 1.0),
+
+    // TST counter appears at step 4; phase-1 fill 4-5; phase-2 fill 6-7
+    tstPhase1TokensProgress: smoothstep(s, 4.0, 5.0),
+    tstPhase2TokensProgress: smoothstep(s, 6.0, 7.0),
+    showTSTCounter:          smoothstep(s, 3.8, 4.2),
+
+    // code snippet visible only during step 4
+    codeSnippetVisible:      smoothstep(s, 3.5, 4.0) * (1 - smoothstep(s, 4.3, 4.8)),
+
+    // bottleneck brace at step 2, gone as bags form
+    bottleneckHighlight:     smoothstep(s, 1.5, 2.0) * (1 - smoothstep(s, 2.2, 2.8)),
+
+    // final-result callout at step 7
+    finalCalloutVisible:     smoothstep(s, 6.5, 7.0),
+    finalLossGapVisible:     smoothstep(s, 6.5, 7.0),
+
+    // annotation for the drop/transition zone: visible briefly during step 6
+    transitionAnnotVisible:  smoothstep(s, 5.3, 6.0) * (1 - smoothstep(s, 6.6, 7.0)),
+
+    rawStep: s,
+  };
+}
+
+// ============================================================================
+// Setup
+// ============================================================================
+function setup() {
+  const c = createCanvas(CFG.canvasW, CFG.canvasH);
+  c.parent('canvas-host');
+  colorMode(HSB, 360, 100, 100, 100);
+  textFont('Inter');
+  frameRate(60);
+  wireControls();
+  updateStepText(0);
+}
+
+function wireControls() {
+  const slider = document.getElementById('step-slider');
+  const prev = document.getElementById('prev-btn');
+  const next = document.getElementById('next-btn');
+
+  slider.addEventListener('input', (e) => {
+    const v = parseInt(e.target.value);
+    gotoStep(v);
+  });
+  prev.addEventListener('click', () => gotoStep(targetStep - 1));
+  next.addEventListener('click', () => gotoStep(targetStep + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') gotoStep(targetStep - 1);
+    else if (e.key === 'ArrowRight') gotoStep(targetStep + 1);
+  });
+
+  updateButtons();
+}
+
+function gotoStep(n) {
+  n = constrain(n, 0, STEPS.length - 1);
+  if (n === targetStep) return;
+  const oldStep = targetStep;
+  targetStep = n;
+  document.getElementById('step-slider').value = n;
+  document.getElementById('step-label').textContent = `${n + 1} of ${STEPS.length}`;
+  updateButtons();
+  // Only swap text if we're changing to a different "nearest" step
+  updateStepText(n);
+}
+
+function updateButtons() {
+  document.getElementById('prev-btn').disabled = targetStep <= 0;
+  document.getElementById('next-btn').disabled = targetStep >= STEPS.length - 1;
+}
+
+function updateStepText(n) {
+  const box = document.getElementById('step-box');
+  box.classList.add('fading');
+  setTimeout(() => {
+    document.getElementById('step-title').textContent = STEPS[n].title;
+    document.getElementById('step-text').innerHTML = STEPS[n].text;
+    box.classList.remove('fading');
+  }, 200);
+}
+
+// ============================================================================
+// Draw loop
+// ============================================================================
+function draw() {
+  displayStep += (targetStep - displayStep) * CFG.ease;
+  const P = paramsAt(displayStep);
+
+  // Arrow cycling — slow and deliberate. One full sweep through the strip
+  // takes ~15s in NTP mode (~625ms per token), about 21s per bag cycle.
+  arrowPos += 1 / (60 * 15);
+
+  drawBackground();
+  drawLossChart(P);
+  drawTokenStrip(P);
+  drawCounters(P);
+  drawCodeSnippet(P);
+  drawFinalCallout(P);
+}
+
+// ============================================================================
+// Background
+// ============================================================================
+function drawBackground() {
+  noStroke();
+  fill(...PALETTE.bg);
+  rect(0, 0, CFG.canvasW, CFG.canvasH);
+  // extremely subtle cool glow behind chart for depth
+  const cx = CFG.canvasW / 2;
+  const cy = CHART.y + CHART.h / 2;
+  for (let r = 500; r > 0; r -= 40) {
+    const a = map(r, 500, 0, 0, 3);
+    fill(200, 15, 96, a);
+    ellipse(cx, cy, r * 2.5, r * 1.2);
+  }
+}
+
+// ============================================================================
+// Loss chart
+// ============================================================================
+function drawLossChart(P) {
+  push();
+  // Chart frame
+  noFill();
+  stroke(200, 70, 45);
+  strokeWeight(1);
+  line(CHART.x, CHART.y, CHART.x, CHART.y + CHART.h);
+  line(CHART.x, CHART.y + CHART.h, CHART.x + CHART.w, CHART.y + CHART.h);
+
+  // Y-axis ticks
+  noStroke();
+  fill(...PALETTE.dimInk);
+  textSize(10);
+  textAlign(RIGHT, CENTER);
+  for (const yVal of [2.5, 3.0, 3.5, 4.0, 4.5, 5.0]) {
+    const y = yToPix(yVal);
+    stroke(200, 60, 55);
+    strokeWeight(1);
+    line(CHART.x - 3, y, CHART.x, y);
+    noStroke();
+    fill(...PALETTE.dimInk);
+    text(yVal.toFixed(1), CHART.x - 7, y);
+    // faint gridline
+    stroke(200, 30, 85, 60);
+    line(CHART.x + 1, y, CHART.x + CHART.w, y);
+  }
+  noStroke();
+
+  // X-axis ticks: 0, 25k, 50k, 75k, 100k, 125k
+  fill(...PALETTE.dimInk);
+  textSize(10);
+  textAlign(CENTER, TOP);
+  for (const xVal of [0, 25000, 50000, 75000, 100000, 125000]) {
+    const x = xToPix(xVal);
+    stroke(200, 60, 55);
+    strokeWeight(1);
+    line(x, CHART.y + CHART.h, x, CHART.y + CHART.h + 3);
+    noStroke();
+    fill(...PALETTE.dimInk);
+    text(`${xVal / 1000}k`, x, CHART.y + CHART.h + 6);
+  }
+  // X axis label
+  fill(...PALETTE.mutedInk);
+  textSize(11);
+  textAlign(CENTER);
+  text("training step", CHART.x + CHART.w / 2, CHART.y + CHART.h + 24);
+  // Y axis label
+  push();
+  translate(CHART.x - 42, CHART.y + CHART.h / 2);
+  rotate(-HALF_PI);
+  textAlign(CENTER);
+  text("training loss", 0, 0);
+  pop();
+
+  // === TST Phase 1 region (shaded band) ===
+  if (P.tstPhase1RegionVisible > 0.01) {
+    const alpha = P.tstPhase1RegionVisible * 18;
+    fill(...PALETTE.sage, alpha);
+    noStroke();
+    rect(xToPix(0), CHART.y, xToPix(TRANSITION_STEP) - xToPix(0), CHART.h);
+
+    if (P.tstPhase1RegionVisible > 0.4) {
+      fill(...PALETTE.sageSoft, P.tstPhase1RegionVisible * 60);
+      textSize(10);
+      textAlign(CENTER, TOP);
+      text("phase 1: superposition", xToPix(TRANSITION_STEP / 2), CHART.y + 10);
+      textSize(9);
+      fill(...PALETTE.sageSoft, P.tstPhase1RegionVisible * 45);
+      text(`r = ${R_VAL}, s = ${S_VAL}`, xToPix(TRANSITION_STEP / 2), CHART.y + 24);
+    }
+  }
+
+  // === Phase boundary line at TRANSITION_STEP ===
+  if (P.phaseBoundaryVisible > 0.01) {
+    const a = P.phaseBoundaryVisible;
+    stroke(...PALETTE.sageSoft, a * 55);
+    strokeWeight(1);
+    drawingContext.setLineDash([3, 3]);
+    line(xToPix(TRANSITION_STEP), CHART.y, xToPix(TRANSITION_STEP), CHART.y + CHART.h);
+    drawingContext.setLineDash([]);
+  }
+
+  // === Baseline curve (real data from paper) ===
+  let baselineEndpoint = null;
+  if (P.baselineCurveProgress > 0.01) {
+    baselineEndpoint = drawCurvePartial(
+      BASELINE_CURVE,
+      P.baselineCurveProgress,
+      PALETTE.amber,
+      2.2
+    );
+    // Endpoint dot — at the actual last-drawn point on the curve
+    if (baselineEndpoint) {
+      fill(...PALETTE.amber);
+      noStroke();
+      ellipse(xToPix(baselineEndpoint[0]), yToPix(baselineEndpoint[1]), 6);
+    }
+  }
+
+  // === TST curve (real data from paper — plateau, drop, recovery) ===
+  let tstEndpoint = null;
+  if (P.tstCurveProgress > 0.01) {
+    tstEndpoint = drawCurvePartial(
+      TST_CURVE,
+      P.tstCurveProgress,
+      PALETTE.sage,
+      2.2
+    );
+    if (tstEndpoint) {
+      fill(...PALETTE.sage);
+      noStroke();
+      ellipse(xToPix(tstEndpoint[0]), yToPix(tstEndpoint[1]), 6);
+    }
+  }
+
+  // === Transition annotation — points at the sharp drop ===
+  if (P.transitionAnnotVisible > 0.02) {
+    const a = P.transitionAnnotVisible;
+    // Point-of-interest is right at the transition: step ~12822, loss ~4.23 (mid-drop)
+    const poiStep = 12822, poiLoss = 4.23;
+    const px = xToPix(poiStep);
+    const py = yToPix(poiLoss);
+    // small pulse dot
+    const pulse = 0.5 + 0.5 * Math.sin(millis() / 500);
+    fill(...PALETTE.red, a * (70 + pulse * 20));
+    noStroke();
+    ellipse(px, py, 7);
+    // caption
+    fill(...PALETTE.red, a * 80);
+    textSize(10);
+    textAlign(LEFT);
+    text("loss drops at phase switch", px + 10, py - 4);
+  }
+
+  // === Final gap annotation ===
+  if (P.finalLossGapVisible > 0.01 && baselineEndpoint && tstEndpoint) {
+    const a = P.finalLossGapVisible;
+    // Use baseline's final point (rightmost) as x anchor
+    const x1 = xToPix(baselineEndpoint[0]);
+    const y1 = yToPix(BASELINE_LOSS_FINAL);
+    const y2 = yToPix(TST_LOSS_FINAL);
+
+    stroke(...PALETTE.ink, a * 70);
+    strokeWeight(1);
+    line(x1 + 10, y1, x1 + 10, y2);
+    line(x1 + 6, y1, x1 + 14, y1);
+    line(x1 + 6, y2, x1 + 14, y2);
+
+    noStroke();
+    fill(...PALETTE.ink, a * 90);
+    textSize(10);
+    textAlign(LEFT, CENTER);
+    text(`Δ ${(BASELINE_LOSS_FINAL - TST_LOSS_FINAL).toFixed(3)}`, x1 + 18, (y1 + y2) / 2);
+  }
+
+  // === Curve labels ===
+  if (P.baselineCurveProgress > 0.6) {
+    noStroke();
+    fill(...PALETTE.amberSoft, P.baselineCurveProgress * 80);
+    textSize(11);
+    textAlign(LEFT);
+    // position the label at ~95k step, slightly above baseline curve
+    const lx = xToPix(100000);
+    const ly = yToPix(2.40) - 6;
+    text("baseline", lx, ly);
+  }
+  if (P.tstCurveProgress > 0.6) {
+    noStroke();
+    fill(...PALETTE.sageSoft, P.tstCurveProgress * 80);
+    textSize(11);
+    textAlign(LEFT);
+    // position below the TST tail
+    const lx = xToPix(42000);
+    const ly = yToPix(2.32) + 14;
+    text("TST", lx, ly);
+  }
+
+  pop();
+}
+
+// ============================================================================
+// Token strip
+// ============================================================================
+const TOKEN_HUES = {};
+function tokenHue(word) {
+  if (TOKEN_HUES[word] !== undefined) return TOKEN_HUES[word];
+  // Assign distinct hues around a varied wheel — tuned for white backgrounds
+  // so the colored blocks have presence without being garish, and white text reads
+  const uniqueWords = [...new Set(SENTENCE)];
+  const idx = uniqueWords.indexOf(word);
+  const h = (idx * 37 + 25) % 360;
+  TOKEN_HUES[word] = word === "the" ? { h: 200, s: 22, b: 62 } : { h, s: 48, b: 62 };
+  return TOKEN_HUES[word];
+}
+
+function drawTokenStrip(P) {
+  push();
+  const sRound = S_VAL;
+  const n = N_TOK;
+  const gap = 3;
+  const usable = STRIP.w - 2;
+  const tokW = (usable - gap * (n - 1)) / n;
+  const numBags = Math.ceil(n / sRound);
+  const bagW = (usable - gap * (numBags - 1)) / numBags;
+  const blend = P.bagBlend;
+
+  // Compute per-token positions (eased between individual and bagged)
+  const tokens = [];
+  for (let i = 0; i < n; i++) {
+    const groupIdx = Math.floor(i / sRound);
+    const indivX = STRIP.x + 1 + i * (tokW + gap);
+    const bagX = STRIP.x + 1 + groupIdx * (bagW + gap);
+    tokens.push({
+      word: SENTENCE[i],
+      idx: i,
+      x: lerp(indivX, bagX, blend),
+      w: lerp(tokW, bagW, blend),
+      bagX: bagX,
+      bagW: bagW,
+      groupIdx: groupIdx,
+    });
+  }
+
+  // === Draw bag blocks underneath (if blend > threshold) ===
+  if (blend > 0.05) {
+    for (let g = 0; g < numBags; g++) {
+      const groupStart = g * sRound;
+      const groupEnd = Math.min(groupStart + sRound, n);
+      const groupSize = groupEnd - groupStart;
+      const bagX = tokens[groupStart].bagX;
+      const bagW_ = tokens[groupStart].bagW;
+
+      // average hue (HSB-polar)
+      let sx = 0, sy = 0, ss = 0, sb = 0;
+      for (let k = groupStart; k < groupEnd; k++) {
+        const c = tokenHue(tokens[k].word);
+        sx += Math.cos(c.h * PI / 180);
+        sy += Math.sin(c.h * PI / 180);
+        ss += c.s;
+        sb += c.b;
+      }
+      const avgH = (Math.atan2(sy / groupSize, sx / groupSize) * 180 / PI + 360) % 360;
+      const avgS = ss / groupSize * 0.85;
+      const avgB = sb / groupSize;
+
+      const alpha = blend * 100;
+
+      // shadow
+      noStroke();
+      fill(200, 50, 30, 15 * blend);
+      rect(bagX + 1, STRIP.y + 2, bagW_, STRIP.h, 6);
+
+      // bag block
+      fill(avgH, avgS, avgB, alpha);
+      rect(bagX, STRIP.y, bagW_, STRIP.h, 6);
+
+      // diagonal stripe inside (signals "averaged")
+      if (blend > 0.4) {
+        push();
+        drawingContext.save();
+        drawingContext.beginPath();
+        drawingContext.rect(bagX, STRIP.y, bagW_, STRIP.h);
+        drawingContext.clip();
+        stroke(avgH, avgS * 0.5, Math.min(100, avgB + 18), 14 * blend);
+        strokeWeight(1);
+        for (let k = -STRIP.h; k < bagW_ + STRIP.h; k += 7) {
+          line(bagX + k, STRIP.y, bagX + k + STRIP.h, STRIP.y + STRIP.h);
+        }
+        drawingContext.restore();
+        pop();
+      }
+
+      // top highlight
+      noFill();
+      stroke(avgH, avgS * 0.5, Math.min(100, avgB + 15), 55 * blend);
+      strokeWeight(1);
+      rect(bagX + 0.5, STRIP.y + 0.5, bagW_ - 1, STRIP.h * 0.35, 6, 6, 0, 0);
+
+      // concatenated words label — dark ink for light theme
+      noStroke();
+      fill(...PALETTE.bg, 95 * blend);
+      textStyle(NORMAL);
+      textSize(10);
+      textAlign(CENTER, CENTER);
+      const full = tokens.slice(groupStart, groupEnd).map(t => t.word).join(' + ');
+      let lbl = full;
+      while (textWidth(lbl) > bagW_ - 10 && lbl.length > 3) lbl = lbl.slice(0, -1);
+      if (lbl !== full) lbl = lbl.replace(/\s*\+?\s*$/, '') + '…';
+      text(lbl, bagX + bagW_ / 2, STRIP.y + STRIP.h / 2);
+    }
+  }
+
+  // === Draw individual tokens on top (fading as blend grows) ===
+  const individualAlpha = Math.max(0, 1 - blend * 1.15);
+  if (individualAlpha > 0.08) {
+    for (let i = 0; i < n; i++) {
+      const t = tokens[i];
+      const c = tokenHue(t.word);
+
+      noStroke();
+      fill(200, 50, 30, 13 * individualAlpha);
+      rect(t.x + 1, STRIP.y + 2, t.w, STRIP.h, 5);
+
+      fill(c.h, c.s, c.b, 100 * individualAlpha);
+      rect(t.x, STRIP.y, t.w, STRIP.h, 5);
+
+      // top highlight
+      noFill();
+      stroke(c.h, c.s * 0.5, Math.min(100, c.b + 15), 55 * individualAlpha);
+      strokeWeight(1);
+      rect(t.x + 0.5, STRIP.y + 0.5, t.w - 1, STRIP.h * 0.35, 5, 5, 0, 0);
+
+      // label — truncate to fit width (white-on-filled-token for light theme)
+      noStroke();
+      fill(...PALETTE.bg, 95 * individualAlpha);
+      textStyle(NORMAL);
+      textSize(9);
+      textAlign(CENTER, CENTER);
+      let wordLbl = t.word;
+      while (textWidth(wordLbl) > t.w - 3 && wordLbl.length > 1) {
+        wordLbl = wordLbl.slice(0, -1);
+      }
+      if (wordLbl !== t.word && wordLbl.length >= 2) wordLbl = wordLbl.slice(0, -1) + '.';
+      if (wordLbl.length >= 1 && t.w > 9) {
+        text(wordLbl, t.x + t.w / 2, STRIP.y + STRIP.h / 2);
+      }
+    }
+  }
+
+  // === Bottleneck highlight (step 3) ===
+  if (P.bottleneckHighlight > 0.05) {
+    const a = P.bottleneckHighlight;
+    // Draw a brace under the full sequence with "L = 24" annotation
+    noFill();
+    stroke(...PALETTE.ink, a * 70);
+    strokeWeight(1);
+    const braceY = STRIP.y + STRIP.h + 8;
+    drawingContext.setLineDash([2, 3]);
+    line(STRIP.x + 1, braceY, STRIP.x + 1 + usable, braceY);
+    drawingContext.setLineDash([]);
+    // ticks at ends
+    line(STRIP.x + 1, braceY - 3, STRIP.x + 1, braceY + 3);
+    line(STRIP.x + 1 + usable, braceY - 3, STRIP.x + 1 + usable, braceY + 3);
+    noStroke();
+    fill(...PALETTE.ink, a * 85);
+    textSize(10);
+    textAlign(CENTER);
+    text(`L = ${n} tokens per step`, STRIP.x + 1 + usable / 2, braceY + 16);
+  }
+
+  // === Prediction arrow ===
+  if (P.arrowVisible > 0.05) {
+    drawPredictionArrow(P, tokens, numBags, sRound);
+  }
+
+  pop();
+}
+
+function drawPredictionArrow(P, tokens, numBags, sRound) {
+  const n = tokens.length;
+  const bagMode = P.arrowBagMode;  // 0 = NTP, 1 = bag
+  const vis = P.arrowVisible;
+
+  // Cycling position — slow and deliberate
+  const cyc = (arrowPos % 1);
+
+  // Compute source and target x, for both NTP and bag modes; interpolate by bagMode
+  //   NTP: src = token[i], tgt = token[i+1], where i advances slowly
+  //   Bag: src = bag[g], tgt = bag[g+1], where g advances even more slowly
+
+  // NTP arrow position
+  const ntpI = Math.floor(cyc * (n - 1));
+  const ntpSrc = tokens[ntpI];
+  const ntpTgt = tokens[Math.min(ntpI + 1, n - 1)];
+  const ntpSrcX = ntpSrc.x + ntpSrc.w / 2;
+  const ntpTgtX = ntpTgt.x + ntpTgt.w / 2;
+
+  // Bag arrow position
+  const bagCyc = ((arrowPos * 0.7) % 1);  // slower for bags
+  const bagG = Math.floor(bagCyc * (numBags - 1));
+  const bagSrcX_ = tokens[bagG * sRound].bagX + tokens[bagG * sRound].bagW / 2;
+  const bagTgtX_ = tokens[Math.min((bagG + 1) * sRound, n - 1)].bagX + tokens[Math.min((bagG + 1) * sRound, n - 1)].bagW / 2;
+
+  // Interpolated positions
+  const srcX = lerp(ntpSrcX, bagSrcX_, bagMode);
+  const tgtX = lerp(ntpTgtX, bagTgtX_, bagMode);
+
+  const srcY = STRIP.y + STRIP.h;
+  const tgtY = STRIP.y;
+
+  // Target highlight ring
+  const tgtW = lerp(ntpTgt.w, tokens[Math.min((bagG + 1) * sRound, n - 1)].bagW, bagMode);
+  const pulse = 0.5 + 0.5 * Math.sin(millis() / 500);
+  noFill();
+  stroke(...PALETTE.sage, vis * (70 + pulse * 20));
+  strokeWeight(1.5);
+  rect(tgtX - tgtW / 2 - 2, tgtY - 2, tgtW + 4, STRIP.h + 4, 7);
+
+  // Arrow curve
+  noFill();
+  stroke(...PALETTE.sage, vis * 65);
+  strokeWeight(1.5);
+  const midY = (srcY + tgtY) / 2 + 26;
+  beginShape();
+  for (let p = 0; p <= 24; p++) {
+    const tt = p / 24;
+    const x = lerp(srcX, tgtX, tt);
+    const y = (1 - tt) * (1 - tt) * srcY + 2 * (1 - tt) * tt * midY + tt * tt * tgtY;
+    vertex(x, y);
+  }
+  endShape();
+
+  // arrowhead at target
+  push();
+  translate(tgtX, tgtY - 2);
+  rotate(-HALF_PI - 0.25);
+  fill(...PALETTE.sage, vis * 80);
+  noStroke();
+  triangle(0, 0, -4, -6, 4, -6);
+  pop();
+
+  // Label
+  noStroke();
+  fill(...PALETTE.sageSoft, vis * 70);
+  textSize(10);
+  textAlign(CENTER);
+  const label = bagMode > 0.5
+    ? `predict: next bag of ${sRound} tokens`
+    : `predict: "${ntpTgt.word}"`;
+  text(label, tgtX, tgtY + STRIP.h + 28);
+}
+
+// ============================================================================
+// Counter row
+// ============================================================================
+// Format token count: show as "xxxB" under 1000, "x.xxT" at 1000+
+function fmtTokens(n) {
+  if (n < 1000) return `${n.toFixed(0)}B`;
+  return `${(n / 1000).toFixed(2)}T`;
+}
+
+function drawCounters(P) {
+  const baselineN = BASELINE_TOKENS * P.baselineTokensProgress;
+  const tstN = TST_PHASE1_TOKENS * P.tstPhase1TokensProgress
+             + (TST_TOTAL_TOKENS - TST_PHASE1_TOKENS) * P.tstPhase2TokensProgress;
+
+  const y = COUNTERS.y;
+  push();
+
+  const panelW = 340;
+  const gap = 40;
+  const totalW = panelW * 2 + gap;
+  const startX = (CFG.canvasW - totalW) / 2;
+
+  if (P.baselineTokensProgress > 0.05) {
+    drawCounterPanel(startX, y, panelW,
+      "baseline",
+      fmtTokens(baselineN),
+      `tokens consumed · final loss ${P.baselineCurveProgress > 0.98 ? BASELINE_LOSS_FINAL.toFixed(3) : '…'}`,
+      PALETTE.amber, PALETTE.amberSoft,
+      P.baselineTokensProgress
+    );
+  }
+
+  if (P.showTSTCounter > 0.05) {
+    const showFinalLoss = P.tstCurveProgress > 0.95;
+    const subtitle = showFinalLoss
+      ? `tokens consumed · final loss ${TST_LOSS_FINAL.toFixed(3)}`
+      : (P.tstPhase1TokensProgress > 0.05
+        ? `tokens consumed · phase ${P.tstPhase2TokensProgress > 0.05 ? '2' : '1'}`
+        : `tokens consumed`);
+    drawCounterPanel(startX + panelW + gap, y, panelW,
+      "TST",
+      fmtTokens(tstN),
+      subtitle,
+      PALETTE.sage, PALETTE.sageSoft,
+      P.showTSTCounter
+    );
+  }
+
+  if (P.tstPhase1TokensProgress > 0.5 && tstN > baselineN) {
+    const ratio = tstN / Math.max(baselineN, 0.1);
+    const ra = Math.min(1, (P.tstPhase1TokensProgress - 0.5) / 0.5);
+    noStroke();
+    fill(...PALETTE.ink, ra * 70);
+    textSize(12);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD);
+    text(`${ratio.toFixed(1)}×`, CFG.canvasW / 2, y + 32);
+    textStyle(NORMAL);
+  }
+
+  pop();
+}
+
+function drawCounterPanel(x, y, w, title, value, subtitle, color, colorSoft, alpha) {
+  push();
+
+  // panel bg — light grey tinted with curve color (just a whisper of tint)
+  noStroke();
+  fill(...color, alpha * 7);
+  rect(x, y, w, 58, 4);
+  // outer border in curve color
+  stroke(...color, alpha * 35);
+  strokeWeight(1);
+  noFill();
+  rect(x, y, w, 58, 4);
+  noStroke();
+
+  // top accent bar (solid curve color)
+  fill(...color, alpha * 85);
+  rect(x, y, w, 3, 3, 3, 0, 0);
+
+  // title
+  fill(...color, alpha * 95);
+  textSize(10);
+  textStyle(BOLD);
+  textAlign(LEFT, TOP);
+  text(title.toUpperCase(), x + 14, y + 12);
+  textStyle(NORMAL);
+
+  // big value
+  fill(...color, alpha * 100);
+  textSize(24);
+  textStyle(BOLD);
+  textAlign(LEFT, TOP);
+  text(value, x + 14, y + 24);
+  textStyle(NORMAL);
+
+  // subtitle
+  fill(...PALETTE.ink, alpha * 70);
+  textSize(10);
+  textAlign(LEFT, TOP);
+  text(subtitle, x + 14, y + 46);
+
+  pop();
+}
+
+// ============================================================================
+// Code snippet overlay (step 5)
+// ============================================================================
+function drawCodeSnippet(P) {
+  const vis = P.codeSnippetVisible;
+  if (vis < 0.03) return;
+  push();
+
+  const boxW = 380, boxH = 74;
+  const bx = (CFG.canvasW - boxW) / 2;
+  const by = OVERLAY.y;
+
+  noStroke();
+  // light panel bg
+  fill(200, 15, 97, vis * 100);
+  rect(bx, by, boxW, boxH, 4);
+  // outer border
+  stroke(...PALETTE.sage, vis * 28);
+  strokeWeight(1);
+  noFill();
+  rect(bx, by, boxW, boxH, 4);
+  noStroke();
+
+  // left accent stripe
+  fill(...PALETTE.sage, vis * 90);
+  rect(bx, by, 3, boxH);
+
+  fill(...PALETTE.sage, vis * 85);
+  textSize(9);
+  textStyle(BOLD);
+  textAlign(LEFT, TOP);
+  text("PYTORCH IMPLEMENTATION", bx + 14, by + 8);
+  textStyle(NORMAL);
+
+  // code body — dark ink for light panel
+  fill(...PALETTE.ink, vis * 95);
+  textFont('JetBrains Mono');
+  textSize(11);
+  textAlign(LEFT, TOP);
+  text("inputs = inputs.reshape(bs, seq // 16, 16)", bx + 14, by + 24);
+  text("embeds = embed(inputs).mean(dim=-2)", bx + 14, by + 40);
+  text("loss = sum(CE(logits, y_i) for i in bag) / 16", bx + 14, by + 56);
+  textFont('Inter');
+
+  pop();
+}
+
+// ============================================================================
+// Final callout (step 8)
+// ============================================================================
+function drawFinalCallout(P) {
+  const vis = P.finalCalloutVisible;
+  if (vis < 0.03) return;
+
+  push();
+
+  const boxW = 340, boxH = 68;
+  const bx = (CFG.canvasW - boxW) / 2;
+  const by = OVERLAY.y;
+
+  // panel — light theme
+  noStroke();
+  fill(200, 15, 97, vis * 100);
+  rect(bx, by, boxW, boxH, 5);
+  // outer border
+  stroke(...PALETTE.sage, vis * 28);
+  strokeWeight(1);
+  noFill();
+  rect(bx, by, boxW, boxH, 5);
+  noStroke();
+
+  fill(...PALETTE.sage, vis * 90);
+  rect(bx, by, 3, boxH);
+
+  // label
+  fill(...PALETTE.sageSoft, vis * 75);
+  textSize(9);
+  textStyle(BOLD);
+  textAlign(LEFT, TOP);
+  text("10B-A1B MoE · ISO-FLOPS", bx + 14, by + 10);
+  textStyle(NORMAL);
+
+  // Two side-by-side values
+  textAlign(LEFT, TOP);
+  fill(...PALETTE.amberSoft, vis * 85);
+  textSize(11);
+  text("baseline", bx + 14, by + 28);
+  fill(...PALETTE.amber, vis * 95);
+  textSize(20);
+  textStyle(BOLD);
+  text(BASELINE_LOSS_FINAL.toFixed(3), bx + 14, by + 42);
+
+  fill(...PALETTE.sageSoft, vis * 85);
+  textSize(11);
+  textStyle(NORMAL);
+  text("TST", bx + 170, by + 28);
+  fill(...PALETTE.sage, vis * 95);
+  textSize(20);
+  textStyle(BOLD);
+  text(TST_LOSS_FINAL.toFixed(3), bx + 170, by + 42);
+  textStyle(NORMAL);
+
+  // delta
+  fill(...PALETTE.ink, vis * 70);
+  textSize(10);
+  textAlign(RIGHT, TOP);
+  text(`−${(BASELINE_LOSS_FINAL - TST_LOSS_FINAL).toFixed(3)} loss`, bx + boxW - 14, by + 28);
+  text(`40% wall-clock`, bx + boxW - 14, by + 42);
+
+  pop();
+}
+
+// ============================================================================
+// Keyboard input
+// ============================================================================
+function keyPressed() {
+  if (key === 's' || key === 'S') saveCanvas('tst-walkthrough', 'png');
+}
+</script>
+</body>
+</html>

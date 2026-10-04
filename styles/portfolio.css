@@ -1,0 +1,72 @@
+/* Portfolio home page: the name, then the poster running edge to edge. */
+
+.pf-hero {
+  color: var(--nw-ink);
+  display: grid;
+  gap: clamp(20px, 3vw, 40px);
+  padding-top: clamp(8px, 2vw, 24px);
+}
+
+.pf-text {
+  display: grid;
+  gap: clamp(12px, 1.6vw, 20px);
+  justify-items: center;
+}
+
+.pf-eyebrow {
+  color: var(--nw-ink);
+  text-align: center;
+}
+
+/* The figure has no frame or rounding and shares the other bands' side inset. The poster is square, so it is cropped to a wide band that keeps the
+   portrait and the name label in view; object-position picks which part of the square survives. */
+.pf-poster {
+  /* the same side inset as the image bands below (mission, Selected Work), so every band lines up */
+  margin: 0 var(--nw-band-inset);
+  width: auto;
+  height: clamp(360px, 82svh, 900px);
+  overflow: clip;
+  background: color-mix(in srgb, var(--nw-ink) 6%, var(--nw-stage));
+}
+
+.pf-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}
+
+@media (max-width: 767px) {
+  .pf-poster {
+    /* the mission image below runs almost to the edge on phones, so match it */
+    margin-inline: 5px;
+    height: min(118vw, 560px);
+  }
+}
+
+/* In dark mode the ink variable is a deep blue; use the heading colour so the lines stay readable. */
+html[data-research-theme='dark'] .pf-hero,
+html[data-research-theme='dark'] .pf-eyebrow {
+  color: var(--nw-theme-heading);
+}
+
+/* Desktop: show the whole poster. It is fitted to the screen height (below the pinned header) so nothing
+   is cropped top or bottom, and the space beside it continues the poster's own paper colour (see
+   poster-edges.css), so the band still runs edge to edge. */
+@media (min-width: 768px) {
+  .pf-poster {
+    position: relative;
+    isolation: isolate;
+    height: clamp(480px, calc(100svh - 112px), 1100px);
+  }
+  .pf-poster {
+    background:
+      var(--pf-edge-left) left / 50% 100% no-repeat,
+      var(--pf-edge-right) right / 50% 100% no-repeat;
+  }
+  .pf-poster img {
+    object-fit: contain;
+    object-position: 50% 50%;
+  }
+}

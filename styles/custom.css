@@ -1,0 +1,133 @@
+/*
+ * Your own styles go here. This file loads after the design system, so rules here win ties.
+ *
+ * Re-theme: the site is two inks, a bright one for the frame, buttons, headings and links, and a darker
+ * one for body copy, on one paper colour. The current palette is Cherry Cola and Cream Vanilla (see
+ * "Palette" at the bottom of this file). Copy the block below out of this comment and pick your own colours.
+ * (The images, such as the hero art and the footer picture, are blue pictures and have to be replaced
+ * separately.)
+ *
+ *   :root {
+ *     --hermes-color-blue: #0a7d4b;
+ *     --hermes-primary: #0a7d4b;
+ *     --nw-theme-blue: #064d2d;
+ *   }
+ *   .nous-web {
+ *     --nw-ink: #0a7d4b;
+ *     --nw-editorial-link: #0a7d4b;
+ *     --nw-editorial-text: #064d2d;
+ *     --hw-teams-ink: #064d2d;
+ *     --nw-key-ink: #064d2d;
+ *   }
+ *
+ * What each one does:
+ *   --hermes-color-blue, --hermes-primary   the bright brand colour: frame, buttons, labels
+ *   --nw-theme-blue                         the darker tint used by dark mode surfaces
+ *   --nw-ink                                headlines, navigation, small labels
+ *   --nw-editorial-link                     links in articles and lists
+ *   --nw-editorial-text, --hw-teams-ink,
+ *   --nw-key-ink                            body copy and keyboard hints
+ */
+
+/* The logo (the signature) in the header: a wide mark, so it is sized by width rather than height. */
+.nw-research-badge {
+  width: 168px;
+  height: auto;
+}
+
+/* On blog articles the header shows the mark above the word "Blog". */
+.nw-research-blog-mark > svg {
+  display: block;
+  margin: 0 auto 6px;
+}
+
+/* ---- Portfolio: home page content ---- */
+
+/* The mission title is plain lettering (the original drew it as an SVG) on every screen size. */
+.nous-web .nw-mission-title > svg { display: none; }
+.nous-web .nw-mission-title .nw-mission-mobile-title {
+  display: block;
+  max-width: 14ch;
+  text-box-trim: none;
+}
+@media (min-width: 768px) {
+  .nous-web .nw-mission-title .nw-mission-mobile-title {
+    max-width: 24ch;
+    font-size: clamp(64px, 8.2vw, 132px) !important;
+  }
+}
+
+/* ---- Palette: Cherry Cola on Cream Vanilla ----
+ *   cherry   #9a0002   frame, buttons, headings, links, small labels
+ *   deep     #4d0001   body copy (a darker cherry, so long text stays easy to read)
+ *   cream    #efe6de   the page (and the text on cherry surfaces)
+ * Dark mode flips them: cream type on a very dark cherry page. Only these values change here; the
+ * rest of the design system reads them through its variables. Edit this block to try another palette. */
+:root {
+  --hermes-color-blue: #9a0002;
+  --hermes-primary: #9a0002;
+  --hermes-color-white: #efe6de;
+  --hermes-neutral: #efe6de;
+  --nw-theme-blue: #6e0001;
+  --hpv2-ink: #9a0002;
+  --hpv2-stage: #efe6de;
+  --hpv2-surface: #efe6de;
+  --hpv2-panel: #efe6de;
+  --hpv2-backdrop: #efe6de;
+  --hw-paper: #efe6de;
+  --hw-bg: #efe6de;
+  --color-hermes: #efe6de;
+  --color-hermes-paper: #efe6de;
+}
+html .nous-web,
+html .nous-web-viewport,
+html .nw-composer-singleton,
+html .nw-research-mobile-menu {
+  --nw-ink: #9a0002;
+  --nw-stage: #efe6de;
+  --nw-paper: #efe6de;
+  --nw-slab: #f6efe8;
+  --nw-editorial-link: #9a0002;
+  --nw-editorial-text: #4d0001;
+  --nw-editorial-paper: #efe6de;
+  --nw-key-ink: #4d0001;
+  --hw-teams-ink: #4d0001;
+  --hw-bg: #efe6de;
+}
+html[data-research-theme='dark'] {
+  --nw-theme-paper: #1b0305;
+  --nw-theme-text: #dccfc5;
+  --nw-theme-back: #2a0a0c;
+  --nw-theme-heading: #efe6de;
+  --nw-theme-link: #e8958f;
+  --nw-theme-white: #efe6de;
+  --nw-theme-composer-paper: #2e1214;
+  --nw-theme-composer-text: #cdb9ad;
+  --nw-theme-composer-line: #9a0002;
+  --nw-theme-blue: #7a0002;
+}
+html[data-research-theme='dark'] :is(.nous-web, .nous-web-viewport, .nw-composer-singleton, .nw-research-mobile-menu) {
+  --nw-stage: #1b0305;
+  --hw-bg: #1b0305;
+  --nw-paper: #efe6de;
+  --nw-editorial-paper: #1b0305;
+  --nw-editorial-text: #dccfc5;
+  --nw-editorial-link: #e8958f;
+  --nw-key-ink: #7a0002;
+}
+
+/* The project tiles blend a (blue) screenshot over the ink; grey it first so the tile reads as cherry, not magenta. */
+.nous-web .nw-mobile-product-preview > img { filter: grayscale(1) contrast(1.05); }
+.nous-web .nw-mobile-product-preview > .nw-mobile-product-color { filter: none; }
+.nous-web .nw-mobile-product-texture { filter: grayscale(1); }
+
+/* Phone menu: the picture used to stop 520px down with a faint seam (the fade was painted in the ink colour,
+   but the picture is screen-blended so the bottom row never matched the flat background). It now spans the
+   full screen height and fades out with a mask, so there is no edge on any phone size. */
+.nw-research-mobile-menu:before {
+  height: 100dvh;
+  min-height: 100%;
+  background: var(--nw-mobile-menu-art) center top / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+}

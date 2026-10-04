@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lighthouse pyramid</title>
+<style>
+  :root{
+    --bg:        #f0f4f7;
+    --panel:     #ffffff;
+    --line:      #c5d8e3;
+    --ink:       #023750;
+    --muted:     #5c7d8e;
+
+    /* value-intensity ramp (cell fills): low → high */
+    --g0:        #dce8f0;
+    --g1:        #b8d1e0;
+    --g2:        #7bafc8;
+    --g3:        #4a96b8;
+    --g4:        #0471a9;
+
+    /* per-level outlines / labels */
+    --l0:        #0471a9;
+    --l1:        #0589c8;
+    --l2:        #58b0d4;
+
+    /* score bar */
+    --score:     #4db8d9;
+
+    /* connector lines */
+    --link:      #6cabc4;
+
+    --r:         10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif;}
+  html,body{height:100%;}
+  .wrap{max-width:1080px;margin:8px auto;padding:0 14px;}
+  h1{font:600 1.05rem/1 'Inter',sans-serif; margin:0; color:var(--ink); letter-spacing:-.01em;}
+  .lede{margin:4px 0 0;color:var(--muted);font-size:.85rem;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:12px;margin:8px 0;}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px;}
+  .phase{font-family:JetBrains Mono,Menlo,Consolas,monospace;font-size:.78rem;color:var(--muted);
+    letter-spacing:.04em;text-transform:uppercase;}
+  .title{color:var(--l1);font-weight:600;font-size:1rem;margin:0;}
+  svg{display:block;width:100%;height:auto;background:transparent;border-radius:8px;}
+  .controls{display:flex;align-items:center;gap:10px;margin-top:14px;}
+  button{appearance:none;border:1px solid var(--line);background:transparent;
+    color:var(--ink);width:36px;height:36px;border-radius:8px;cursor:pointer;
+    font-size:1rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;
+    transition:background .15s ease, border-color .15s ease;}
+  button:hover{background:#e8f0f5;border-color:#a8c8d8;}
+  button.play{background:#e0edf5;border-color:#9ec3d5;color:var(--g4);}
+  button.play:hover{background:#d0e3ef;}
+  .meter{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .meter > i{display:block;height:100%;background:var(--l0);width:0;transition:width .25s ease;}
+  .speed{background:transparent;color:var(--muted);border:1px solid var(--line);
+    border-radius:6px;padding:6px 8px;font:inherit;}
+  .speed:focus{outline:none;border-color:var(--l0);}
+  .legend{display:flex;gap:16px;font-size:.78rem;color:var(--muted);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <h1>Lighthouse pyramid</h1>
+  <p class="lede">N = 16, L = 3, p = 2.  Cell fill — mean-pooled value.  Bar below — max-pooled ‖·‖₂ score.</p>
+
+  <div class="panel">
+    <div class="head">
+      <h3 class="title" id="title">Base sequence</h3>
+      <div class="phase" id="phase">phase 1 / 4</div>
+    </div>
+    <svg id="viz" viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#6cabc4"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="controls">
+      <button id="prev"  title="Previous">⟵</button>
+      <button id="play"  class="play" title="Play / Pause">▶</button>
+      <button id="next"  title="Next">⟶</button>
+      <button id="restart" title="Restart">↻</button>
+      <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+      <select id="speed" class="speed">
+        <option value="0.5">½×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--g4)"></i>L0</span>
+      <span><i style="background:var(--l1)"></i>L1</span>
+      <span><i style="background:var(--l2)"></i>L2</span>
+      <span><i style="background:var(--score)"></i>‖·‖₂</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   N = 16, L = 3, p = 2  →  pyramid of 16 + 8 + 4 = 28 entries
+   value:  mean-pool from L0  → L1 → L2
+   score:  ‖Q‖₂ at L0,  max-pool to L1 → L2
+   ============================================================ */
+
+const N = 16, L = 3, p = 2;
+const SIZES = [N, N/p, N/(p*p)];                       // [16, 8, 4]
+const TOTAL = SIZES.reduce((a,b)=>a+b,0);              // 28
+const OFF   = [0, SIZES[0], SIZES[0]+SIZES[1]];        // [0, 16, 24]
+
+// reproducible base values in [0.30, 1.00] (proxy for ‖Q⁽⁰⁾ᵢ‖₂)
+const rng = (s=>()=>(s=(s*9301+49297)%233280)/233280)(7);
+const v0 = Array.from({length:N}, () => 0.30 + rng()*0.70);
+const v1 = Array.from({length:SIZES[1]}, (_,i)=>(v0[2*i]+v0[2*i+1])/2);
+const v2 = Array.from({length:SIZES[2]}, (_,i)=>(v1[2*i]+v1[2*i+1])/2);
+const s0 = v0.slice();
+const s1 = Array.from({length:SIZES[1]}, (_,i)=>Math.max(s0[2*i],s0[2*i+1]));
+const s2 = Array.from({length:SIZES[2]}, (_,i)=>Math.max(s1[2*i],s1[2*i+1]));
+const valueOf = (lvl,i) => [v0,v1,v2][lvl][i];
+const scoreOf = (lvl,i) => [s0,s1,s2][lvl][i];
+
+/* ----- layout: more vertical room between levels ----- */
+const W = 1000, H = 380, PAD = 36;
+const trackW  = W - 2*PAD;
+const cellH   = 26;
+const flatGap = 2;
+const flatCellW = (trackW - (TOTAL-1)*flatGap) / TOTAL;
+
+// pyramid Y positions (100 px pitch — leaves 44 px clear between cell-bottom-of-score and next-level-cell-top)
+const pyrL2_y = 60;
+const pyrL1_y = 160;
+const pyrL0_y = 260;
+
+// flat row sits at L0's pyramid Y so L0 cells don't move during flatten
+const flatY  = pyrL0_y;
+
+// score bar BELOW cell (max height + gap)
+const barMax = 30;
+const barGap = 4;
+const barH   = (sc) => Math.max(2, sc * barMax);
+
+// pyramid widths (preserve "L1 spans 2 base cells, L2 spans 4")
+const pyrL0_w = (trackW*0.62 - (N-1)*flatGap)/N;
+const pyrL0_x = i => PAD + i*(pyrL0_w + flatGap);
+const pyrL1_w = 2*pyrL0_w + flatGap;
+const pyrL2_w = 4*pyrL0_w + 3*flatGap;
+const pyrL1_x = i => (pyrL0_x(2*i) + pyrL0_x(2*i+1)+pyrL0_w)/2 - pyrL1_w/2;
+const pyrL2_x = i => (pyrL0_x(4*i) + pyrL0_x(4*i+3)+pyrL0_w)/2 - pyrL2_w/2;
+
+const flatX  = idx => PAD + idx*(flatCellW + flatGap);
+const globalIdx = (lvl,i) => OFF[lvl] + i;
+
+function pyrBox(lvl,i){
+  if (lvl===0) return {x:pyrL0_x(i), y:pyrL0_y, w:pyrL0_w, h:cellH};
+  if (lvl===1) return {x:pyrL1_x(i), y:pyrL1_y, w:pyrL1_w, h:cellH};
+  return         {x:pyrL2_x(i), y:pyrL2_y, w:pyrL2_w, h:cellH};
+}
+function flatBoxFor(lvl,i){
+  return {x:flatX(globalIdx(lvl,i)), y:flatY, w:flatCellW, h:cellH};
+}
+
+/* value-fill colour (5-step ramp) */
+const RAMP = ['var(--g0)','var(--g1)','var(--g2)','var(--g3)','var(--g4)'];
+function fillFor(value){
+  const t = Math.min(0.999, Math.max(0, (value - 0.25) / 0.80));
+  return RAMP[Math.floor(t*RAMP.length)];
+}
+
+/* ----- phases ----- */
+const phases = [
+  { title: 'Base sequence',                sub: 'L0 — 16 tokens fade in (cells + scores)' },
+  { title: 'Mean-pool ↑   Max-pool ↑',     sub: 'L1 — 8 tokens (mean) + 8 scores (max)' },
+  { title: 'Mean-pool ↑   Max-pool ↑',     sub: 'L2 — 4 tokens (mean) + 4 scores (max)' },
+  { title: 'Flatten by appending',         sub: '28-entry sequence  [L0×16] [L1×8] [L2×4]' },
+];
+const PHASE_COUNT = phases.length;
+
+/* ----- helpers ----- */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs={}, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text!=null) e.textContent = text;
+  return e;
+}
+const ease = t => t<0?0 : t>1?1 : (1 - Math.cos(Math.PI*t))/2;
+const lerp = (a,b,t) => a+(b-a)*t;
+
+/* alpha for cells/scores at a given (phase, progress).
+   Phase 0 (Base): L0 fades in; L1, L2 invisible.
+   Phase 1 (L1):   L0 stays; L1 fades in.
+   Phase 2 (L2):   L0+L1 stay; L2 fades in.
+   Phase 3 (Flat): all stay (layout transitions). */
+function alphaAt(phase, lvl, tt){
+  if (phase === 0) return lvl === 0 ? tt : 0;
+  if (phase === 1){
+    if (lvl === 0) return 1;
+    if (lvl === 1) return tt;
+    return 0;
+  }
+  if (phase === 2){
+    if (lvl === 0 || lvl === 1) return 1;
+    if (lvl === 2) return tt;
+  }
+  return 1;
+}
+/* layout weight (0 = pure pyramid, 1 = pure flat).
+   Phases 0,1,2 = pyramid. Phase 3 transitions. */
+function flatWeight(phase, tt){
+  if (phase < 3) return 0;
+  if (phase === 3) return tt;
+  return 1;
+}
+/* connector-line alpha (lines fade out during flatten) */
+function lineAlpha(phase, tt){
+  if (phase < 3) return 1;
+  if (phase === 3) return 1 - tt;
+  return 0;
+}
+
+/* interpolate cell box between pyramid and flat layouts */
+function boxAt(lvl, i, w_flat){
+  const A = pyrBox(lvl, i);
+  const B = flatBoxFor(lvl, i);
+  return {
+    x: lerp(A.x, B.x, w_flat),
+    y: lerp(A.y, B.y, w_flat),
+    w: lerp(A.w, B.w, w_flat),
+    h: lerp(A.h, B.h, w_flat),
+  };
+}
+
+/* ----- draw ----- */
+const svg = document.getElementById('viz');
+const titleEl = document.getElementById('title');
+const subEl   = null;
+const phaseEl = document.getElementById('phase');
+const meter   = document.getElementById('meter');
+const playBtn = document.getElementById('play');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const restartBtn = document.getElementById('restart');
+const speedSel = document.getElementById('speed');
+
+function draw(phase, progress){
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+  const tt = ease(progress);
+
+  const wf = flatWeight(phase, tt);
+  const lineA = lineAlpha(phase, tt);
+
+  /* ---------- connector lines (pyramid only) ----------
+     Two diagonals from each child cell-top up to the parent cell-bottom-centre,
+     with an arrowhead at the parent side so the pool direction is obvious. */
+  function drawPoolArrows(childLvl, parentLvl, alphaBase){
+    const a_child  = alphaAt(phase, childLvl,  tt);
+    const a_parent = alphaAt(phase, parentLvl, tt);
+    const aL = Math.min(a_child, a_parent) * lineA * alphaBase;
+    if (aL < 0.01) return;
+    for (let i=0;i<SIZES[parentLvl];i++){
+      const a = boxAt(childLvl, 2*i,   wf);
+      const b = boxAt(childLvl, 2*i+1, wf);
+      const pP = boxAt(parentLvl, i, wf);
+      const cxA = a.x + a.w/2, cxB = b.x + b.w/2;
+      const px = pP.x + pP.w/2, pyB = pP.y + pP.h;
+      // left child → parent
+      svg.appendChild(el('path',{
+        d:`M ${cxA} ${a.y} L ${px} ${pyB}`,
+        stroke:'var(--link)', 'stroke-width':1.6, fill:'none',
+        opacity: aL, 'marker-end':'url(#arrowhead)',
+        'stroke-linecap':'round',
+      }));
+      // right child → parent
+      svg.appendChild(el('path',{
+        d:`M ${cxB} ${b.y} L ${px} ${pyB}`,
+        stroke:'var(--link)', 'stroke-width':1.6, fill:'none',
+        opacity: aL, 'marker-end':'url(#arrowhead)',
+        'stroke-linecap':'round',
+      }));
+    }
+  }
+  if (lineA > 0.01){
+    drawPoolArrows(0, 1, 1);
+    drawPoolArrows(1, 2, 1);
+  }
+
+  /* ---------- score bars BELOW each cell ---------- */
+  for (let lvl=0; lvl<L; lvl++){
+    const al = alphaAt(phase, lvl, tt);
+    if (al < 0.01) continue;
+    for (let i=0;i<SIZES[lvl];i++){
+      const box = boxAt(lvl, i, wf);
+      const sc = scoreOf(lvl, i);
+      const h = barH(sc);
+      svg.appendChild(el('rect',{
+        x: box.x + 1.5,
+        y: box.y + box.h + barGap,
+        width: Math.max(2, box.w - 3),
+        height: h,
+        rx: 2, ry: 2,
+        fill: 'var(--score)',
+        opacity: al*0.92,
+      }));
+    }
+  }
+
+  /* ---------- cells (with value-tinted fill) ---------- */
+  for (let lvl=0; lvl<L; lvl++){
+    const al = alphaAt(phase, lvl, tt);
+    if (al < 0.01) continue;
+    const stroke = lvl===0?'var(--l0)' : lvl===1?'var(--l1)' : 'var(--l2)';
+    for (let i=0;i<SIZES[lvl];i++){
+      const box = boxAt(lvl, i, wf);
+      svg.appendChild(el('rect',{
+        x: box.x, y: box.y, width: box.w, height: box.h,
+        rx: 4, ry: 4,
+        fill: fillFor(valueOf(lvl,i)),
+        stroke: stroke, 'stroke-width': 1.2,
+        opacity: al,
+      }));
+    }
+  }
+
+  /* ---------- level brackets in flat layout ---------- */
+  if (wf > 0.01){
+    function brk(x0,x1,col){
+      const yB = flatY + cellH + barMax + barGap + 6;
+      svg.appendChild(el('path',{
+        d:`M ${x0} ${yB} L ${x0} ${yB+4} L ${x1} ${yB+4} L ${x1} ${yB}`,
+        stroke:col,'stroke-width':1,fill:'none',opacity:wf*0.5
+      }));
+    }
+    brk(flatX(0), flatX(SIZES[0]-1)+flatCellW, 'var(--l0)');
+    brk(flatX(SIZES[0]), flatX(SIZES[0]+SIZES[1]-1)+flatCellW, 'var(--l1)');
+    brk(flatX(SIZES[0]+SIZES[1]), flatX(TOTAL-1)+flatCellW, 'var(--l2)');
+  }
+}
+
+/* ----- playback ----- */
+let phase = 0, progress = 0, playing = false, lastT = 0, baseDur = 1700;
+
+function setLabel(){
+  // show the phase that the visualization is "currently inside" (closest to)
+  const idx = Math.min(phase, PHASE_COUNT-1);
+  titleEl.textContent = phases[idx].title + '  —  ' + phases[idx].sub;
+  phaseEl.textContent = `phase ${idx+1} / ${PHASE_COUNT}`;
+  const total = (phase + progress) / Math.max(1, PHASE_COUNT-1);
+  meter.style.width = (Math.min(1, Math.max(0, total))*100).toFixed(1) + '%';
+}
+function render(){ draw(phase, progress); setLabel(); }
+
+function step(dtMs){
+  const sp = parseFloat(speedSel.value);
+  progress += dtMs / (baseDur / sp);
+  while (progress >= 1){
+    if (phase < PHASE_COUNT-1){
+      progress -= 1;
+      phase++;
+    } else {
+      // hold on the final scene; user must press ↻ to replay
+      progress = 1;
+      playing = false;
+      playBtn.textContent = '▶';
+      break;
+    }
+  }
+  render();
+}
+function tick(ts){
+  if (!playing) return;
+  if (!lastT) lastT = ts;
+  const dt = ts - lastT; lastT = ts;
+  step(dt);
+  requestAnimationFrame(tick);
+}
+playBtn.onclick = () => {
+  playing = !playing;
+  playBtn.textContent = playing ? '⏸' : '▶';
+  lastT = 0;
+  if (playing) requestAnimationFrame(tick);
+};
+prevBtn.onclick    = () => { playing=false; playBtn.textContent='▶';
+  if (progress>0.05) progress=0;
+  else { phase = Math.max(0,phase-1); progress=0; } render(); };
+nextBtn.onclick    = () => { playing=false; playBtn.textContent='▶';
+  if (phase<PHASE_COUNT-1){ phase++; progress=0; } else progress=1; render(); };
+restartBtn.onclick = () => { playing=false; playBtn.textContent='▶';
+  phase=0; progress=0; render(); };
+
+render();
+</script>
+</body>
+</html>

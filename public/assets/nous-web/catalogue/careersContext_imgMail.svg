@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="mail">
+<g id="Icon">
+<path d="M6 8H8V10H6V8Z" fill="#9a0002"/>
+<path d="M8 10L10 10V12H8L8 10Z" fill="#9a0002"/>
+<path d="M18 8H16V10H18V8Z" fill="#9a0002"/>
+<path d="M16 10L14 10V12H16L16 10Z" fill="#9a0002"/>
+<path d="M10 12H14L14 14H10L10 12Z" fill="#9a0002"/>
+<path d="M2 6H4V18H2V6Z" fill="#9a0002"/>
+<path d="M20 6H22V18H20V6Z" fill="#9a0002"/>
+<path d="M4 4H20L20 6H4V4Z" fill="#9a0002"/>
+<path d="M4 18H20L20 20H4V18Z" fill="#9a0002"/>
+</g>
+</g>
+</svg>

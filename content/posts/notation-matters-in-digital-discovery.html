@@ -1,0 +1,71 @@
+<section>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    My paper has been published in Digital Discovery, Royal Society of Chemistry, as a Gold Open Access article: <strong>Notation matters: cross-representation inconsistency in chemistry language models and its mechanistic origins.</strong>
+  </p>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    The short version: I investigate how large language models behave when applied to a real scientific task, molecular property prediction.
+  </p>
+</section>
+<section>
+  <h2
+    id="user-content-what-i-tested"
+    class="font-[family-name:var(--font-rules-gothic-cnd)] font-normal text-inherit normal-case"
+    style="font-size: 28px; line-height: 1.4"
+  >
+    What I tested
+  </h2>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    The same molecule can be represented using SMILES, IUPAC, InChI or SELFIES. I tested these representations across 1,072 molecules and found that 88% showed inconsistent predictions depending on how the molecule was represented.
+  </p>
+</section>
+<section>
+  <h2
+    id="user-content-what-happens-inside-the-model"
+    class="font-[family-name:var(--font-rules-gothic-cnd)] font-normal text-inherit normal-case"
+    style="font-size: 28px; line-height: 1.4"
+  >
+    What happens inside the model
+  </h2>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    I then went beyond measuring the outputs and investigated what was happening inside the model. Using representation-level analysis with ChemBERTa-2, I found that chemically identical molecules progressively develop different internal representations as they move through the network.
+  </p>
+</section>
+<section>
+  <h2
+    id="user-content-why-it-matters"
+    class="font-[family-name:var(--font-rules-gothic-cnd)] font-normal text-inherit normal-case"
+    style="font-size: 28px; line-height: 1.4"
+  >
+    Why it matters
+  </h2>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    What I find most interesting about this work is the broader application of AI to science. As LLMs are increasingly used for problems in chemistry and other scientific domains, it becomes important to understand not just whether an AI model can make a prediction, but what it is actually responding to when it does.
+  </p>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    This work was a great opportunity for me to explore the intersection of AI, scientific applications, and understanding model behaviour.
+  </p>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    Paper: <a href="https://lnkd.in/dBrV7SGx">Notation matters, Digital Discovery</a>. Code: <a href="https://github.com/amethystani/notation-matters">notation-matters on GitHub</a>.
+  </p>
+</section>

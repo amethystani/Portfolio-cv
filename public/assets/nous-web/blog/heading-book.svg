@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="book-open">
+<g id="Icon">
+<path d="M2 3H11V5H2V3Z" fill="#9a0002"/>
+<path d="M0 19H11V21H0V19Z" fill="#9a0002"/>
+<path d="M13 3H22V5H13V3Z" fill="#9a0002"/>
+<path d="M13 19H24V21H13V19Z" fill="#9a0002"/>
+<path d="M11 5H13V23H11V5Z" fill="#9a0002"/>
+<path d="M0 5L2 5V19H0V5Z" fill="#9a0002"/>
+<path d="M22 5L24 5V19H22V5Z" fill="#9a0002"/>
+<path d="M15 7H20V9H15V7Z" fill="#9a0002"/>
+<path d="M15 11H20V13H15V11Z" fill="#9a0002"/>
+<path d="M15 15H17V17H15V15Z" fill="#9a0002"/>
+</g>
+</g>
+</svg>

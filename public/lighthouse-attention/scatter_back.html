@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lighthouse attention &amp; scatter-back</title>
+<style>
+  :root{
+    --bg:        #f0f4f7;
+    --panel:     #ffffff;
+    --line:      #c5d8e3;
+    --ink:       #023750;
+    --muted:     #5c7d8e;
+
+    --g0:        #dce8f0;
+    --g1:        #b8d1e0;
+    --g2:        #7bafc8;
+    --g3:        #4a96b8;
+    --g4:        #0471a9;
+
+    --l0:        #0471a9;
+    --l1:        #0589c8;
+    --l2:        #58b0d4;
+
+    --score:     #4db8d9;
+    --link:      #6cabc4;
+    --pick:      #ffe074;
+
+    --r:         10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif;}
+  html,body{height:100%;}
+  .wrap{max-width:1200px;margin:8px auto;padding:0 14px;}
+  h1{font:600 1.05rem/1 'Inter',sans-serif; margin:0; color:var(--ink); letter-spacing:-.01em;}
+  .lede{margin:4px 0 0;color:var(--muted);font-size:.85rem;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:12px;margin:8px 0;}
+  .head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px;}
+  .phase{font-family:JetBrains Mono,Menlo,Consolas,monospace;font-size:.78rem;color:var(--muted);
+    letter-spacing:.04em;text-transform:uppercase;}
+  .title{color:var(--l1);font-weight:600;font-size:1rem;margin:0;}
+  svg{display:block;width:100%;height:auto;background:transparent;border-radius:8px;}
+  .controls{display:flex;align-items:center;gap:10px;margin-top:14px;}
+  button{appearance:none;border:1px solid var(--line);background:transparent;
+    color:var(--ink);width:36px;height:36px;border-radius:8px;cursor:pointer;
+    font-size:1rem;line-height:1;display:inline-flex;align-items:center;justify-content:center;
+    transition:background .15s ease, border-color .15s ease;}
+  button:hover{background:#e8f0f5;border-color:#a8c8d8;}
+  button.play{background:#e0edf5;border-color:#9ec3d5;color:var(--g4);}
+  button.play:hover{background:#d0e3ef;}
+  .meter{flex:1;height:3px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .meter > i{display:block;height:100%;background:var(--l0);width:0;transition:width .25s ease;}
+  .speed{background:transparent;color:var(--muted);border:1px solid var(--line);
+    border-radius:6px;padding:6px 8px;font:inherit;}
+  .speed:focus{outline:none;border-color:var(--l0);}
+  .legend{display:flex;gap:16px;font-size:.78rem;color:var(--muted);margin-top:10px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .legend i{display:inline-block;width:14px;height:2px;background:var(--l0);}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <h1>Attention &amp; scatter-back</h1>
+  <p class="lede">12-entry sorted sub-sequence → stock attention → scatter back to N = 16.  Shift = pool − 1: L0 → no shift, L1 → +1, L2 → +3 (pool taken w.r.t. the base sequence).</p>
+
+  <div class="panel">
+    <div class="head">
+      <h3 class="title" id="title">Sorted sub-sequence</h3>
+      <div class="phase" id="phase">phase 1 / 5</div>
+    </div>
+    <svg id="viz" viewBox="0 0 1100 460" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="ah-l0" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#0471a9"/>
+        </marker>
+        <marker id="ah-l1" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#0589c8"/>
+        </marker>
+        <marker id="ah-l2" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#58b0d4"/>
+        </marker>
+      </defs>
+    </svg>
+    <div class="controls">
+      <button id="prev"  title="Previous">⟵</button>
+      <button id="play"  class="play" title="Play / Pause">▶</button>
+      <button id="next"  title="Next">⟶</button>
+      <button id="restart" title="Restart">↻</button>
+      <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+      <select id="speed" class="speed">
+        <option value="0.5">½×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--l0)"></i>L0 → 1 base pos (no shift)</span>
+      <span><i style="background:var(--l1)"></i>L1 → 2 base pos  (+1)</span>
+      <span><i style="background:var(--l2)"></i>L2 → 4 base pos  (+3)</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const N = 16, PFAC = 2;
+
+// hard-coded sorted sub-sequence from previous viz
+const sorted = [
+  {lvl:2, i:0, lbl:25},
+  {lvl:1, i:2, lbl:19},
+  {lvl:0, i:6, lbl:7},
+  {lvl:0, i:7, lbl:8},
+  {lvl:1, i:3, lbl:20},
+  {lvl:2, i:1, lbl:26},
+  {lvl:1, i:4, lbl:21},
+  {lvl:0, i:10, lbl:11},
+  {lvl:0, i:11, lbl:12},
+  {lvl:1, i:5, lbl:22},
+  {lvl:2, i:2, lbl:27},
+  {lvl:2, i:3, lbl:28},
+];
+const S = sorted.length;
+
+// reproduce the scoring (for cell fill colours only — values don't change after attention here,
+// we just want consistent colouring across the three viz files)
+const rng = (s=>()=>(s=(s*9301+49297)%233280)/233280)(7);
+const v0 = Array.from({length:N}, () => 0.30 + rng()*0.70);
+const v1 = Array.from({length:N/2}, (_,i)=>(v0[2*i]+v0[2*i+1])/2);
+const v2 = Array.from({length:N/4}, (_,i)=>(v1[2*i]+v1[2*i+1])/2);
+const valueOf = (lvl,i) => [v0,v1,v2][lvl][i];
+
+/* targets of an entry on the base sequence with shift = pool − 1 */
+function targetsOf(e){
+  const pool  = Math.pow(PFAC, e.lvl);   // 1, 2, 4
+  const start = e.i * pool;
+  const shift = pool - 1;                // 0, 1, 3
+  const out = [];
+  for (let k=0; k<pool; k++){
+    const pos = start + shift + k;
+    if (pos >= 0 && pos < N) out.push(pos);
+  }
+  return out;
+}
+const ALL_TARGETS = sorted.map(targetsOf);
+
+/* contribution count per base position (used for visual saturation) */
+const contribCount = Array(N).fill(0);
+for (const t of ALL_TARGETS) for (const p of t) contribCount[p]++;
+const maxContrib = Math.max(1, ...contribCount);
+
+/* ---------- layout ---------- */
+const W = 1100, H = 460, PAD = 36;
+const trackW = W - 2*PAD;
+const cellH = 24;
+const gap = 2;
+
+// input sub-sequence (12 cells)
+const subY = 30;
+const subW = (trackW - (S-1)*gap)/S;
+const subX = (idx) => PAD + idx*(subW + gap);
+
+// attention black box
+const boxY = 130;
+const boxH = 70;
+
+// output sub-sequence (same X positions as input, shifted down past the box)
+const outY = 240;
+const outX = subX;
+const outW = subW;
+
+// base sequence (16 positions)
+const baseY = 360;
+const baseW = (trackW - (N-1)*gap)/N;
+const baseX = (i) => PAD + i*(baseW + gap);
+
+const RAMP = ['var(--g0)','var(--g1)','var(--g2)','var(--g3)','var(--g4)'];
+function fillFor(value){
+  const t = Math.min(0.999, Math.max(0, (value - 0.25) / 0.80));
+  return RAMP[Math.floor(t*RAMP.length)];
+}
+function levelStroke(lvl){ return lvl===0?'var(--l0)':lvl===1?'var(--l1)':'var(--l2)'; }
+function levelMarker(lvl){ return lvl===0?'url(#ah-l0)':lvl===1?'url(#ah-l1)':'url(#ah-l2)'; }
+function levelColor(lvl){ return lvl===0?'var(--l0)':lvl===1?'var(--l1)':'var(--l2)'; }
+
+/* ---------- phases ---------- */
+const phases = [
+  { title: 'Sorted sub-sequence',  sub: '12 entries: 25, 19, 7, 8, 20, 26, 21, 11, 12, 22, 27, 28' },
+  { title: 'Attention',            sub: 'Sub-sequence enters the attention block (stock FlashAttention).' },
+  { title: 'Output emerges',       sub: 'Same 12 entries, attention-mixed values.' },
+  { title: 'Scatter-back',         sub: 'Each output entry contributes to its pool ⊆ base sequence with shift = pool − 1.' },
+  { title: 'Final base sequence',  sub: 'N = 16 base positions populated by accumulated contributions.' },
+];
+const PHASE_COUNT = phases.length;
+
+/* ---------- helpers ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs={}, text){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (text!=null) e.textContent = text;
+  return e;
+}
+const ease = t => t<0?0 : t>1?1 : (1 - Math.cos(Math.PI*t))/2;
+const lerp = (a,b,t) => a+(b-a)*t;
+const clamp01 = t => Math.min(1, Math.max(0, t));
+
+/* per-phase alphas */
+function inputAlpha(phase, tt){
+  if (phase === 0) return 1;
+  if (phase === 1) return 1 - tt;
+  return 0;
+}
+function inputBox(idx, phase, tt){
+  const A = {x: subX(idx), y: subY,           w: subW, h: cellH};
+  const B = {x: subX(idx), y: boxY + boxH/2 - cellH/2, w: subW, h: cellH};
+  if (phase === 0) return A;
+  if (phase === 1) return {x:A.x, y:lerp(A.y,B.y,tt), w:A.w, h:A.h};
+  return B;
+}
+function outputAlpha(phase, tt){
+  if (phase < 2) return 0;
+  if (phase === 2) return tt;
+  return 1;
+}
+function outputBox(idx, phase, tt){
+  const A = {x: outX(idx), y: boxY + boxH - 6,  w: outW, h: cellH};
+  const B = {x: outX(idx), y: outY,             w: outW, h: cellH};
+  if (phase === 2) return {x:A.x, y:lerp(A.y,B.y,tt), w:A.w, h:A.h};
+  return B;
+}
+
+/* arrow opacity — staggered by source level so L0→L1→L2 fan in turn */
+function arrowAlpha(srcIdx, phase, tt){
+  if (phase < 3) return 0;
+  if (phase >= 4) return 1;
+  // phase 3: stagger by level
+  const lvl = sorted[srcIdx].lvl;
+  const t0 = lvl * 0.18;            // L0 starts at 0, L1 at .18, L2 at .36
+  return clamp01((tt - t0) / 0.55);
+}
+
+/* base position fill saturation = sum of incoming arrow alphas, clipped */
+function baseAlpha(pos, phase, tt){
+  if (phase < 3) return 0.18;        // dim slot before scatter
+  let acc = 0;
+  for (let s=0; s<S; s++){
+    if (ALL_TARGETS[s].includes(pos)) acc += arrowAlpha(s, phase, tt);
+  }
+  return Math.min(1, 0.18 + acc * 0.55);
+}
+
+/* attention-box pulse during phase 1+2 */
+function boxGlow(phase, tt){
+  if (phase === 1) return tt * 0.7;
+  if (phase === 2) return 0.7 - tt*0.3;
+  if (phase === 3) return 0.4;
+  return 0.25;
+}
+
+/* ---------- draw ---------- */
+const svg = document.getElementById('viz');
+const titleEl = document.getElementById('title');
+const phaseEl = document.getElementById('phase');
+const meter   = document.getElementById('meter');
+const playBtn = document.getElementById('play');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const restartBtn = document.getElementById('restart');
+const speedSel = document.getElementById('speed');
+
+function clearSvg(){
+  const defs = svg.querySelector('defs');
+  while (svg.lastChild && svg.lastChild !== defs) svg.removeChild(svg.lastChild);
+}
+
+function draw(phase, progress){
+  clearSvg();
+  const tt = ease(progress);
+
+  /* ---- 1. attention black box (always visible) ---- */
+  const glow = boxGlow(phase, tt);
+  // glow halo
+  if (glow > 0.05){
+    svg.appendChild(el('rect',{
+      x: PAD - 6, y: boxY - 6,
+      width: trackW + 12, height: boxH + 12,
+      rx: 10, ry: 10,
+      fill:'none', stroke:'var(--l1)', 'stroke-width': 2,
+      opacity: glow*0.55,
+    }));
+  }
+  // box body
+  svg.appendChild(el('rect',{
+    x: PAD, y: boxY,
+    width: trackW, height: boxH,
+    rx: 8, ry: 8,
+    fill:'#e8f0f5', stroke:'var(--l1)', 'stroke-width': 1.4,
+    opacity: 0.95,
+  }));
+  // box label centred
+  svg.appendChild(el('text',{
+    x: PAD + trackW/2, y: boxY + boxH/2 + 5.5,
+    'text-anchor':'middle',
+    'font-size': 16,
+    'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+    fill:'var(--l2)', 'font-weight':'600',
+    'letter-spacing':'.05em',
+  }, 'A T T E N T I O N'));
+  // sub-label
+  svg.appendChild(el('text',{
+    x: PAD + trackW/2, y: boxY + boxH/2 + 22,
+    'text-anchor':'middle',
+    'font-size': 10,
+    'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+    fill:'var(--muted)', opacity: 0.85,
+  }, 'stock FlashAttention  ·  causal mask  ·  S = 12'));
+
+  /* ---- 2. row labels ---- */
+  svg.appendChild(el('text',{
+    x: PAD - 8, y: subY - 8,
+    'font-size': 11,
+    'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+    fill:'var(--muted)', opacity: 0.85,
+  }, 'sub-sequence (12)'));
+  if (phase >= 2){
+    svg.appendChild(el('text',{
+      x: PAD - 8, y: outY - 8,
+      'font-size': 11,
+      'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+      fill:'var(--muted)', opacity: 0.85,
+    }, 'output (12)'));
+  }
+  svg.appendChild(el('text',{
+    x: PAD - 8, y: baseY - 8,
+    'font-size': 11,
+    'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+    fill:'var(--muted)', opacity: 0.85,
+  }, `base sequence (N = ${N})`));
+
+  /* ---- 3. base sequence cells (always shown, fill by accumulation) ---- */
+  for (let p=0; p<N; p++){
+    const a = baseAlpha(p, phase, tt);
+    svg.appendChild(el('rect',{
+      x: baseX(p), y: baseY, width: baseW, height: cellH,
+      rx: 4, ry: 4,
+      fill: contribCount[p] === 0 ? '#e8f0f5' : 'var(--g3)',
+      stroke:'var(--l0)', 'stroke-width': 1.0,
+      opacity: a,
+    }));
+    // position number under the cell
+    svg.appendChild(el('text',{
+      x: baseX(p) + baseW/2, y: baseY + cellH + 14,
+      'text-anchor':'middle',
+      'font-size': 10,
+      'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+      fill:'var(--muted)', opacity: 0.75,
+    }, String(p+1)));
+  }
+
+  /* ---- 4. scatter-back arrows from output cells to base positions ---- */
+  for (let s=0; s<S; s++){
+    const aa = arrowAlpha(s, phase, tt);
+    if (aa < 0.01) continue;
+    const e = sorted[s];
+    const ob = outputBox(s, phase, tt);
+    const ax = ob.x + ob.w/2, ay = ob.y + ob.h;
+    for (const pos of ALL_TARGETS[s]){
+      const bx = baseX(pos) + baseW/2, by = baseY;
+      svg.appendChild(el('path',{
+        d:`M ${ax} ${ay} L ${bx} ${by}`,
+        stroke: levelColor(e.lvl), 'stroke-width': 1.4, fill:'none',
+        opacity: aa*0.85, 'marker-end': levelMarker(e.lvl),
+        'stroke-linecap':'round',
+      }));
+    }
+  }
+
+  /* ---- 5. input cells (in pyramid → into box) ---- */
+  for (let s=0; s<S; s++){
+    const a = inputAlpha(phase, tt);
+    if (a < 0.01) continue;
+    const e = sorted[s];
+    const box = inputBox(s, phase, tt);
+    svg.appendChild(el('rect',{
+      x: box.x, y: box.y, width: box.w, height: box.h,
+      rx: 4, ry: 4,
+      fill: fillFor(valueOf(e.lvl, e.i)),
+      stroke: levelStroke(e.lvl), 'stroke-width': 1.2,
+      opacity: a,
+    }));
+    svg.appendChild(el('text',{
+      x: box.x + box.w/2, y: box.y + box.h/2 + 3.6,
+      'text-anchor':'middle',
+      'font-size': box.w >= 50 ? 11 : 10,
+      'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+      fill: 'var(--ink)', opacity: a*0.95,
+    }, String(e.lbl)));
+  }
+
+  /* ---- 6. output cells (emerging from box) ---- */
+  for (let s=0; s<S; s++){
+    const a = outputAlpha(phase, tt);
+    if (a < 0.01) continue;
+    const e = sorted[s];
+    const box = outputBox(s, phase, tt);
+    svg.appendChild(el('rect',{
+      x: box.x, y: box.y, width: box.w, height: box.h,
+      rx: 4, ry: 4,
+      fill: fillFor(valueOf(e.lvl, e.i)),
+      stroke: levelStroke(e.lvl), 'stroke-width': 1.2,
+      opacity: a,
+    }));
+    svg.appendChild(el('text',{
+      x: box.x + box.w/2, y: box.y + box.h/2 + 3.6,
+      'text-anchor':'middle',
+      'font-size': box.w >= 50 ? 11 : 10,
+      'font-family':'JetBrains Mono,Menlo,Consolas,monospace',
+      fill: 'var(--ink)', opacity: a*0.95,
+    }, String(e.lbl)));
+  }
+}
+
+/* ---------- playback ---------- */
+let phase = 0, progress = 0, playing = false, lastT = 0, baseDur = 1700;
+
+function setLabel(){
+  const idx = Math.min(phase, PHASE_COUNT-1);
+  titleEl.textContent = phases[idx].title + '  —  ' + phases[idx].sub;
+  phaseEl.textContent = `phase ${idx+1} / ${PHASE_COUNT}`;
+  const total = (phase + progress) / Math.max(1, PHASE_COUNT-1);
+  meter.style.width = (Math.min(1, Math.max(0, total))*100).toFixed(1) + '%';
+}
+function render(){ draw(phase, progress); setLabel(); }
+
+function step(dtMs){
+  const sp = parseFloat(speedSel.value);
+  progress += dtMs / (baseDur / sp);
+  while (progress >= 1){
+    if (phase < PHASE_COUNT-1){
+      progress -= 1;
+      phase++;
+    } else {
+      // hold on the final scene; user must press ↻ to replay
+      progress = 1;
+      playing = false;
+      playBtn.textContent = '▶';
+      break;
+    }
+  }
+  render();
+}
+function tick(ts){
+  if (!playing) return;
+  if (!lastT) lastT = ts;
+  const dt = ts - lastT; lastT = ts;
+  step(dt);
+  requestAnimationFrame(tick);
+}
+playBtn.onclick = () => {
+  playing = !playing;
+  playBtn.textContent = playing ? '⏸' : '▶';
+  lastT = 0;
+  if (playing) requestAnimationFrame(tick);
+};
+prevBtn.onclick    = () => { playing=false; playBtn.textContent='▶';
+  if (progress>0.05) progress=0;
+  else { phase = Math.max(0,phase-1); progress=0; } render(); };
+nextBtn.onclick    = () => { playing=false; playBtn.textContent='▶';
+  if (phase<PHASE_COUNT-1){ phase++; progress=0; } else progress=1; render(); };
+restartBtn.onclick = () => { playing=false; playBtn.textContent='▶';
+  phase=0; progress=0; render(); };
+
+render();
+</script>
+</body>
+</html>

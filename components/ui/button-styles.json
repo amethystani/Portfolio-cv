@@ -1,0 +1,24 @@
+{
+  "base": "hermes-button group relative inline-flex cursor-pointer items-center justify-center rounded-none border-0 bg-clip-padding outline-none select-none font-[family-name:var(--font-mono)] tracking-[0.1em] uppercase transition-[background-color,box-shadow,color,transform] duration-150 ease-out hover:duration-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-midground/30 disabled:pointer-events-none disabled:cursor-not-allowed",
+  "variants": {
+    "primary": "bg-[var(--hpv2-brand,var(--hermes-primary))] text-[var(--hermes-white)] hover:shadow-[var(--hpv2-shadow-lift-strong)] active:shadow-[var(--hpv2-shadow-press-strong)] disabled:bg-[var(--hpv2-row-well,rgb(0_0_0/0.02))] disabled:text-[var(--hpv2-inactive-fg,color-mix(in_srgb,var(--hermes-primary)_40%,transparent))] disabled:shadow-none",
+    "secondary": "bg-[color-mix(in_srgb,var(--hermes-paper)_90%,transparent)] text-[var(--hpv2-brand,var(--hermes-primary))] hover:bg-[var(--hermes-paper)] hover:shadow-[var(--hpv2-shadow-lift)] active:bg-[var(--hermes-paper)] active:shadow-[var(--hpv2-shadow-press)] disabled:bg-[var(--hpv2-row-well,rgb(0_0_0/0.02))] disabled:text-[var(--hpv2-inactive-fg,color-mix(in_srgb,var(--hermes-primary)_40%,transparent))] disabled:shadow-none",
+    "ghost": "bg-transparent text-current hover:shadow-[var(--hpv2-shadow-hair)] active:shadow-[var(--hpv2-shadow-hair),var(--hpv2-shadow-press)] disabled:opacity-40 disabled:shadow-none",
+    "outline": "hermes-button-outline bg-[color-mix(in_srgb,var(--hermes-paper)_90%,transparent)] text-[var(--hpv2-brand,var(--hermes-primary))] shadow-[var(--hpv2-shadow-hair)] hover:bg-[var(--hermes-paper)] hover:shadow-[var(--hpv2-shadow-hair),var(--hpv2-shadow-lift)] active:bg-[var(--hermes-paper)] active:shadow-[var(--hpv2-shadow-hair),var(--hpv2-shadow-press)] disabled:bg-[var(--hpv2-row-well,rgb(0_0_0/0.02))] disabled:text-[var(--hpv2-inactive-fg,color-mix(in_srgb,var(--hermes-primary)_40%,transparent))] disabled:shadow-none",
+    "icon": "hermes-button-icon-only hermes-button-size-m text-xs bg-transparent text-current opacity-70 hover:opacity-100 disabled:opacity-40 disabled:shadow-none size-[var(--hpv2-btn-icon-m)] leading-none",
+    "editorial-disclosure": "disabled:opacity-40",
+    "hero-ghost": "bg-[color-mix(in_srgb,currentColor_20%,transparent)] text-current hover:bg-[color-mix(in_srgb,currentColor_30%,transparent)] active:bg-[color-mix(in_srgb,currentColor_30%,transparent)] active:shadow-[var(--hpv2-shadow-press)] disabled:opacity-40 disabled:shadow-none",
+    "underline": "bg-transparent text-current disabled:opacity-40"
+  },
+  "sizes": {
+    "m": "hermes-button-size-m gap-2 px-3",
+    "s": "hermes-button-size-s gap-1.5 px-2 py-1.5 text-xs"
+  },
+  "density": {
+    "cta": "py-[var(--hw-teams-btn-py)] text-[length:var(--hw-teams-label)]",
+    "compact": "text-xs py-2.5"
+  },
+  "label": "leading-none whitespace-nowrap cap-mono text-cap-trim relative -top-[var(--hpv2-cap-nudge)] cap-fallback:top-[var(--hpv2-nudge)]!",
+  "labelNoTrim": "leading-none whitespace-nowrap cap-mono relative -top-[var(--hpv2-cap-nudge)] cap-fallback:top-[var(--hpv2-nudge)]!",
+  "labelUnderline": "leading-none whitespace-nowrap cap-mono text-cap-trim relative -top-[var(--hpv2-cap-nudge)] cap-fallback:top-[var(--hpv2-nudge)]! underline decoration-current/67 underline-offset-[0.2em] transition-[text-decoration-color] duration-150 ease-out group-hover:decoration-current group-hover:duration-0"
+}

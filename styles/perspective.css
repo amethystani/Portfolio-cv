@@ -1,0 +1,107 @@
+/* Perspective text scroll (components/home/PerspectiveStatement.tsx), after Skiper UI's Skiper 28. */
+.ps {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 240vh;
+  margin: -6vh 0 0;
+  color: var(--nw-ink);
+  /* the tilted text must not spill onto the next section (clip, unlike hidden, keeps the stage sticky) */
+  overflow: clip;
+}
+html[data-research-theme='dark'] .ps {
+  color: var(--nw-theme-heading);
+}
+.ps-label {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  translate: -50% 0;
+  max-width: 14ch;
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.ps-label::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  height: 64px;
+  width: 1px;
+  margin-top: 8px;
+  background: linear-gradient(to bottom, transparent, currentColor);
+}
+.ps-stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+  padding: 80px var(--hw-teams-pad-x, 24px);
+  transform-style: preserve-3d;
+  perspective: 200px;
+  overflow: visible;
+}
+.ps-text {
+  --ps-y: 487px;
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  text-align: center;
+  font-family: var(--font-rules-gothic-cmp);
+  font-size: clamp(24px, 4.1vw, 60px);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  transform-style: preserve-3d;
+  transform: rotateX(30deg) translateY(var(--ps-y)) translateZ(10px);
+}
+/* the text melts into the page at the bottom, as in the original */
+.ps-fade {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, var(--nw-stage, #efe6de));
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .ps {
+    height: 210vh;
+    margin: -4vh 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps {
+    height: auto;
+    margin: 0;
+  }
+  .ps-stage {
+    position: static;
+    height: auto;
+    padding: 96px var(--hw-teams-pad-x, 24px);
+    perspective: none;
+  }
+  .ps-text {
+    transform: none;
+  }
+  .ps-fade,
+  .ps-label::after {
+    display: none;
+  }
+  .ps-label {
+    position: static;
+    translate: none;
+    margin: 0 auto;
+    padding-top: 48px;
+  }}

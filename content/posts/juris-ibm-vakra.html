@@ -1,0 +1,50 @@
+<section>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    Our agent Juris ranked #2 globally on the IBM VAKRA benchmark specifically for tool selection. Not a bad way to end the week.
+  </p>
+</section>
+<section>
+  <h2
+    id="user-content-the-benchmark"
+    class="font-[family-name:var(--font-rules-gothic-cnd)] font-normal text-inherit normal-case"
+    style="font-size: 28px; line-height: 1.4"
+  >
+    The benchmark
+  </h2>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    VAKRA evaluates how well agents select and use tools in complex enterprise workflows. The tool space is roughly 8,000+ APIs across about 62 domains.
+  </p>
+</section>
+<section>
+  <h2
+    id="user-content-doing-less-choosing-better"
+    class="font-[family-name:var(--font-rules-gothic-cnd)] font-normal text-inherit normal-case"
+    style="font-size: 28px; line-height: 1.4"
+  >
+    Doing less, choosing better
+  </h2>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    A lot of work went into making the agent do less and choose better. A 36B model turned out to be more than enough; larger models tended to introduce more failures, timeouts and unnecessary token usage.
+  </p>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    For VAKRA capability 2, Juris did not run a generic multi-step ReAct loop. We used a capability-specific routing stack: shortlist the tool space, force a single best tool choice, normalise arguments for brittle endpoints, and return deterministic answers directly from tool outputs instead of letting the model paraphrase and drift.
+  </p>
+  <p
+    class="font-[family-name:var(--font-rules)] proportional-nums font-normal text-inherit normal-case text-pretty"
+    style="font-size: 16px; line-height: 1.5"
+  >
+    Learn more: <a href="https://lnkd.in/d9CS5cTq">link 1</a>, <a href="https://lnkd.in/dAEdFS6h">link 2</a>, <a href="https://lnkd.in/dAXChz-e">link 3</a>.
+  </p>
+</section>
