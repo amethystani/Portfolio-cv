@@ -387,25 +387,25 @@ button.px-box:focus-visible {
   }
 }
 
-/* ---- phone header: big and balanced (the logo mirrors the search + menu pair) ---- */
+/* ---- phone header: a modest signature balanced by the search + menu pair (44px tap targets, 24px icons) ---- */
 @media (max-width: 767px) {
   nav[data-pro-nav] .nw-research-badge,
   nav[data-pro-nav] .nw-research-pinned-badge {
-    width: min(230px, 56vw) !important;
+    width: min(150px, 40vw) !important;
     height: auto !important;
   }
   nav[data-pro-nav] .nw-search-icon,
   nav[data-pro-nav] button[aria-label='Open menu'] {
-    width: 52px !important;
-    height: 52px !important;
+    width: 44px !important;
+    height: 44px !important;
   }
   nav[data-pro-nav] .nw-search-icon svg {
-    width: 34px !important;
-    height: 34px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   nav[data-pro-nav] .nw-research-menu-burger {
-    width: 34px !important;
-    height: 34px !important;
+    width: 24px !important;
+    height: 24px !important;
   }
   nav[data-pro-nav] > .flex.md\:hidden {
     gap: 4px;
@@ -424,12 +424,12 @@ nav[data-pro-nav] .nw-research-pinned-badge {
 }
 @media (max-width: 767px) {
   nav[data-pro-nav] .nw-research-pinned-badge {
-    width: min(230px, 56vw) !important;
+    width: min(150px, 40vw) !important;
   }
 }
 @media (max-width: 767px) {
   .nw-pinned-brand {
-    width: min(230px, 56vw);
+    width: min(150px, 40vw);
   }
 }
 
