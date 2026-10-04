@@ -493,3 +493,58 @@ nav[data-pro-nav] .nw-research-pinned-badge {
   height: 18px;
   shape-rendering: crispEdges;
 }
+
+/* ---- on-device quick answer: the Answer block above Sources in the ⌘K palette (components/research/Composer.tsx) ---- */
+.nw-ai-panel {
+  isolation: isolate;
+  position: relative;
+  padding: 8px 8px 0;
+  color: var(--nw-paper);
+  --label-width: 134px;
+}
+@media (max-width: 767px) {
+  .nw-ai-panel {
+    --label-width: 74px;
+  }
+}
+.nw-ai-body {
+  grid-area: 1 / 2;
+  min-width: 0;
+  padding: 10px 8px 14px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+.nw-ai-text {
+  margin: 0;
+  font: 15px/1.55 var(--font-rules);
+  overflow-wrap: anywhere;
+}
+.nw-ai-muted {
+  opacity: var(--nw-muted, 0.7);
+  font-size: 13px;
+}
+.nw-ai-cite {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35em;
+  height: 1.35em;
+  margin: 0 1px;
+  padding: 0 3px;
+  font: 600 10px/1 var(--font-mono);
+  vertical-align: 0.15em;
+  border: 1px solid currentColor;
+  text-decoration: none;
+  opacity: 0.85;
+}
+.nw-ai-cite:hover,
+.nw-ai-cite:focus-visible {
+  opacity: 1;
+  color: var(--nw-ink);
+  background: var(--nw-paper);
+  border-color: var(--nw-paper);
+}
+.nw-ai-meta {
+  margin: 8px 0 0;
+  font: 11px/1.5 var(--hpv2-font-meta, var(--font-mono));
+  letter-spacing: 0.02em;
+  opacity: var(--nw-muted, 0.7);
+}

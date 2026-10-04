@@ -9,6 +9,7 @@ import { Kbd } from '@/components/ui/Kbd';
 import { ANSWER_ART, answers, QUESTION_ORDER, QUESTION_PAGES, QUESTIONS_PER_PAGE } from '@/content/composer';
 import { researchUi, useResearchUi } from '@/lib/research-ui';
 import type { SearchResult } from '@/lib/search';
+import { ai, type AiPassage, type AiResults, useAiStatus } from '@/lib/ai';
 import { ArrowPixelIcon, ChevronPixelIcon } from './PromptIcons';
 
 const TITLE = 'Ask : About Animesh';
@@ -291,13 +292,20 @@ function Searching() {
 function SearchPanel({
   query,
   search,
+  local,
   onNavigate,
 }: {
   query: string;
   search: ReturnType<typeof useSearch>;
+  /** Meaning-based matches from the on-device index, used when no page contains the exact words. */
+  local?: AiPassage[];
   onNavigate: () => void;
 }) {
-  const results = search.query === query.trim() ? search.results : undefined;
+  const exact = search.query === query.trim() ? search.results : undefined;
+  const results: SearchResult[] | undefined =
+    !search.pending && !search.error && !exact?.length && local?.length
+      ? local.map((p) => ({ id: p.id, kind: 'page', title: p.title, url: p.url, excerpt: p.text.length > 170 ? `${p.text.slice(0, 170).replace(/\s+\S*$/, '')}…` : p.text }))
+      : exact;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
     const panel = e.currentTarget.closest('.nw-search-panel');
@@ -402,6 +410,69 @@ function SearchPanel({
   );
 }
 
+// ------------------------------------------------------------------------------------------ quick answer
+type Assist = AiResults & { query: string };
+
+/** On-device search (lib/ai.ts): ranked passages and a quick answer, about a millisecond per keystroke. */
+function useAssistant(query: string, enabled: boolean) {
+  const status = useAiStatus();
+  const trimmed = query.trim();
+  const [local, setLocal] = useState<Assist>();
+
+  useEffect(() => {
+    if (!enabled || trimmed.length < 2 || !status.index) return;
+    let live = true;
+    ai.search(trimmed).then((r) => live && setLocal({ ...r, query: trimmed }));
+    return () => {
+      live = false;
+    };
+  }, [trimmed, enabled, status.index, status.semantic]);
+
+  return { status, local: local?.query === trimmed ? local : undefined };
+}
+
+function AnswerPanel({
+  query,
+  assist,
+  onNavigate,
+}: {
+  query: string;
+  assist: ReturnType<typeof useAssistant>;
+  onNavigate: () => void;
+}) {
+  const { local } = assist;
+  if (query.trim().length < 2 || !local) return null;
+  return (
+    <section className="nw-ai-panel" aria-label="Quick answer" aria-live="polite">
+      <div className="nw-prompt-layout">
+        <div className="nw-search-sidebar">
+          <PanelTitle>Answer</PanelTitle>
+        </div>
+        <div className="nw-ai-body">
+          {local.summary.length ? (
+            <p className="nw-ai-text">
+              {local.summary.map((s, i) => (
+                <span key={s.id + i}>
+                  {s.text}{' '}
+                  <PromptLink href={s.url} className="nw-ai-cite" onClick={onNavigate} aria-label={`Source: ${s.title}`}>
+                    {i + 1}
+                  </PromptLink>{' '}
+                </span>
+              ))}
+            </p>
+          ) : (
+            <p className="nw-ai-text nw-ai-muted">Nothing on the site matches that closely. Try other words.</p>
+          )}
+          <p className="nw-ai-meta">
+            From the site, found on your device in {local.ms < 1 ? '<1' : Math.round(local.ms)} ms
+            {local.semantic ? '' : ' (keywords only, meaning search still loading)'}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ------------------------------------------------------------------------------------------ the palette
 /**
  * The ⌘K palette on the home page: a search field with suggested questions (curated answers) beneath it,
@@ -425,10 +496,17 @@ export function Composer() {
   const input = useRef<HTMLInputElement>(null);
   const results = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    ai.warmWhenIdle();
+  }, []);
   const available = mounted; // search works on every page
   const open = composer.open && available;
   const search = useSearch(query, open);
+  const assist = useAssistant(query, open);
+  useEffect(() => {
+    if (open) ai.warmNow();
+  }, [open]);
   const dismiss = useCallback(() => researchUi.closeComposer(), []);
 
   // Sit exactly over the hero button, or float near the top when it has scrolled away.
@@ -564,7 +642,10 @@ export function Composer() {
       </div>
       <div ref={results} className="nw-composer-results" data-lenis-prevent="">
         {query.trim() ? (
-          <SearchPanel query={query} search={search} onNavigate={dismiss} />
+          <>
+            <AnswerPanel query={query} assist={assist} onNavigate={dismiss} />
+            <SearchPanel query={query} search={search} local={assist.local?.results} onNavigate={dismiss} />
+          </>
         ) : (
           <QuestionsPanel
             active={open}
