@@ -297,15 +297,21 @@ function SearchPanel({
 }: {
   query: string;
   search: ReturnType<typeof useSearch>;
-  /** Meaning-based matches from the on-device index, used when no page contains the exact words. */
+  /** Ranked matches from the on-device index; replace the server results once available. */
   local?: AiPassage[];
   onNavigate: () => void;
 }) {
+  // The on-device ranking (lib/ai.ts) is used once it has loaded; the server's keyword search covers the moment before.
   const exact = search.query === query.trim() ? search.results : undefined;
-  const results: SearchResult[] | undefined =
-    !search.pending && !search.error && !exact?.length && local?.length
-      ? local.map((p) => ({ id: p.id, kind: 'page', title: p.title, url: p.url, excerpt: p.text.length > 170 ? `${p.text.slice(0, 170).replace(/\s+\S*$/, '')}…` : p.text }))
-      : exact;
+  const results: SearchResult[] | undefined = local
+    ? local.map((p) => ({
+        id: p.id,
+        kind: 'page',
+        title: p.title,
+        url: p.url,
+        excerpt: p.text.length > 170 ? `${p.text.slice(0, 170).replace(/\s+\S*$/, '')}…` : p.text,
+      }))
+    : exact;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
     const panel = e.currentTarget.closest('.nw-search-panel');
@@ -329,9 +335,12 @@ function SearchPanel({
       else if (t.top < s.top) scroller.scrollTop -= s.top - t.top;
     }
   };
-  const showStatus = query.trim().length < 2 || search.pending || search.error || !results?.length;
+  // with on-device results in hand, the server request's loading and error states no longer matter
+  const pending = !local && search.pending;
+  const error = local ? undefined : search.error;
+  const showStatus = query.trim().length < 2 || pending || error || !results?.length;
   return (
-    <section className="nw-search-panel" aria-label="Site search results" aria-busy={search.pending}>
+    <section className="nw-search-panel" aria-label="Site search results" aria-busy={pending}>
       <div className="nw-prompt-layout">
         <div className="nw-search-sidebar">
           <PanelTitle>Sources</PanelTitle>
@@ -341,11 +350,11 @@ function SearchPanel({
             <div className="nw-search-status" role="status">
               {query.trim().length < 2 ? (
                 'Type a little more to search.'
-              ) : search.pending ? (
+              ) : pending ? (
                 <Searching />
-              ) : search.error ? (
+              ) : error ? (
                 <>
-                  {search.error}{' '}
+                  {error}{' '}
                   <button type="button" className="nw-composer-hit" onClick={search.retry}>
                     Retry
                   </button>
@@ -355,8 +364,8 @@ function SearchPanel({
               )}
             </div>
           )}
-          {!search.pending &&
-            !search.error &&
+          {!pending &&
+            !error &&
             results?.map((result) =>
               result.kind === 'career' && result.matches?.length ? (
                 <section key={result.id} className="nw-search-group" aria-label={result.title}>

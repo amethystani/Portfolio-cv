@@ -1,7 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { affiliations, venues } from '@/content/affiliations';
-import { answers } from '@/content/composer';
 import { hermesFeatures, mission, statement, work } from '@/content/home';
 import { jobs } from '@/content/jobs';
 import { portfolio } from '@/content/portfolio';
@@ -70,15 +69,6 @@ export function buildAiCorpus(): AiChunk[] {
     add(`project-${f.id}`, f.title, f.cta.desktop.href, 'project', `${f.title}: ${f.eyebrow.desktop}.`),
   );
 
-  answers.forEach((a, i) =>
-    add(
-      `answer-${i}`,
-      a.question,
-      a.learn,
-      'answer',
-      `${a.question} ${a.answer}${/\bemail\b/i.test(a.answer) ? ` His email is ${portfolio.email}.` : ''}`,
-    ),
-  );
 
   releases.forEach((r, i) =>
     add(`release-${i}`, r.title, r.href, 'publication', `${r.type} (${r.date}): ${r.title}. ${r.description}`),
