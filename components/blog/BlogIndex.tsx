@@ -56,7 +56,24 @@ function FeatureCard({ post }: { post: Post }) {
 
 function ArchiveRow({ post }: { post: Post }) {
   return (
-    <article className="nw-catalogue-row nw-blog-archive-row">
+    <article
+      className={`nw-catalogue-row nw-blog-archive-row${post.cardImage ? ' nw-blog-archive-row-art' : ''}`}
+    >
+      {post.cardImage && (
+        <Link tabIndex={-1} aria-hidden="true" href={`/${post.slug}`} className="nw-blog-row-art-link">
+          <span className="nw-article-color-frame nw-article-related-image nw-blog-row-art">
+            <img className="nw-color-reveal" src={post.cardImage} alt="" loading="lazy" decoding="async" />
+            <img
+              className="nw-article-color nw-color-reveal"
+              src={post.cardImage}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+            />
+          </span>
+        </Link>
+      )}
       <RowTitle size={24} className="nw-catalogue-row-title" data-blog-reveal="">
         <Link className="nw-catalogue-link" href={`/${post.slug}`}>
           {cardTitle(post)}

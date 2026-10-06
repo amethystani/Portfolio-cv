@@ -317,3 +317,24 @@ html[data-research-theme='dark'] .nw-theme-icon {
     display: none;
   }
 }
+
+/* Writing index: every post carries a piece of artwork beside its title. */
+.nw-blog-index .nw-blog-archive-row.nw-blog-archive-row-art {
+  grid-template-columns: 240px var(--nw-row-title) minmax(0, 1fr) 100px;
+  align-items: start;
+  --nw-row-rule-start: 0px;
+}
+.nw-blog-row-art-link { display: block; }
+.nw-blog-row-art { display: block; height: 135px; min-height: 0; border-radius: 6px; }
+.nw-blog-row-art > img { object-fit: cover; }
+@media (max-width: 1100px) {
+  .nw-blog-index .nw-blog-archive-row.nw-blog-archive-row-art { grid-template-columns: 200px minmax(0, 1fr); }
+  .nw-blog-archive-row-art .nw-blog-row-art-link { grid-row: 1 / span 3; }
+}
+@media (max-width: 767px) {
+  .nw-blog-index .nw-blog-archive-row.nw-blog-archive-row-art { grid-template-columns: 1fr; }
+  .nw-blog-archive-row-art .nw-blog-row-art-link { grid-row: auto; }
+  .nw-blog-row-art { height: 180px; }
+}
+.nw-blog-feature:first-child .nw-blog-feature-art img { width: 100%; height: 100%; object-fit: cover; top: 0; right: auto; left: 0; transform: none; }
+.nw-blog-row-art-link, .nw-blog-row-art { width: 100%; }
