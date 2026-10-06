@@ -4,7 +4,8 @@ import { posts, type Post } from '@/content/posts';
 
 export const allPosts = posts;
 export const featuredPosts = posts.filter((p) => p.featured);
-export const archivePosts = posts.filter((p) => !p.featured);
+/** The full list for the Archive filters: featured posts appear here too, so the topic counts are complete. */
+export const archivePosts = posts;
 
 export function getPost(slug: string): Post | undefined {
   return posts.find((p) => p.slug === slug);

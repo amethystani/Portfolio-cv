@@ -58,7 +58,10 @@ export const posts: Post[] = [
     excerpt:
       'The same molecule written as SMILES, IUPAC, InChI or SELFIES gave inconsistent predictions for 88% of 1,072 molecules. What happens inside the model?',
     featured: true,
-    cover: { src: '/assets/portfolio/animesh-mishra-poster.webp', alt: 'Animesh Mishra' },
+    cover: {
+      src: '/assets/blog/cards/notation.webp',
+      alt: 'A benzene ring as the sun over a retro grid horizon',
+    },
     cardImage: '/assets/blog/cards/notation.webp',
     eagerCard: true,
     related: ['emnlp-2026-beyond-epistemic-collapse', 'wmt-2026-translation-metrics', 'juris-ibm-vakra'],

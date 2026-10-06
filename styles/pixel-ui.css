@@ -1026,3 +1026,38 @@ html[data-research-theme='dark'] .nw-work-card.nw-work-card-has-art {
 .nw-work-card.nw-work-card-has-art > *,
 html[data-research-theme='dark'] .nw-work-card.nw-work-card-has-art,
 html[data-research-theme='dark'] .nw-work-card.nw-work-card-has-art > * { color: #fff4ea !important; }
+
+/* The article "Back" button: a pixel pill that stays on screen while reading. Wide screens: in the left margin under the
+   header. Narrower ones (where the contents bar owns the top): bottom-left. */
+.nw-article-back {
+  --px-s: 4px;
+  --px-b: 2px;
+  position: fixed;
+  left: 20px;
+  top: 140px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nw-article-back svg {
+  transition: translate 0.12s steps(2, end);
+}
+.nw-article-back:hover svg,
+.nw-article-back:focus-visible svg {
+  translate: -3px 0;
+}
+@media (max-width: 1279px) {
+  .nw-article-back {
+    top: auto;
+    bottom: 20px;
+    left: 18px;
+  }
+}

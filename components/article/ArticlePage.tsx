@@ -4,6 +4,7 @@ import '@/styles/article-deep.css';
 import { PageMotion } from '@/components/behavior/PageMotion';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/icons';
+import { ArticleBack } from '@/components/article/ArticleBack';
 import { ArticleEmbeds } from '@/components/article/ArticleEmbeds';
 import { ArticleReading } from '@/components/article/ArticleReading';
 import { ArticleToolbar } from '@/components/article/ArticleToolbar';
@@ -85,9 +86,9 @@ function RelatedRow({ post }: { post: Post }) {
         </h3>
         <p>{post.excerpt}</p>
       </div>
-      {post.thumbnail !== null && (post.thumbnail ?? post.cover) && (
+      {post.thumbnail !== null && (post.thumbnail ?? post.cardImage ?? post.cover?.src) && (
         <ColorFrame
-          src={post.thumbnail ?? post.cover!.src}
+          src={(post.thumbnail ?? post.cardImage ?? post.cover?.src)!}
           alt={cardTitle(post)}
           className="nw-article-related-image"
         />
@@ -106,6 +107,7 @@ export function ArticlePage({ post, body }: { post: Post; body: string }) {
   return (
     <div>
       <PageMotion kind="article" />
+      <ArticleBack />
       <main className={`nw-blog nw-article${post.feature ? ' nw-article-feature' : ''}`}>
         <article>
           <header className={`${WRAP} nw-article-hero`}>
