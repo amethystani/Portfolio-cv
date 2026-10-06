@@ -3,6 +3,7 @@
 import { type ComponentType, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArticleConstellation } from './ArticleConstellation';
+import { UnicodeLens } from './UnicodeLens';
 
 /**
  * Interactive widgets inside article bodies. The body HTML (content/posts/<slug>.html) holds a static
@@ -11,6 +12,7 @@ import { ArticleConstellation } from './ArticleConstellation';
  */
 const EMBEDS: Record<string, ComponentType> = {
   'article-constellation': ArticleConstellation,
+  'widget-unicode-lens': UnicodeLens,
 };
 
 export function ArticleEmbeds() {

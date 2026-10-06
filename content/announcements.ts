@@ -60,12 +60,12 @@ export const announcements: Announcement[] = [
     date: 'Aug 22, 2026',
   },
   {
-    url: 'https://github.com/clerktree',
+    url: '/machina-open-machine-intelligence',
     image: '/assets/portfolio/updates/pixel-satellite.webp',
     width: 1000,
     height: 563,
     handle: 'Shared',
-    text: 'Machina, open machine intelligence from ClerkTree: bearing-fault classification, remaining useful life, visual inspection and evidence-grounded industrial reasoning. Signals stay legible, models stay portable, actions stay governed.',
+    text: 'Machina, open machine intelligence from ClerkTree: bearing-fault classification, remaining useful life, process-quality prediction and an evidence brief for industrial reasoning. Signals stay legible, models stay portable, actions stay governed.',
     date: 'Jul 26, 2026',
   },
   {
@@ -74,7 +74,7 @@ export const announcements: Announcement[] = [
     width: 1000,
     height: 563,
     handle: 'Benchmark',
-    text: 'Our agent Juris ranked #2 globally on the IBM VAKRA benchmark for tool selection, using a 36B model and a capability-specific routing stack over roughly 8,000 APIs in 62 domains.',
+    text: 'Our agent Juris ranked #2 globally on the IBM VAKRA benchmark for tool selection, using a ~35B model and a capability-specific routing stack over roughly 8,000 APIs in 62 domains.',
     date: 'May 24, 2026',
   },
 ];

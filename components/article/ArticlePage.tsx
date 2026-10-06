@@ -1,5 +1,6 @@
 import { portfolio } from '@/content/portfolio';
 import Link from 'next/link';
+import '@/styles/article-deep.css';
 import { PageMotion } from '@/components/behavior/PageMotion';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/icons';

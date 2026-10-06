@@ -124,20 +124,34 @@ export const posts: Post[] = [
     related: ['wmt-2026-translation-metrics', 'notation-matters-in-digital-discovery', 'juris-ibm-vakra'],
   },
   {
+    slug: 'machina-open-machine-intelligence',
+    tag: 'Project',
+    title: 'Machina: open machine intelligence you can audit',
+    description:
+      'Machina from ClerkTree is an open harness for machine intelligence: bearing-fault classification, remaining useful life, process quality and an evidence brief, with abstention, an audit trail and a human in the loop.',
+    author: 'Animesh Mishra',
+    avatar: { initials: 'AM' },
+    publishedTime: '2026-07-26T12:00:00+00:00',
+    dateLabel: 'July 2026',
+    excerpt:
+      'Signals stay legible, models stay portable, actions stay governed. A close look at what is in the first release, including what is still baseline.',
+    related: ['juris-ibm-vakra', 'emnlp-2026-beyond-epistemic-collapse', 'fruit-fly-connectome-trading'],
+  },
+  {
     slug: 'juris-ibm-vakra',
     tag: 'Benchmark',
     title: 'Juris ranked #2 globally on IBM VAKRA for tool selection',
     description:
-      'Our agent Juris ranked #2 globally on the IBM VAKRA benchmark for tool selection, using a 36B model and a capability-specific routing stack.',
+      'Our agent Juris ranked #2 globally on the IBM VAKRA benchmark for tool selection, using a ~35B mixture-of-experts model and a capability-specific routing stack.',
     author: 'Animesh Mishra',
     avatar: { initials: 'AM' },
     publishedTime: '2026-05-24T12:00:00+00:00',
     dateLabel: 'May 2026',
     excerpt:
-      'A lot of work went into making the agent do less and choose better. A 36B model turned out to be more than enough.',
+      'A lot of work went into making the agent do less and choose better. A ~35B mixture-of-experts model (about 3B active per token) turned out to be more than enough.',
     related: [
+      'machina-open-machine-intelligence',
       'emnlp-2026-beyond-epistemic-collapse',
-      'fruit-fly-connectome-trading',
       'notation-matters-in-digital-discovery',
     ],
   },

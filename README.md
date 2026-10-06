@@ -72,6 +72,14 @@ Almost all copy lives in `content/`. Edit, save, and the page updates.
 article's "Contents" list and reading rail. The post appears on `/blog`, in search, in the sitemap and
 under any post that lists it in `related`.
 
+**Deep-dive posts.** The five long posts (Juris, Notation matters, WMT 2026, EVIRAG, Machina) use the components in
+`styles/article-deep.css`: theme-aware inline SVG diagrams and charts (colours come from the editorial theme
+variables, so they follow light and dark mode and scroll sideways on phones), data tables, callouts, stat rows,
+numbered steps, code blocks and collapsible details. They are plain HTML in `content/posts/`; the WMT post also
+mounts an interactive widget (`components/article/UnicodeLens.tsx`, registered in `ArticleEmbeds.tsx` by the
+container id `widget-unicode-lens`). Every number in them is attributed (repository file, paper table, or labelled as
+derived), and the Notation post embeds the paper's own figures from `public/assets/blog/`.
+
 **Filters and search.** Publications, Experience and Writing each have a filter bar (text box, type chips with live counts,
 sort, reset) from `components/catalogue/FilteredList.tsx`; the chips come from each item's type (`type` in
 `content/releases.ts`, `employment` in `content/jobs.ts`, `tag` in `content/posts.ts`). The filters live in the address

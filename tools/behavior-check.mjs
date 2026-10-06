@@ -58,7 +58,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
 
   // theme
   const before = await page.evaluate(() => document.documentElement.dataset.researchTheme);
-  await page.click('.nw-research-theme-fold'); await page.waitForTimeout(1500);
+  await page.click('header .nw-header-theme'); await page.waitForTimeout(1500);
   const after = await page.evaluate(() => document.documentElement.dataset.researchTheme);
   check('theme fold toggles light/dark', before !== after, `${before} -> ${after}`);
   check('theme is remembered', (await page.evaluate(() => localStorage.getItem('nous-research-theme'))) === after);
@@ -129,7 +129,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
   await page.goto(BASE + '/releases?q=wmt&g=PAPER', { waitUntil: 'networkidle' }); await page.waitForTimeout(400);
   check('a filtered link restores its filters', (await page.$eval('.fl-search input', (i) => i.value)) === 'wmt' && (await rows()) === 1);
   await page.goto(BASE + '/careers', { waitUntil: 'networkidle' });
-  await page.click('.nw-search-pill'); await page.waitForTimeout(700);
+  await page.click('header button.nw-header-icon[aria-label="Search the site"]'); await page.waitForTimeout(700);
   check('the header search button opens the palette on any page', (await page.getAttribute('#research-composer', 'data-open')) === 'true');
   await page.fill('.nw-composer-search-input', 'evirag'); await page.waitForTimeout(1500);
   check('and searches the whole site', (await page.$$('[data-search-result]')).length >= 1);
@@ -157,7 +157,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   await page.evaluate((y) => scrollTo(0, y), Math.round(height * 0.3)); await page.waitForTimeout(800);
   const rail = await page.$eval('.nw-article-reading-rail', (r) => ({ hidden: r.hidden, n: r.children.length }));
-  check('the reading rail appears beside the text with one tick per section', !rail.hidden && rail.n === 3, JSON.stringify(rail));
+  check('the reading rail appears beside the text with one tick per section', !rail.hidden && rail.n >= 3, JSON.stringify(rail));
   await page.hover('.nw-article-reading-rail a:nth-child(3)'); await page.waitForTimeout(300);
   check('hovering a tick previews that section', (await page.$$('.nw-article-reading-rail a[data-preview]')).length === 1);
   check('headings and figures fade in as they scroll into view', (await page.$$('.nw-blog-reveal')).length > 5);
@@ -171,7 +171,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight * 0.3)); await page.waitForTimeout(800);
   check('the dock shows once the contents list scrolls away', !(await dock()).hidden);
   await page.click('.nw-article-dock button'); await page.waitForTimeout(300);
-  check('tapping it lists the sections', (await dock()).open === 'true' && (await page.$$('.nw-article-dock-list a')).length === 3);
+  check('tapping it lists the sections', (await dock()).open === 'true' && (await page.$$('.nw-article-dock-list a')).length >= 3);
   await page.keyboard.press('Escape'); await page.waitForTimeout(200);
   check('Escape closes the list', (await dock()).open === 'false');
   await ctx.close();
@@ -214,7 +214,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
 }
 {
   const { page, ctx } = await open('/blog');
-  check('blog archive shows all 5 on desktop (pagination is mobile-only)', /Showing 5 of 5/.test(await page.$eval('#blog-archive-list + button + span, #blog-archive-list ~ span.sr-only', (e) => e.textContent).catch(() => '')));
+  check('blog archive shows all 6 on desktop (pagination is mobile-only)', /Showing 6 of 6/.test(await page.$eval('#blog-archive-list + button + span, #blog-archive-list ~ span.sr-only', (e) => e.textContent).catch(() => '')));
   await ctx.close();
 }
 
