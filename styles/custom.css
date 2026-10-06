@@ -338,3 +338,8 @@ html[data-research-theme='dark'] .nw-theme-icon {
 }
 .nw-blog-feature:first-child .nw-blog-feature-art img { width: 100%; height: 100%; object-fit: cover; top: 0; right: auto; left: 0; transform: none; }
 .nw-blog-row-art-link, .nw-blog-row-art { width: 100%; }
+
+/* The page titles (Writing, Publications, Experience) keep a hidden duplicate of the title for text selection. As a flex
+   sibling it took a slice of the row and pulled the visible title off-centre on wide screens, so take it out of the flow. */
+.nous-web .nw-catalogue-title { position: relative; }
+.nous-web .nw-catalogue-title > [aria-hidden] { position: absolute; inset: 0; margin: 0; pointer-events: none; overflow: hidden; }

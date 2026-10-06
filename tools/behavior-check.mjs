@@ -214,7 +214,7 @@ const attr = (page, sel, name) => page.$eval(sel, (el, n) => el.getAttribute(n),
 }
 {
   const { page, ctx } = await open('/blog');
-  check('blog archive shows all 6 on desktop (pagination is mobile-only)', /Showing 6 of 6/.test(await page.$eval('#blog-archive-list + button + span, #blog-archive-list ~ span.sr-only', (e) => e.textContent).catch(() => '')));
+  check('blog archive shows all 9 on desktop (pagination is mobile-only)', /Showing 9 of 9/.test(await page.$eval('#blog-archive-list + button + span, #blog-archive-list ~ span.sr-only', (e) => e.textContent).catch(() => '')));
   await ctx.close();
 }
 

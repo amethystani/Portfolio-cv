@@ -37,6 +37,8 @@ export type HermesFeature = {
   /** One line on the project's card, and the repository it lives in. */
   blurb: string;
   repo: string;
+  /** Artwork behind the card (public/assets/work). */
+  art?: string;
   /** Desktop and mobile can show different call-to-action wording and targets. */
   cta: { desktop: Cta; mobile: Cta };
 };
@@ -45,10 +47,12 @@ export type HermesFeature = {
 export const hermesFeatures: (HermesFeature & { id: string })[] = [
   {
     id: 'evirag-bench',
+    art: '/assets/work/evirag.webp',
     kind: 'terminal',
     eyebrow: { desktop: 'Benchmark · EMNLP 2026', mobile: 'Benchmark' },
     title: 'EVIRAG-Bench',
-    blurb: 'Retrieval that keeps conflicting scientific evidence apart instead of collapsing it into one answer.',
+    blurb:
+      'Retrieval that keeps conflicting scientific evidence apart instead of collapsing it into one answer.',
     repo: 'amethystani/evirag-bench',
     cta: {
       desktop: { label: 'View on GitHub', href: 'https://github.com/amethystani/evirag-bench' },
@@ -57,10 +61,12 @@ export const hermesFeatures: (HermesFeature & { id: string })[] = [
   },
   {
     id: 'notation-matters',
+    art: '/assets/work/notation.webp',
     kind: 'desktop',
     eyebrow: { desktop: 'Paper · Digital Discovery', mobile: 'Paper' },
     title: 'Notation Matters',
-    blurb: 'The same molecule, written four ways, gets four different predictions from chemistry language models.',
+    blurb:
+      'The same molecule, written four ways, gets four different predictions from chemistry language models.',
     repo: 'amethystani/notation-matters',
     cta: {
       desktop: { label: 'View on GitHub', href: 'https://github.com/amethystani/notation-matters' },
@@ -69,6 +75,7 @@ export const hermesFeatures: (HermesFeature & { id: string })[] = [
   },
   {
     id: 'palimpsest',
+    art: '/assets/work/palimpsest.webp',
     kind: 'portal',
     eyebrow: { desktop: 'Metric · WMT 2026', mobile: 'Metric' },
     title: 'Palimpsest',
@@ -107,4 +114,3 @@ export const statement = {
   label: 'Research statement',
   text: 'My research asks when language models, and the measurements used to judge them, can be trusted when the underlying knowledge is heterogeneous, conflicting, or uncertain. In scientific retrieval-augmented generation I studied how standard RAG collapses real disagreement between sources into one answer, and proposed a disagreement-aware alternative. In chemistry language models I showed that the same molecule written in different notations gets inconsistent predictions. In LLM fairness auditing I used partial identification to make evaluation uncertainty explicit instead of hiding it.',
 };
-

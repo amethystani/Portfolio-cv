@@ -161,4 +161,53 @@ export const posts: Post[] = [
       'notation-matters-in-digital-discovery',
     ],
   },
+  {
+    slug: 'politeness-in-hindi-gemma-scope',
+    cardImage: '/assets/blog/cards/politeness.webp',
+    tag: 'Paper',
+    title: 'Where does politeness live in Hindi?',
+    description:
+      'Our AACL-IJCNLP 2026 Student Research Workshop paper (accepted) with Krishang Sharma: a mechanistic case study of honorific encoding in Gemma Scope sparse autoencoders.',
+    author: 'Animesh Mishra',
+    avatar: { initials: 'AM' },
+    dateLabel: '2026',
+    excerpt: 'Hindi builds respect into its grammar. Where does a language model keep that distinction?',
+    related: [
+      'notation-matters-in-digital-discovery',
+      'wmt-2026-translation-metrics',
+      'legalnexus-hyperbolic-legal-retrieval',
+    ],
+  },
+  {
+    slug: 'emi-rebar-reliability-measurement',
+    cardImage: '/assets/blog/cards/emi.webp',
+    tag: 'Paper',
+    title: 'Sensing steel without gluing the sensor on',
+    description:
+      'Published in Measurement (Elsevier), Vol. 274, Art. 121021: a reliability framework for non-bonded, reusable electro-mechanical impedance measurements in construction steel rebar.',
+    author: 'Animesh Mishra',
+    avatar: { initials: 'AM' },
+    dateLabel: '2026',
+    excerpt:
+      'Reusable sensors only help if re-seating them does not change the answer. A reliability framework for EMI measurements on rebar.',
+    related: [
+      'politeness-in-hindi-gemma-scope',
+      'machina-open-machine-intelligence',
+      'notation-matters-in-digital-discovery',
+    ],
+  },
+  {
+    slug: 'legalnexus-hyperbolic-legal-retrieval',
+    cardImage: '/assets/blog/cards/legal.webp',
+    tag: 'Paper',
+    title: 'LegalNexus: finding precedent in a hierarchy',
+    description:
+      'A preprint (SSRN 6678264, under review at Engineering Applications of Artificial Intelligence): hierarchy-aware legal case retrieval with hyperbolic graph learning and multi-agent refinement.',
+    author: 'Animesh Mishra',
+    avatar: { initials: 'AM' },
+    dateLabel: '2026',
+    excerpt:
+      'Legal authority is a hierarchy. Hyperbolic graph learning and multi-agent refinement for retrieving the right cases.',
+    related: ['emnlp-2026-beyond-epistemic-collapse', 'politeness-in-hindi-gemma-scope', 'juris-ibm-vakra'],
+  },
 ];

@@ -111,7 +111,21 @@ export function HermesBlock() {
               </div>
               <div className="relative overflow-clip h-[var(--nw-feature-art-h)] w-full max-lg:aspect-[347/313] max-lg:h-auto">
                 {/* the project in one line, set like a printed card */}
-                <a className="nw-work-card" href={`https://github.com/${feature.repo}`} target="_blank" rel="noopener noreferrer">
+                <a
+                  className={`nw-work-card${feature.art ? ' nw-work-card-has-art' : ''}`}
+                  href={`https://github.com/${feature.repo}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {feature.art && (
+                    <img
+                      className="nw-work-card-img"
+                      src={feature.art}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  )}
                   <span className="nw-work-card-blurb">{feature.blurb}</span>
                   <span className="nw-work-card-repo">github.com/{feature.repo}</span>
                 </a>
