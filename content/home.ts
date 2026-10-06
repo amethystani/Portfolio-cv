@@ -102,8 +102,8 @@ export const work = {
   band: {
     poster: '/assets/portfolio/terminal-loop-poster.webp',
     sources: [
-      { src: '/media/terminal-loop.webm', type: 'video/webm' },
       { src: '/media/terminal-loop.mp4', type: 'video/mp4' },
+      { src: '/media/terminal-loop.webm', type: 'video/webm' },
     ],
   },
   secondary: { label: 'GitHub', href: 'https://github.com/amethystani' },
